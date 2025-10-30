@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 060fdbe195f8c4518b6bb384047155be, type: 3}
+  m_Name: DefaultShader
+  m_EditorClassIdentifier: 
+  Shader:
+    Mesh: {fileID: 4800000, guid: aa831087b5fa2406aa2deb7e8e7870ea, type: 3}
+    Procedural: {fileID: 4800000, guid: 106af35169bf3471d82c7e02df626638, type: 3}
+  PropertyNames:
+    Texture: _Texture
+    Vertices: _Vertices
+    BaseVertex: _BaseVertex

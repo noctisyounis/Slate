@@ -1,0 +1,16 @@
+{
+    "name": "Slate.Runtime",
+    "rootNamespace": "Slate.Runtime",
+    "references": [
+        "GUID:56a25bc3d96654d6696bd2bf7846171f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
