@@ -22,13 +22,19 @@ namespace Slate.Runtime
         {
             HandleKeyboardPan();
             HandleMousePan();
+            HandleCursor();
         }
 
-        public CameraPan(Camera camera, float panSpeed = 10f, float mousePanSpeed = 0.5f)
+
+
+        public CameraPan(Camera camera, float panSpeed = 10f, float mousePanSpeed = 10f, Texture2D panCursor = null)
         {
             _camera = camera;
             _panSpeed = panSpeed;
             _mousePanSpeed  = mousePanSpeed;
+
+            _panCursor = panCursor;
+            _defaultCursor = null; // Cursor par défaut
 
             // Initialiser le input system
             _input = new SlateInputActions.Runtime.SlateInputActions();
@@ -65,16 +71,40 @@ namespace Slate.Runtime
             Vector3 move = new Vector3(m_moveInput.x,  m_moveInput.y, 0f) * (_panSpeed * Time.deltaTime);
             _camera.transform.Translate(move, Space.World);
         }
+        private void HandleCursor()
+        {
+            if (m_isMiddleClickHeld)
+            {
+                // Cursor de pan
+                if (_panCursor is not null)
+                {
+                    Cursor.SetCursor(_panCursor, _cursorHotspot, CursorMode.Auto);
+                }
+
+                Cursor.visible = true;
+            }
+
+            else
+            {
+                // Cursor par défaut
+                Cursor.SetCursor(_defaultCursor, Vector2.zero, CursorMode.Auto);
+                Cursor.visible = true;
+            }
+        }
         
         #endregion
         
         
         #region Private and protected
         
-        private readonly float _panSpeed = 10f;
-        private readonly float _mousePanSpeed = 0.5f;
-        private readonly Camera _camera;
+        private float _panSpeed = 10f;
+        private float _mousePanSpeed = 10f;
+        private Camera _camera;
         private readonly SlateInputActions.Runtime.SlateInputActions _input;
+        
+        private Texture2D _panCursor; // Le sprite du curseur pour le pan
+        private Texture2D _defaultCursor; // Sauvegarde du curseur par défaut
+        private Vector2 _cursorHotspot =  Vector2.zero;
 
         #endregion
     }
