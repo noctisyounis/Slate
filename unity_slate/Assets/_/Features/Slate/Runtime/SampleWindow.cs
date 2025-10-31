@@ -1,3 +1,4 @@
+using ImGuiNET;
 using UImGui;
 using UnityEngine;
 
@@ -10,7 +11,7 @@ namespace Slate.Runtime
 
         private void OnLayout(UImGui.UImGui uImGui)
         {
-            
+            ImGui.ShowDemoWindow();
         }
     }
 }
