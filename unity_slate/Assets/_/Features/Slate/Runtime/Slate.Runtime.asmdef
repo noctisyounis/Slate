@@ -2,7 +2,8 @@
     "name": "Slate.Runtime",
     "rootNamespace": "Slate.Runtime",
     "references": [
-        "GUID:56a25bc3d96654d6696bd2bf7846171f"
+        "GUID:56a25bc3d96654d6696bd2bf7846171f",
+        "GUID:75469ad4d38634e559750d17036d5f7c"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
