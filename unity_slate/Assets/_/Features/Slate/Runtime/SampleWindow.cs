@@ -1,9 +1,9 @@
+using Foundation.Runtime;
 using UImGui;
-using UnityEngine;
 
 namespace Slate.Runtime
 {
-    public class SampleWindow : MonoBehaviour
+    public class SampleWindow : FBehaviour
     {
         private void OnEnable() => UImGuiUtility.Layout += OnLayout;
         private void OnDisable() => UImGuiUtility.Layout -= OnLayout;
