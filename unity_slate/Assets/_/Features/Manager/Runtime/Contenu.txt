@@ -1,0 +1,12 @@
+Facts
+Save / Load
+Localisation
+Platformisation
+Conditional Title Screen
+Settings and Tweaks
+Goals
+Optimisation:
+How to break the game
+How to prevent 100mb file on git
+Show version number
+Editor

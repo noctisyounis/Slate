@@ -1,0 +1,16 @@
+{
+    "name": "Database.Editor",
+    "rootNamespace": "Database.Editor",
+    "references": [
+        "GUID:843051488f27441a9888a50aed5eabec"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
