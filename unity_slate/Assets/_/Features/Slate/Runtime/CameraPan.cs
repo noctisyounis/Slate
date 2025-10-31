@@ -23,11 +23,12 @@ namespace Slate.Runtime
             HandleKeyboardPan();
             HandleMousePan();
             HandleCursor();
+            HandleZoom();
         }
 
 
 
-        public CameraPan(Camera camera, float panSpeed = 10f, float mousePanSpeed = 10f, Texture2D panCursor = null)
+        public CameraPan(Camera camera, float panSpeed = 10f, float mousePanSpeed = 10f, Texture2D panCursor = null, float zoomSpeed = 100f)
         {
             _camera = camera;
             _panSpeed = panSpeed;
@@ -35,6 +36,8 @@ namespace Slate.Runtime
 
             _panCursor = panCursor;
             _defaultCursor = null; // Cursor par défaut
+            
+            _zoomSpeed = zoomSpeed;
 
             // Initialiser le input system
             _input = new SlateInputActions.Runtime.SlateInputActions();
@@ -47,6 +50,9 @@ namespace Slate.Runtime
 
             _input.Camera.MiddleClick.performed += ctx => m_isMiddleClickHeld = true;
             _input.Camera.MiddleClick.canceled += ctx => m_isMiddleClickHeld = false;
+            
+            _input.Camera.Zoom.performed += ctx => _zoomDelta = ctx.ReadValue<float>();
+            _input.Camera.Zoom.canceled += ctx => _zoomDelta = 0f;
 
         }
         
@@ -91,6 +97,17 @@ namespace Slate.Runtime
                 Cursor.visible = true;
             }
         }
+
+        private void HandleZoom()
+        {
+            if (Mathf.Abs(_zoomDelta) > 0.01f)
+            {
+                Vector3 pos = _camera.transform.position;
+                pos.z += _zoomDelta * _zoomSpeed * Time.deltaTime;
+                pos.z = Mathf.Clamp(pos.z, _minZoom, _maxZoom);
+                _camera.transform.position = pos;
+            }
+        }
         
         #endregion
         
@@ -102,9 +119,14 @@ namespace Slate.Runtime
         private Camera _camera;
         private readonly SlateInputActions.Runtime.SlateInputActions _input;
         
-        private Texture2D _panCursor; // Le sprite du curseur pour le pan
-        private Texture2D _defaultCursor; // Sauvegarde du curseur par défaut
+        private Texture2D _panCursor;           // Le sprite du curseur pour le pan
+        private Texture2D _defaultCursor;       // Sauvegarde du curseur par défaut
         private Vector2 _cursorHotspot =  Vector2.zero;
+        
+        private float _zoomDelta;
+        private float _zoomSpeed = 100f;        // vitesse de zoom
+        private float _minZoom = -50f;        // distance minimal de la caméra
+        private float _maxZoom = -2f;         // distance maximal de la caméra
 
         #endregion
     }
