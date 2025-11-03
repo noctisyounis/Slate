@@ -316,6 +316,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1569865505}
   - component: {fileID: 1569865506}
+  - component: {fileID: 1569865507}
   m_Layer: 0
   m_Name: Slate
   m_TagString: Untagged
@@ -348,6 +349,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fefdf94526573431e80f06d47f4431bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1569865507
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1569865504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd38ac838e4fa467e9a47b3c84bdf9fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &2052622590
@@ -402,6 +415,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: SampleDemoWindow
       objectReference: {fileID: 0}
+    - target: {fileID: 8660594806240859278, guid: 112cf8b9a0f0a412689fc195c6e55968, type: 3}
+      propertyPath: _camera
+      value: 
+      objectReference: {fileID: 330585545}
     m_RemovedComponents:
     - {fileID: 5187045405267620860, guid: 112cf8b9a0f0a412689fc195c6e55968, type: 3}
     - {fileID: 7100641311238782667, guid: 112cf8b9a0f0a412689fc195c6e55968, type: 3}

@@ -1,0 +1,16 @@
+{
+    "name": "WindowUtilMac.Runtime",
+    "rootNamespace": "WindowUtilMac.Runtime",
+    "references": [
+        "GUID:70ee7783ecf9646f99ae250415f2a80b"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

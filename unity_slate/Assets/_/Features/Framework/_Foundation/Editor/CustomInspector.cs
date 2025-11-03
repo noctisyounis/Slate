@@ -17,7 +17,6 @@ namespace Foundation.Editor
         
         private void OnEnable()
         {
-            Debug.Log("OnEnable");
             _behaviour = target as FBehaviour;
             
             ColorUtility.TryParseHtmlString("#00CFFFC3", out _debugColor);

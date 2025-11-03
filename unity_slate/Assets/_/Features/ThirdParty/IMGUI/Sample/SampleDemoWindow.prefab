@@ -9,8 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1024104415388363069}
-  - component: {fileID: 3389649589900402120}
   - component: {fileID: 1398806238415314217}
+  - component: {fileID: 8660594806240859278}
+  - component: {fileID: 7249066809784241369}
   m_Layer: 0
   m_Name: SampleDemoWindow
   m_TagString: Untagged
@@ -33,7 +34,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3389649589900402120
+--- !u!114 &1398806238415314217
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5338779034653158535}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f07b80444417847c59bfc4018e815315, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8660594806240859278
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -76,7 +89,7 @@ MonoBehaviour:
   _style: {fileID: 11400000, guid: 4ce70a66679a34e6895c45e822e23048, type: 2}
   _cursorShapes: {fileID: 11400000, guid: 5d3ad54851b8840fdb60bb0691c45276, type: 2}
   _doGlobalEvents: 1
---- !u!114 &1398806238415314217
+--- !u!114 &7249066809784241369
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
