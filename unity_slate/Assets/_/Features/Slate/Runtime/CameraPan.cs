@@ -21,7 +21,8 @@ namespace Slate.Runtime
         public void UpdatePan()
         {
             HandleKeyboardPan();
-            HandleMousePan();
+            if (m_isMiddleClickHeld) HandleMousePan();
+            else _mouseDelta = Vector2.zero;
             HandleCursor();
             HandleZoom();
         }
@@ -40,19 +41,19 @@ namespace Slate.Runtime
             _zoomSpeed = zoomSpeed;
 
             // Initialiser le input system
-            _input = new SlateInputActions.Runtime.SlateInputActions();
+            _input = new CustomInputActions();
             _input.Enable();
-            _input.Camera.Move.performed += ctx => m_moveInput = ctx.ReadValue<Vector2>();
-            _input.Camera.Move.canceled += ctx => m_moveInput = Vector2.zero;
+            _input.Slate.Move.performed += ctx => m_moveInput = ctx.ReadValue<Vector2>();
+            _input.Slate.Move.canceled += ctx => m_moveInput = Vector2.zero;
             
-            _input.Camera.Look.performed += ctx => _mouseDelta = ctx.ReadValue<Vector2>();
-            _input.Camera.Look.canceled += ctx => _mouseDelta = Vector2.zero;
+            // _input.Slate.Look.performed += ctx => _mouseDelta = ctx.ReadValue<Vector2>();
+            // _input.Slate.Look.canceled += ctx => _mouseDelta = Vector2.zero;
 
-            _input.Camera.MiddleClick.performed += ctx => m_isMiddleClickHeld = true;
-            _input.Camera.MiddleClick.canceled += ctx => m_isMiddleClickHeld = false;
+            _input.Slate.Pan.performed += ctx => m_isMiddleClickHeld = ctx.ReadValue<float>() > 0.5f;
+            _input.Slate.Pan.canceled += ctx => m_isMiddleClickHeld = false;
             
-            _input.Camera.Zoom.performed += ctx => _zoomDelta = ctx.ReadValue<float>();
-            _input.Camera.Zoom.canceled += ctx => _zoomDelta = 0f;
+            _input.Slate.Zoom.performed += ctx => _zoomDelta = ctx.ReadValue<float>();
+            _input.Slate.Zoom.canceled += ctx => _zoomDelta = 0f;
 
         }
         
@@ -63,8 +64,8 @@ namespace Slate.Runtime
         
         private void HandleMousePan()
         {
-            // Pan souris (clic droit maintenu)
-            if (m_isMiddleClickHeld)
+            // Pan souris (Middleclick maintenu)
+            if (!m_isMiddleClickHeld) // Empêche la souris d'agir
             {
                 Vector3 mouseMove = new Vector3(-_mouseDelta.x, -_mouseDelta.y, 0f) * (_mousePanSpeed * Time.deltaTime);
                 _camera.transform.Translate(mouseMove, Space.World);
@@ -74,8 +75,11 @@ namespace Slate.Runtime
         private void HandleKeyboardPan()
         {
             // Pan clavier
-            Vector3 move = new Vector3(m_moveInput.x,  m_moveInput.y, 0f) * (_panSpeed * Time.deltaTime);
-            _camera.transform.Translate(move, Space.World);
+            if (m_isMiddleClickHeld)
+            {
+                Vector3 move = new Vector3(m_moveInput.x,  m_moveInput.y, 0f) * (_panSpeed * Time.deltaTime);
+                _camera.transform.Translate(move, Space.World);
+            }
         }
         private void HandleCursor()
         {
@@ -117,7 +121,7 @@ namespace Slate.Runtime
         private float _panSpeed = 10f;
         private float _mousePanSpeed = 10f;
         private Camera _camera;
-        private readonly SlateInputActions.Runtime.SlateInputActions _input;
+        private readonly CustomInputActions _input;
         
         private Texture2D _panCursor;           // Le sprite du curseur pour le pan
         private Texture2D _defaultCursor;       // Sauvegarde du curseur par défaut
