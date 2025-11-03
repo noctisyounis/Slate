@@ -267,7 +267,7 @@ GameObject:
   - component: {fileID: 395331924}
   - component: {fileID: 395331925}
   m_Layer: 0
-  m_Name: Test Inputs Receiver
+  m_Name: Inputs Receiver
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -300,9 +300,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0868605669d6f94aad08ebb4cdc4e79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_isVerbose: 0
   _inputsHandler: {fileID: 11400000, guid: 8a2c3149c1f5d3648b30ecc391000d8e, type: 2}
   _moveHeld: {x: 0, y: 0}
-  _zoomHeld: 0
+  _zoomHeld: {x: 0, y: 0}
   _panHeld: 0
   _selectHeld: 0
   _optionsHeld: 0
@@ -350,6 +351,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fefdf94526573431e80f06d47f4431bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_isVerbose: 0
 --- !u!1001 &2052622590
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -470,7 +472,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2128048749}
   - component: {fileID: 2128048750}
-  - component: {fileID: 2128048751}
   m_Layer: 0
   m_Name: Input Manager
   m_TagString: Untagged
@@ -523,19 +524,6 @@ MonoBehaviour:
   m_DefaultActionMap: Slate
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!114 &2128048751
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2128048748}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 020cbfcfb93155f45856f5b0adcd5730, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _inputsHandler: {fileID: 11400000, guid: 8a2c3149c1f5d3648b30ecc391000d8e, type: 2}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
