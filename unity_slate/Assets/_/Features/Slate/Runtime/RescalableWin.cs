@@ -25,129 +25,130 @@ namespace Slate.Runtime
         #endregion
 
         #if UNITY_STANDALONE_WIN
+
+        public void InitializeBorderlessWindow()
+        {
+            _hWnd = GetActiveWindow();
+            ApplyBorderlessStyle();
+            if (centerOnStart) CenterWindow();
+            HookWndProc();
+        }
+
+        private void ApplyBorderlessStyle()
+        {
+            var style = GetWindowLong(_hWnd, _gwlStyle);
+            style &= ~(
+                _wsCaption |
+                _wsSysmenu |
+                _wsMinimizebox |
+                _wsMaximizebox
+            );
+            style |= _wsThickframe;
+            SetWindowLong(_hWnd, _gwlStyle, (int)style);
+
+            var exStyle = GetWindowLong(_hWnd, _gwlExstyle);
+            exStyle |= _wsExAppwindow;
+            exStyle &= ~_wsExWindowedge;
+            SetWindowLong(_hWnd, _gwlExstyle, (int)exStyle);
+
+            SetWindowPos(
+                _hWnd,
+                IntPtr.Zero,
+                0, 0, 0, 0,
+                _swpNomove |
+                _swpNosize |
+                _swpNozorder |
+                _swpFramechanged |
+                _swpShowwindow
+            );
+        }
+
+        private void CenterWindow()
+        {
+            if (!GetWindowRect(_hWnd, out var wr)) return;
+            var hMon = MonitorFromWindow(_hWnd, _monitorDefaulttonearest);
+            var mi = new MONITORINFO();
+            if (!GetMonitorInfo(hMon, mi)) return;
+
+            var winW = wr.right - wr.left;
+            var winH = wr.bottom - wr.top;
+            var workW = mi.rcWork.right - mi.rcWork.left;
+            var workH = mi.rcWork.bottom - mi.rcWork.top;
+
+            var x = mi.rcWork.left + (workW - winW) / 2;
+            var y = mi.rcWork.top + (workH - winH) / 2;
+
+            SetWindowPos(_hWnd, 
+                IntPtr.Zero,
+                x, y, 0, 0, 
+                _swpNosize | _swpNozorder | _swpShowwindow
+            );
+        }
+
+        private void HookWndProc()
+        {
+            if (_prevWndProc != IntPtr.Zero) return;
+
+            _wndProcDelegate = CustomWndProc;
+            _prevWndProc = SetWindowLongPtr(_hWnd, -4, _wndProcDelegate);
+        }
         
-            void Start()
+        void OnDestroy()
+        {
+            if (_hWnd == IntPtr.Zero || _prevWndProc == IntPtr.Zero) return;
+            SetWindowLongPtr(_hWnd,
+                -4,
+                Marshal.GetDelegateForFunctionPointer<WndProcDelegate>(_prevWndProc)
+            );
+            _prevWndProc = IntPtr.Zero;
+        }
+
+        private IntPtr CustomWndProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)
+        {
+            switch (msg)
             {
-                _hWnd = GetActiveWindow();
-                if (_hWnd == IntPtr.Zero)
+                case _wmNchittest:
                 {
-                    Debug.LogWarning("BorderlessResizableWindow: HWND introuvable.");
-                    return;
+                    int x = (short)((ulong)lParam & 0xFFFF);
+                    int y = (short)(((ulong)lParam >> 16) & 0xFFFF);
+
+                    var p = new POINT { x = x, y = y };
+
+                    if (!ScreenToClient(hWnd, ref p))
+                        break;
+
+                    if (!GetClientRect(hWnd, out var rc))
+                        break;
+
+                    var onLeft = p.x <= resizeBorder;
+                    var onRight = p.x >= (rc.right - resizeBorder);
+                    var onTop = p.y <= resizeBorder;
+                    var onBottom = p.y >= (rc.bottom - resizeBorder);
+
+                    if (onLeft) return (IntPtr)_htLeft;
+                    if (onRight) return (IntPtr)_htRight;
+                    if (onTop) return (IntPtr)_htTop;
+                    if (onBottom) return (IntPtr)_htBottom;
+
+                    if (dragAnywhere)
+                        return (IntPtr)_htCaption;
+
+                    return (IntPtr)_htClient;
                 }
 
-                // 1) Appliquer un style borderless mais redimensionnable (on garde WS_THICKFRAME)
-                var style = GetWindowLong(_hWnd, _gwlStyle);
-                style &= ~(_wsCaption |
-                           _wsSysmenu |
-                           _wsMinimizebox |
-                           _wsMaximizebox
-                           ); // pas de barre de titre / boutons
-                style |= _wsThickframe; // conserve la capacité de resize côté Win32
-                SetWindowLong(_hWnd, _gwlStyle, (int)style);
-
-                var exStyle = GetWindowLong(_hWnd, _gwlExstyle);
-                exStyle |= _wsExAppwindow;
-                exStyle &= ~_wsExWindowedge;
-                SetWindowLong(_hWnd, _gwlExstyle, (int)exStyle);
-
-                // Forcer le recalcul du cadre
-                SetWindowPos(_hWnd,
-                    IntPtr.Zero,
-                    0, 0, 0, 0,
-                    _swpNomove | _swpNosize | _swpNozorder | _swpFramechanged | _swpShowwindow
-                    );
-
-                // 2) Centrage optionnel
-                if (centerOnStart)
-                    CenterWindow();
-
-                // 3) Hook WndProc pour gérer le hit-test (resize par côté) et min size
-                _wndProcDelegate = CustomWndProc; // conserver la delegate
-                _prevWndProc = SetWindowLongPtr(_hWnd, -4, _wndProcDelegate); // GWL_WNDPROC = -4
-            }
-
-            void OnDestroy()
-            {
-                if (_hWnd == IntPtr.Zero || _prevWndProc == IntPtr.Zero) return;
-                SetWindowLongPtr(_hWnd,
-                    -4,
-                    Marshal.GetDelegateForFunctionPointer<WndProcDelegate>(_prevWndProc)
-                );
-                _prevWndProc = IntPtr.Zero;
-            }
-
-            private void CenterWindow()
-            {
-                if (!GetWindowRect(_hWnd, out var wr)) return;
-                var hMon = MonitorFromWindow(_hWnd, _monitorDefaulttonearest);
-                var mi = new MONITORINFO();
-                if (!GetMonitorInfo(hMon, mi)) return;
-
-                var winW = wr.right - wr.left;
-                var winH = wr.bottom - wr.top;
-                var workW = mi.rcWork.right - mi.rcWork.left;
-                var workH = mi.rcWork.bottom - mi.rcWork.top;
-
-                var x = mi.rcWork.left + (workW - winW) / 2;
-                var y = mi.rcWork.top + (workH - winH) / 2;
-
-                SetWindowPos(_hWnd, 
-                    IntPtr.Zero,
-                    x, y, 0, 0, 
-                    _swpNosize | _swpNozorder | _swpShowwindow
-                    );
-            }
-
-            private IntPtr CustomWndProc(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)
-            {
-                switch (msg)
+                case _wmGetminmaxinfo:
                 {
-                    case _wmNchittest:
-                    {
-                        // Détecter le bord en fonction de la position pour renvoyer HTLEFT/HTRIGHT/HTTOP/HTBOTTOM
-                        // -> pas de coins => pas de resize diagonal (PureRef-like)
-                        int x = (short)((ulong)lParam & 0xFFFF);
-                        int y = (short)(((ulong)lParam >> 16) & 0xFFFF);
-
-                        var p = new POINT { x = x, y = y };
-                        // Convertir en coords client pour comparer avec la taille du client rect
-                        if (!ScreenToClient(hWnd, ref p))
-                            break;
-
-                        if (!GetClientRect(hWnd, out var rc))
-                            break;
-
-                        var onLeft   = p.x <= resizeBorder;
-                        var onRight  = p.x >= (rc.right - resizeBorder);
-                        var onTop    = p.y <= resizeBorder;
-                        var onBottom = p.y >= (rc.bottom - resizeBorder);
-
-                        if (onLeft)   return (IntPtr)_htLeft;
-                        if (onRight)  return (IntPtr)_htRight;
-                        if (onTop)    return (IntPtr)_htTop;
-                        if (onBottom) return (IntPtr)_htBottom;
-
-                        // Drag anywhere (cliquer-tenir n'importe où déplace la fenêtre)
-                        if (dragAnywhere)
-                            return (IntPtr)_htCaption;
-
-                        return (IntPtr)_htClient;
-                    }
-
-                    case _wmGetminmaxinfo:
-                    {
-                        // Impose la taille minimale
-                        var mmi = Marshal.PtrToStructure<MINMAXINFO>(lParam);
-                        mmi.ptMinTrackSize.x = Mathf.Max(1, minSize.x);
-                        mmi.ptMinTrackSize.y = Mathf.Max(1, minSize.y);
-                        Marshal.StructureToPtr(mmi, lParam, true);
-                        return IntPtr.Zero;
-                    }
+                    var mmi = Marshal.PtrToStructure<MINMAXINFO>(lParam);
+                    mmi.ptMinTrackSize.x = Mathf.Max(1, minSize.x);
+                    mmi.ptMinTrackSize.y = Mathf.Max(1, minSize.y);
+                    Marshal.StructureToPtr(mmi, lParam, true);
+                    return IntPtr.Zero;
                 }
-
-                return DefWindowProc(hWnd, msg, wParam, lParam);
             }
-            
+
+            return DefWindowProc(hWnd, msg, wParam, lParam);
+        }
+
         #endif
 
         #region Private Variable
