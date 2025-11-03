@@ -17,6 +17,7 @@ namespace Slate.Runtime
 
         private void Awake()
         {
+            _camera = Camera.main;
             _cameraPan = new CameraPan(_camera,_panSpeed, _mousePanSpeed, _panCursor, _zoomSpeed);
         }
 
