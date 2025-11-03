@@ -9,6 +9,8 @@ public class WindowUtilMacBehaviour : FBehaviour
 
     void Start()
     {
+        #if UNITY_STANDALONE_OSX
+        
         try
         {
             MakeWindowBorderless();
@@ -22,5 +24,7 @@ public class WindowUtilMacBehaviour : FBehaviour
         {
             Error($"Function not found in plugin: {e.Message}");
         }
+        
+        #endif
     }
 }

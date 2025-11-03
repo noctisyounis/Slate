@@ -25,6 +25,11 @@ namespace Slate.Runtime
         #endregion
 
         #if UNITY_STANDALONE_WIN
+        
+        void Start() 
+        {
+            InitializeBorderlessWindow();
+        }
 
         public void InitializeBorderlessWindow()
         {

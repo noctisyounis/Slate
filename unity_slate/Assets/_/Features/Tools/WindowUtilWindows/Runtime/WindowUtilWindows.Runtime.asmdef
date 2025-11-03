@@ -1,0 +1,16 @@
+{
+    "name": "WindowUtilWindows.Runtime",
+    "rootNamespace": "WindowUtilWindows.Runtime",
+    "references": [
+        "Foundation.Runtime"
+],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "autoReferenced": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
