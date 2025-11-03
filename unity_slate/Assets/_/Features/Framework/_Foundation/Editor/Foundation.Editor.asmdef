@@ -1,12 +1,12 @@
 {
-    "name": "Slate.Runtime",
-    "rootNamespace": "Slate.Runtime",
+    "name": "Foundation.Editor",
+    "rootNamespace": "Foundation.Editor",
     "references": [
-        "GUID:56a25bc3d96654d6696bd2bf7846171f",
-        "GUID:70ee7783ecf9646f99ae250415f2a80b",
-        "GUID:aece0706ddf3e2649a0bdb368c8c430b"
+        "GUID:70ee7783ecf9646f99ae250415f2a80b"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

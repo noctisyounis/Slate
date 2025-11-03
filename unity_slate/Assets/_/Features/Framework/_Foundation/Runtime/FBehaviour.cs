@@ -6,19 +6,10 @@ namespace Foundation.Runtime
 {
     public class FBehaviour : MonoBehaviour
     {
-        #region Private and Protected
-        
-        [SerializeField, Header("Debug")]
-        protected bool m_isVerbose;
-        
-        protected static FactDictionary GameFacts => GameSystem.m_gameFacts;
-        protected static JsonSaveSystem SaveSystem => GameSystem.m_jsonSaveSystem;
-        
-        protected static string _savePath = "SaveData.json";
-        protected FactDictionary.FactPersistence _persistence = FactDictionary.FactPersistence.Normal;
-   
-        // protected static GameSystem System => GameSystem.Instance;
-
+        #region Public
+        public bool m_debug {get => _debug; set => _debug = value; }
+        public bool m_warning {get => _warning; set => _warning = value; }
+        public bool m_error {get => _error; set => _error = value; }
         #endregion
    
         #region Fact Dictionary
@@ -77,35 +68,54 @@ namespace Foundation.Runtime
 
         protected void Info(string message)
         {
-            if (!m_isVerbose) return;
+            if (!_debug) return;
             Debug.Log($"<color=cyan> FROM: {this} | INFO: {message} </color>");
         }
    
         protected void InfoInProgress(string message)
         {
-            if (!m_isVerbose) return;
+            if (!_debug) return;
             Debug.Log($"<color=orange> FROM: {this} | IN_PROGRESS: {message} </color>");
         }
         
         protected void InfoDone(string message)
         {
-            if (!m_isVerbose) return;
+            if (!_debug) return;
             Debug.Log($"<color=green> FROM: {this} | DONE: {message} </color>");
         }
 
         protected void Warning(string message)
         {
-            if (!m_isVerbose) return;
+            if (!_warning) return;
             Debug.LogWarning($"<color=yellow> FROM: {this} | WARNING: {message} </color>");
         }
 
         protected void Error(string message)
         {
-            if (!m_isVerbose) return;
+            if (!_error) return;
             Debug.LogError($"<color=red> FROM: {this} | ERROR: {message} </color>");
         }
    
         #endregion
    
+        #region Private and Protected
+        
+        // [Header("Console Debug")]
+        // [SerializeField]
+        protected bool _debug;
+        // [SerializeField]
+        protected bool _warning;
+        // [SerializeField]
+        protected bool _error;
+        
+        protected static FactDictionary GameFacts => GameSystem.m_gameFacts;
+        protected static JsonSaveSystem SaveSystem => GameSystem.m_jsonSaveSystem;
+        
+        protected static string _savePath = "SaveData.json";
+        protected FactDictionary.FactPersistence _persistence = FactDictionary.FactPersistence.Normal;
+   
+        // protected static GameSystem System => GameSystem.Instance;
+
+        #endregion
     }
 }
