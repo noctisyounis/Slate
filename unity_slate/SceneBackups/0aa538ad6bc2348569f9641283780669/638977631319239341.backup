@@ -300,6 +300,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0868605669d6f94aad08ebb4cdc4e79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_isVerbose: 0
   _inputsHandler: {fileID: 11400000, guid: 8a2c3149c1f5d3648b30ecc391000d8e, type: 2}
   _moveHeld: {x: 0, y: 0}
   _zoomHeld: 0
@@ -350,6 +351,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fefdf94526573431e80f06d47f4431bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_isVerbose: 0
 --- !u!1001 &2052622590
 PrefabInstance:
   m_ObjectHideFlags: 0

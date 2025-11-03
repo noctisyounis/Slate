@@ -822,7 +822,7 @@ PlayerSettings:
   webGLCloseOnQuit: 0
   webWasm2023: 0
   scriptingDefineSymbols:
-    Standalone: UIMGUI_REMOVE_IMPLOT;UIMGUI_REMOVE_IMNODES;UIMGUI_REMOVE_IMGUIZMO
+    Standalone: UIMGUI_REMOVE_IMPLOT;UIMGUI_REMOVE_IMNODES;UIMGUI_REMOVE_IMGUIZMO;UEE;AMPLIFY_SHADER_EDITOR
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:
@@ -919,7 +919,7 @@ PlayerSettings:
   qnxGraphicConfPath: 
   apiCompatibilityLevel: 6
   captureStartupLogs: {}
-  activeInputHandler: 2
+  activeInputHandler: 1
   windowsGamepadBackendHint: 0
   cloudProjectId: 
   framebufferDepthMemorylessMode: 0
