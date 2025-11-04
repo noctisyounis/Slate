@@ -18,7 +18,7 @@ namespace Slate.Runtime
         private void Awake()
         {
             _camera =  Camera.main;
-            _cameraPan = new CameraPan(_camera,_panSpeed, _mousePanSpeed, _panCursor, _zoomSpeed);
+            _cameraPan = new CameraPan(_camera,_panSettings, _panCursor);
         }
 
         private void Update()
@@ -44,12 +44,12 @@ namespace Slate.Runtime
                 Cursor.SetCursor(null, Vector2.zero, CursorMode.Auto); // curseur par défaut
             }
         }
-
-        [SerializeField] private float _panSpeed = 10f;
-        [SerializeField] private float _mousePanSpeed = 10f;
+        
+        
         [SerializeField] private Camera _camera;
         [SerializeField] private Texture2D _panCursor;
-        [SerializeField] private float _zoomSpeed = 100f;
+        [SerializeField] private CameraPanSettings _panSettings;
+        
         private CameraPan _cameraPan;
     }
 }

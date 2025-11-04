@@ -478,7 +478,7 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
-  orthographic: 0
+  orthographic: 1
   orthographic size: 5
   m_Depth: -1
   m_CullingMask:
@@ -721,11 +721,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fefdf94526573431e80f06d47f4431bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _panSpeed: 10
-  _mousePanSpeed: 10
   _camera: {fileID: 1310666080}
   _panCursor: {fileID: 2800000, guid: 7ca9faadefe201547ab3430bf6a2bf2d, type: 3}
-  _zoomSpeed: 100
+  _panSettings: {fileID: 11400000, guid: 71558efd1b9bf4c409729a35ea8c0cdc, type: 2}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
