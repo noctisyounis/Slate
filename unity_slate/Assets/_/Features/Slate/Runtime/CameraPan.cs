@@ -45,8 +45,6 @@ namespace Slate.Runtime
             _input.m_move += ctx => m_moveInput = ctx;
             _input.m_zoom += ctx => _zoomDelta = ctx;
             _input.m_pan += ctx => m_isMiddleClickHeld = ctx;
-            
-
         }
         
         #endregion
