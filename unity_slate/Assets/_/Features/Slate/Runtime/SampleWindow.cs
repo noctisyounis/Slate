@@ -45,8 +45,6 @@ namespace Slate.Runtime
             }
         }
         
-        
-        [SerializeField] private Camera _camera;
         [SerializeField] private Texture2D _panCursor;
         [SerializeField] private CameraPanSettings _panSettings;
         
