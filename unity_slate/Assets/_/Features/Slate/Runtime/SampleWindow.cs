@@ -1,7 +1,7 @@
-using System;
-using Foundation.Runtime;
-using UImGui;
 using UnityEngine;
+
+using UImGui;
+using Foundation.Runtime;
 
 namespace Slate.Runtime
 {
@@ -17,6 +17,7 @@ namespace Slate.Runtime
 
         private void Awake()
         {
+            _camera = Camera.main;
             _cameraPan = new CameraPan(_camera,_panSpeed, _mousePanSpeed, _panCursor, _zoomSpeed);
         }
 
@@ -46,9 +47,10 @@ namespace Slate.Runtime
 
         [SerializeField] private float _panSpeed = 10f;
         [SerializeField] private float _mousePanSpeed = 10f;
-        [SerializeField] private Camera _camera;
         [SerializeField] private Texture2D _panCursor;
         [SerializeField] private float _zoomSpeed = 100f;
+        
         private CameraPan _cameraPan;
+        private Camera _camera;
     }
 }
