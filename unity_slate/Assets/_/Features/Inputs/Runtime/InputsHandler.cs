@@ -72,7 +72,8 @@ namespace Inputs.Runtime
         #region Private Methods
 
         // Z : Ideally create a float & bool version of this method but couldn't get it working for some reason
-        private void OnVector2Update(InputAction.CallbackContext context, UnityAction<Vector2> customEvent) => customEvent.Invoke(context.ReadValue<Vector2>());
+        private void OnVector2Update(InputAction.CallbackContext context, UnityAction<Vector2> customEvent)
+            => customEvent.Invoke(context.ReadValue<Vector2>().normalized);
         #endregion
 
         #endregion

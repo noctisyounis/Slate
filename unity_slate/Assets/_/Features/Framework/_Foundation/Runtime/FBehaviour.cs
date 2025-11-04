@@ -66,34 +66,34 @@ namespace Foundation.Runtime
    
         #region Debug
 
-        protected void Info(string message)
+        protected void Info(string message, Object context = null)
         {
             if (!_debug) return;
-            Debug.Log($"<color=cyan> FROM: {this} | INFO: {message} </color>");
+            Debug.Log($"<color=cyan> FROM: {this} | INFO: {message} </color>", context);
         }
    
-        protected void InfoInProgress(string message)
+        protected void InfoInProgress(string message, Object context = null)
         {
             if (!_debug) return;
-            Debug.Log($"<color=orange> FROM: {this} | IN_PROGRESS: {message} </color>");
+            Debug.Log($"<color=orange> FROM: {this} | IN_PROGRESS: {message} </color>", context);
         }
         
-        protected void InfoDone(string message)
+        protected void InfoDone(string message, Object context = null)
         {
             if (!_debug) return;
-            Debug.Log($"<color=green> FROM: {this} | DONE: {message} </color>");
+            Debug.Log($"<color=green> FROM: {this} | DONE: {message} </color>", context);
         }
 
-        protected void Warning(string message)
+        protected void Warning(string message, Object context = null)
         {
             if (!_warning) return;
-            Debug.LogWarning($"<color=yellow> FROM: {this} | WARNING: {message} </color>");
+            Debug.LogWarning($"<color=yellow> FROM: {this} | WARNING: {message} </color>", context);
         }
 
-        protected void Error(string message)
+        protected void Error(string message, Object context = null)
         {
             if (!_error) return;
-            Debug.LogError($"<color=red> FROM: {this} | ERROR: {message} </color>");
+            Debug.LogError($"<color=red> FROM: {this} | ERROR: {message} </color>", context);
         }
    
         #endregion
