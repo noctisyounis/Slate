@@ -9,7 +9,6 @@ namespace Slate.Runtime
         #region public
         
         public Vector2 m_moveInput { get; set; }
-        public Vector2 _mouseDelta{ get; set; }
         public bool m_isMiddleClickHeld{ get; set; }
         
         #endregion
@@ -17,17 +16,21 @@ namespace Slate.Runtime
         
         #region Utils
         
-        public void Disable() => _input.DisableInputsHandling();
+        public void Disable()
+        {
+            _input.m_move -= ctx => m_moveInput = ctx;
+            _input.m_zoom -= ctx => _zoomDelta = ctx;
+            _input.m_pan -= ctx => m_isMiddleClickHeld = ctx;
+
+            _input.DisableInputsHandling();
+        }
 
         public void UpdatePan()
         {
             HandleKeyboardPan();
-            if (m_isMiddleClickHeld) HandleMousePan();
-            else _mouseDelta = Vector2.zero;
-            HandleCursor();
+            HandleMousePan();
             HandleZoom();
         }
-
 
 
         public CameraPan(Camera camera, CameraPanSettings settings , Texture2D panCursor = null, float zoomSpeed = 100f)
@@ -51,45 +54,25 @@ namespace Slate.Runtime
         
         
         #region Main Methods
-        
-        private void HandleMousePan()
-        {
-            // Pan souris (Middleclick maintenu)
-            if (!m_isMiddleClickHeld) // Empêche la souris d'agir
-            {
-                Vector3 mouseMove = new Vector3(_mouseDelta.x, _mouseDelta.y, 0f) * (_settings.m_mousePanSpeed * Time.deltaTime);
-                _camera.transform.Translate(mouseMove, Space.World);
-            }
-        }
 
         private void HandleKeyboardPan()
         {
             // Pan clavier
-            if (m_isMiddleClickHeld)
-            {
-                Vector3 move = new Vector3(m_moveInput.x,  m_moveInput.y, 0f) * (_settings.m_panSpeed * Time.deltaTime);
-                _camera.transform.Translate(move, Space.World);
-            }
+            if (m_isMiddleClickHeld || UnityEngine.InputSystem.Mouse.current.delta.magnitude > 0.0f)
+                return;
+
+            Vector3 move = new Vector3(m_moveInput.x,  m_moveInput.y, 0f) * (_settings.m_panSpeed * Time.deltaTime);
+            _camera.transform.Translate(move, Space.World);
         }
-        private void HandleCursor()
+        private void HandleMousePan()
         {
-            if (m_isMiddleClickHeld)
-            {
-                // Cursor de pan
-                if (_panCursor is not null)
-                {
-                    Cursor.SetCursor(_panCursor, _cursorHotspot, CursorMode.Auto);
-                }
+            if (!m_isMiddleClickHeld)
+                return;
 
-                Cursor.visible = true;
-            }
+            // Pan souris (Middleclick maintenu)
+            Vector3 mouseMove = new Vector3(m_moveInput.x, m_moveInput.y, 0f) * (_settings.m_mousePanSpeed * Time.deltaTime);
+            _camera.transform.Translate(mouseMove, Space.World);
 
-            else
-            {
-                // Cursor par défaut
-                Cursor.SetCursor(_defaultCursor, Vector2.zero, CursorMode.Auto);
-                Cursor.visible = true;
-            }
         }
 
         private void HandleZoom()
@@ -103,7 +86,6 @@ namespace Slate.Runtime
                 _camera.orthographicSize -= _zoomDelta * (_settings.m_zoomSpeed) *  Time.deltaTime;
                 _camera.orthographicSize = Mathf.Clamp(_camera.orthographicSize, _settings.m_minOrthoZoom, _settings.m_maxOrthoZoom);
             }
-
             else
             {
                 // Zoom caméra perspective : on ajuste la position Z
