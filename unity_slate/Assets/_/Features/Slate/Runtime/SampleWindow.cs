@@ -1,7 +1,7 @@
-using System;
-using Foundation.Runtime;
-using UImGui;
 using UnityEngine;
+
+using UImGui;
+using Foundation.Runtime;
 
 namespace Slate.Runtime
 {
@@ -51,5 +51,6 @@ namespace Slate.Runtime
         [SerializeField] private CameraPanSettings _panSettings;
         
         private CameraPan _cameraPan;
+        private Camera _camera;
     }
 }
