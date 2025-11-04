@@ -67,7 +67,7 @@ namespace Slate.Runtime
             // Pan souris (Middleclick maintenu)
             if (!m_isMiddleClickHeld) // Empêche la souris d'agir
             {
-                Vector3 mouseMove = new Vector3(-_mouseDelta.x, -_mouseDelta.y, 0f) * (_mousePanSpeed * Time.deltaTime);
+                Vector3 mouseMove = new Vector3(_mouseDelta.x, _mouseDelta.y, 0f) * (_mousePanSpeed * Time.deltaTime);
                 _camera.transform.Translate(mouseMove, Space.World);
             }
         }
@@ -104,8 +104,19 @@ namespace Slate.Runtime
 
         private void HandleZoom()
         {
-            if (Mathf.Abs(_zoomDelta) > 0.01f)
+            if (Mathf.Abs(_zoomDelta) <= 0.01f) return;
+
+            if (_camera.orthographic)
             {
+                // Zoom caméra orthographique : on ajuste la taille
+                
+                _camera.orthographicSize -= _zoomDelta * (_zoomSpeed) *  Time.deltaTime;
+                _camera.orthographicSize = Mathf.Clamp(_camera.orthographicSize, _minOrthoZoom, _maxOrthoZoom);
+            }
+
+            else
+            {
+                // Zoom caméra perspective : on ajuste la position Z
                 Vector3 pos = _camera.transform.position;
                 pos.z += _zoomDelta * _zoomSpeed * Time.deltaTime;
                 pos.z = Mathf.Clamp(pos.z, _minZoom, _maxZoom);
@@ -129,8 +140,14 @@ namespace Slate.Runtime
         
         private float _zoomDelta;
         private float _zoomSpeed = 100f;        // vitesse de zoom
-        private float _minZoom = -50f;        // distance minimal de la caméra
-        private float _maxZoom = -2f;         // distance maximal de la caméra
+        
+        // Limite pour la caméra Perspective
+        private float _minZoom = -50f;          // distance minimal de la caméra
+        private float _maxZoom = -2f;           // distance maximal de la caméra
+        
+        // Limite pour la caméra Orthographique
+        private float _minOrthoZoom = 2f;       // distance minimal de la caméra
+        private float _maxOrthoZoom = 50f;      // distance maximal de la caméra
 
         #endregion
     }
