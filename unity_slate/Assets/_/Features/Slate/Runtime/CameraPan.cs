@@ -62,7 +62,8 @@ namespace Slate.Runtime
                 return;
 
             Vector3 move = new Vector3(m_moveInput.x,  m_moveInput.y, 0f) * (_settings.m_panSpeed * Time.deltaTime);
-            _camera.transform.Translate(move, Space.World);
+            float zoomFactor = _camera.orthographic ? _camera.orthographicSize : _camera.fieldOfView * _settings.m_correcZoom;
+            _camera.transform.Translate(move * zoomFactor, Space.World);
         }
         private void HandleMousePan()
         {
@@ -71,7 +72,8 @@ namespace Slate.Runtime
 
             // Pan souris (Middleclick maintenu)
             Vector3 mouseMove = new Vector3(m_moveInput.x, m_moveInput.y, 0f) * (_settings.m_mousePanSpeed * Time.deltaTime);
-            _camera.transform.Translate(mouseMove, Space.World);
+            float zoomFactor = _camera.orthographic ? _camera.orthographicSize : _camera.fieldOfView * _settings.m_correcZoom;
+            _camera.transform.Translate(mouseMove * zoomFactor, Space.World);
 
         }
 
@@ -83,7 +85,7 @@ namespace Slate.Runtime
             {
                 // Zoom caméra orthographique : on ajuste la taille
                 
-                _camera.orthographicSize -= _zoomDelta * (_settings.m_zoomSpeed) *  Time.deltaTime;
+                _camera.orthographicSize -= _zoomDelta * (_settings.m_zoomSpeed)* _camera.orthographicSize *  Time.deltaTime;
                 _camera.orthographicSize = Mathf.Clamp(_camera.orthographicSize, _settings.m_minOrthoZoom, _settings.m_maxOrthoZoom);
             }
             else
