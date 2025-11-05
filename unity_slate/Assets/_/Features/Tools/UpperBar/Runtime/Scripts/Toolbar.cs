@@ -7,52 +7,72 @@ namespace UpperBar.Runtime
     {
         #region Publics
         
-            public float hoverZoneHeight = 10f;
-            public float barHeight = 10f;
-            public float transitionSpeed = 10f;
+            
         
         #endregion
 
         #region Unity API
         
-            void Start()
+            public void Start()
             {
-                currentY = -barHeight;
+                _currentY = -_barHeight;
             }
 
-            void Update()
+            public void Update()
             {
-                if (Input.mousePosition.y >= Screen.height - hoverZoneHeight)
-                    isVisible = true;
-                else if (Input.mousePosition.y < Screen.height - barHeight - 10f)
-                    isVisible = false;
+                if (Input.mousePosition.y >= Screen.height - _hoverZoneHeight)
+                    _isVisible = true;
+                else if (Input.mousePosition.y < Screen.height - _barHeight - 10f)
+                    _isVisible = false;
 
-                var targetY = isVisible ? 0f : -barHeight;
-                currentY = Mathf.Lerp(currentY, targetY, Time.deltaTime * transitionSpeed);
+                var targetY = _isVisible ? 0f : -_barHeight;
+                _currentY = Mathf.Lerp(_currentY, targetY, Time.deltaTime * _transitionSpeed);
             }
 
-            void OnGUI()
+            public void OnGUI()
             {
-                GUI.depth = 0;
+                if (!_styleReady)
+                {
+                    _textStyle = new GUIStyle(GUI.skin.label)
+                    {
+                        fontSize = _fontSize,
+                        normal = { textColor = _textColor },
+                        alignment = TextAnchor.MiddleCenter
+                    };
+                    _styleReady = true;
+                }
 
-                GUILayout.BeginArea(new Rect(0, currentY, Screen.width, barHeight), GUI.skin.box);
+                var prev = GUI.color;
+                GUI.color = _backgroundColor;
+                GUI.Box(new Rect(0, _currentY, Screen.width, _barHeight), GUIContent.none);
+                GUI.color = prev;
 
+                GUILayout.BeginArea(new Rect(0, _currentY, Screen.width, _barHeight));
                 GUILayout.BeginHorizontal();
                 GUILayout.FlexibleSpace();
 
-                if (GUILayout.Button("Menu", GUILayout.Width(100)))
-                    Debug.Log("Menu clicked");
+                DrawButton("_", () => Debug.Log("Menu clicked"));
+                GUILayout.Space(_spacing);
+                DrawButton("☐", () => Debug.Log("Options clicked"));
+                GUILayout.Space(_spacing);
+                DrawButton("X", Application.Quit);
+                GUILayout.Space(_spacing);
 
-                if (GUILayout.Button("Options", GUILayout.Width(100)))
-                    Debug.Log("Options clicked");
-
-                if (GUILayout.Button("Quitter", GUILayout.Width(100)))
-                    Application.Quit();
-
-                GUILayout.FlexibleSpace();
                 GUILayout.EndHorizontal();
-
                 GUILayout.EndArea();
+            }
+
+            private void DrawButton(string text, System.Action onClick)
+            {
+                var size = _textStyle.CalcSize(new GUIContent(text));
+
+                var rect = GUILayoutUtility.GetRect(size.x, size.y,
+                    GUILayout.ExpandWidth(false), GUILayout.ExpandHeight(false));
+
+                GUI.Label(rect, text, _textStyle);
+
+                if (GUI.Button(rect, GUIContent.none, GUIStyle.none))
+                    onClick?.Invoke();
             }
         
         #endregion
@@ -66,12 +86,21 @@ namespace UpperBar.Runtime
 
    
         #endregion
-
-
+        
         #region Privates & Protected
         
-            private bool isVisible;
-            private float currentY;
+            private bool _isVisible;
+            private bool _styleReady;
+            private float _currentY;
+            private float _hoverZoneHeight = 30f;
+            private float _barHeight = 30f;
+            private float _transitionSpeed = 10f;
+            private float _spacing = 20f;
+            private int _fontSize = 16;
+            private Color _backgroundColor = new Color(0f, 0f, 0f, 1f);
+            private Color _textColor = Color.white;
+            private GUIStyle _iconStyle;
+            private GUIStyle _textStyle;
         
         #endregion
     }
