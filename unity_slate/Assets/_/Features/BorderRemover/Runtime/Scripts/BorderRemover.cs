@@ -1,4 +1,5 @@
 using Foundation.Runtime;
+using Slate.Runtime;
 using UnityEngine;
 
 namespace BorderRemover.Runtime
