@@ -24,7 +24,7 @@ namespace Foundation.Runtime
             {
                 if (_jsonSaveSystem != null) return _jsonSaveSystem;
                 _jsonSaveSystem = new JsonSaveSystem();
-                _jsonSaveSystem.SetPath(_gameFacts.SaveDirectoryPath);
+                _jsonSaveSystem.SetPath(m_gameFacts.SaveDirectoryPath);
                 return _jsonSaveSystem;
             }
         }
