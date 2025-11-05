@@ -5,10 +5,12 @@ public class CameraPanSettings : ScriptableObject
 {
     [Header("Pan Settings")] 
     [Tooltip("Vitesse de déplacement au clavier (WASD ou flèches")]
-    public float m_panSpeed = 10f;
+    public float m_panSpeedmin = 10f;
+    public float m_panSpeedmax = 10f;
     
     [Tooltip("Movement speed with mouse")]
-    public float m_mousePanSpeed = 10f;
+    public float m_mousePanSpeedmin = 10f;
+    public float m_mousePanSpeedmax = 10f;
     
     [Header("Zoom settings")]
     [Tooltip("Vitesse de zoom")]
