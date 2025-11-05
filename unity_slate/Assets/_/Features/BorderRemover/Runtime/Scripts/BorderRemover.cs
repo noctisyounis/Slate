@@ -15,7 +15,7 @@ namespace BorderRemover.Runtime
             _borderRemover = Instantiate(new GameObject("BorderRemover"));
             _borderRemover.transform.SetParent(transform);
             #if UNITY_STANDALONE_WIN
-            _borderRemover.AddComponent<RescalableWin>();
+            _borderRemover.AddComponent<NoBorderWin>();
             #endif
             #if UNITY_STANDALONE_OSX
             _borderRemover.AddComponent<WindowUtilMacBehaviour>();
