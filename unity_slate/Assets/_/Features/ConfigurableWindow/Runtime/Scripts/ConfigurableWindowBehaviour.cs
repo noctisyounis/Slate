@@ -38,6 +38,36 @@ public class ConfigurableWindowBehaviour : FBehaviour
         SetFact("number", _number,true);
         
         var color = Color.blue;
+        _renderer.material.color = color; 
+        
+        SetFact("color", color, true);
+        Save();
+
+    }
+    
+    [ContextMenu("Set Red")]
+    public void SetRed()
+    {
+        _number = inputnumber;
+        SetFact("number", _number,true);
+        
+        var color = Color.red;
+        _renderer.material.color = color; 
+        
+        SetFact("color", color, true);
+        Save();
+
+    }
+    
+    [ContextMenu("Set Yellow")]
+    public void SetYellow()
+    {
+        _number = inputnumber;
+        SetFact("number", _number,true);
+        
+        var color = Color.yellow;
+        _renderer.material.color = color; 
+        
         SetFact("color", color, true);
         Save();
 
