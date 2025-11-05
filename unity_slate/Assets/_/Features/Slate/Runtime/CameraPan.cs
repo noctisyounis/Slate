@@ -1,3 +1,4 @@
+using System;
 using Inputs.Runtime;
 using UnityEngine;
 
@@ -28,7 +29,8 @@ namespace Slate.Runtime
         public void UpdatePan()
         {
             HandleKeyboardPan();
-            HandleMousePan();
+            // HandleMousePan();   // ancienne version
+            HandleMousePanTest();  // nouvelle version
             HandleZoom();
         }
 
@@ -61,22 +63,70 @@ namespace Slate.Runtime
             if (m_isMiddleClickHeld || UnityEngine.InputSystem.Mouse.current.delta.magnitude > 0.0f)
                 return;
 
-            Vector3 move = new Vector3(m_moveInput.x,  m_moveInput.y, 0f) * (_settings.m_panSpeed * Time.deltaTime);
             float zoomFactor = _camera.orthographic ? _camera.orthographicSize : _camera.fieldOfView * _settings.m_correcZoom;
+            
+            float currentZoom = _camera.orthographicSize;
+            float interpolant = Mathf.Clamp01(Mathf.InverseLerp(_settings.m_maxOrthoZoom, _settings.m_minOrthoZoom, currentZoom)); 
+            float finalSpeed = Mathf.Lerp(-_settings.m_panSpeedmax, -_settings.m_panSpeedmin, interpolant);
+            
+            Vector3 move = new Vector3(m_moveInput.x,  m_moveInput.y, 0f) * (finalSpeed * Time.deltaTime);
             _camera.transform.Translate(move * zoomFactor, Space.World);
         }
+        
+        /// <summary>
+        /// Old version MousePan
+        /// </summary>
         private void HandleMousePan()
         {
             if (!m_isMiddleClickHeld)
                 return;
 
             // Pan souris (Middleclick maintenu)
-            Vector3 mouseMove = new Vector3(m_moveInput.x, m_moveInput.y, 0f) * (_settings.m_mousePanSpeed * Time.deltaTime);
-            float zoomFactor = _camera.orthographic ? _camera.orthographicSize : _camera.fieldOfView * _settings.m_correcZoom;
-            _camera.transform.Translate(mouseMove * zoomFactor, Space.World);
+            // float zoomFactor = _camera.orthographic ? _camera.orthographicSize : _camera.fieldOfView * _settings.m_correcZoom;
 
+            float currentZoom = _camera.orthographicSize;
+            float interpolant = Mathf.Clamp01(Mathf.InverseLerp(_settings.m_maxOrthoZoom, _settings.m_minOrthoZoom, currentZoom)); 
+            float finalSpeed = Mathf.Lerp(-_settings.m_mousePanSpeedmax, -_settings.m_mousePanSpeedmin, interpolant);
+            
+            Vector3 mouseMove = new Vector3(m_moveInput.x, m_moveInput.y, 0f) * (finalSpeed * Time.deltaTime);
+            //Debug.Log($"{mouseMove} / {finalSpeed}");
+            _camera.transform.Translate(mouseMove, Space.World);
         }
 
+        private void HandleMousePanTest()
+        {
+            var mouse = UnityEngine.InputSystem.Mouse.current;
+            if (mouse == null) return;
+            
+            if (m_isMiddleClickHeld && !_isDragging)
+            {
+                _isDragging = true;
+                
+                Vector3 mouseScreenPos = mouse.position.ReadValue();
+                mouseScreenPos.z = Mathf.Abs(_camera.transform.position.z);
+                _dragOriginWorld = _camera.ScreenToWorldPoint(mouseScreenPos);
+            }
+            
+            if (_isDragging && m_isMiddleClickHeld)
+            {
+                Vector3 mouseScreenPos = mouse.position.ReadValue();
+                mouseScreenPos.z = Mathf.Abs(_camera.transform.position.z);
+                
+                Vector3 currentworld = _camera.ScreenToWorldPoint(mouseScreenPos);
+                Vector3 delta = _dragOriginWorld - currentworld;
+                
+                _camera.transform.Translate(delta, Space.World);
+                
+                _dragOriginWorld = _camera.ScreenToWorldPoint(mouseScreenPos);
+            }
+            
+            if (!m_isMiddleClickHeld && _isDragging)
+            {
+                _isDragging = false;
+            }
+            
+        }
+        
         private void HandleZoom()
         {
             if (Mathf.Abs(_zoomDelta) <= 0.01f) return;
@@ -112,6 +162,10 @@ namespace Slate.Runtime
         private Vector2 _cursorHotspot =  Vector2.zero;
         
         private float _zoomDelta;
+        
+        // test mousepan
+        private bool _isDragging;
+        private Vector3 _dragOriginWorld;
 
         #endregion
     }
