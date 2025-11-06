@@ -1,0 +1,17 @@
+{
+    "name": "Minimap.Runtime",
+    "rootNamespace": "Minimap.Runtime",
+    "references": [
+        "GUID:70ee7783ecf9646f99ae250415f2a80b",
+        "GUID:56a25bc3d96654d6696bd2bf7846171f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
