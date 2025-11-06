@@ -5,28 +5,63 @@ namespace Minimap.Runtime
 {
     public class Minimap : FBehaviour
     {
-        public Texture2D minimapTexture;
-        [SerializeField] Rect minimapRect = new Rect(0, 0, 200, 200);
+        [Header("Textures & Styles")]
+        [SerializeField] Texture2D minimapTexture;
         [SerializeField] Color borderColor = Color.white;
 
-        [SerializeField] Vector2 cameraPos = new Vector2(0.5f, 0.5f);
+        [Header("Map Settings")]
         [SerializeField] Vector2 cameraViewSize = new Vector2(0.2f, 0.2f);
-
-        public Transform m_camera_position;
         [SerializeField] Vector2 worldMin = new Vector2(-50, -50);
         [SerializeField] Vector2 worldMax = new Vector2(50, 50);
 
-        void Update()
+        [Header("References")]
+        public Transform m_camera_position;
+
+        [Header("Visibility Control")]
+        [SerializeField] float fadeDuration = 0.3f;
+        [SerializeField] float visibleDelay = 0.5f;
+
+        private Vector3 lastPlayerPos;
+        private bool isMoving = false;
+        private float visibleTimer = 0f;
+        private float currentAlpha = 0f;
+
+        private Vector2 cameraPos = new Vector2(0.5f, 0.5f);
+
+        void Start()
         {
             if (m_camera_position)
-            {
-                cameraPos.x = Mathf.InverseLerp(worldMin.x, worldMax.x, m_camera_position.position.x);
-                cameraPos.y = Mathf.InverseLerp(worldMin.y, worldMax.y, m_camera_position.position.y);
-            }
+                lastPlayerPos = m_camera_position.position;
+        }
+
+        void Update()
+        {
+            if (!m_camera_position) return;
+
+            cameraPos.x = Mathf.InverseLerp(worldMin.x, worldMax.x, m_camera_position.position.x);
+            cameraPos.y = 1f - Mathf.InverseLerp(worldMin.y, worldMax.y, m_camera_position.position.z);
+
+            isMoving = (m_camera_position.position != lastPlayerPos);
+
+            if (isMoving)
+                visibleTimer = visibleDelay;
+
+            lastPlayerPos = m_camera_position.position;
+
+            float targetAlpha = (visibleTimer > 0f) ? 1f : 0f;
+            currentAlpha = Mathf.MoveTowards(currentAlpha, targetAlpha, Time.deltaTime / fadeDuration);
+
+            if (visibleTimer > 0f)
+                visibleTimer -= Time.deltaTime;
         }
 
         void OnGUI()
         {
+            if (currentAlpha <= 0f)
+                return;
+
+            GUI.color = new Color(1f, 1f, 1f, currentAlpha);
+
             float w = 250, h = 250;
             Rect mapRect = new Rect(Screen.width - w - 20, Screen.height - h - 20, w, h);
 
@@ -37,13 +72,13 @@ namespace Minimap.Runtime
 
             float innerW = mapRect.width * cameraViewSize.x;
             float innerH = mapRect.height * cameraViewSize.y;
-
             float px = mapRect.x + mapRect.width * cameraPos.x - innerW / 2f;
-            float py = mapRect.y + mapRect.height * (1 - cameraPos.y) - innerH / 2f;
+            float py = mapRect.y + mapRect.height * cameraPos.y - innerH / 2f;
 
             Rect viewRect = new Rect(px, py, innerW, innerH);
-
             DrawDashedRect(viewRect, borderColor, 8f, 4f, 2f);
+
+            GUI.color = Color.white;
         }
 
         void DrawDashedRect(Rect rect, Color color, float dashLength, float gap, float thickness)
