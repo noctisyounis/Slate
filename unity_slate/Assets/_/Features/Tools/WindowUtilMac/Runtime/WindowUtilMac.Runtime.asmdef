@@ -2,7 +2,8 @@
     "name": "WindowUtilMac.Runtime",
     "rootNamespace": "WindowUtilMac.Runtime",
     "references": [
-        "GUID:70ee7783ecf9646f99ae250415f2a80b"
+        "GUID:70ee7783ecf9646f99ae250415f2a80b",
+        "GUID:aece0706ddf3e2649a0bdb368c8c430b"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
