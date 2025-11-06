@@ -294,8 +294,7 @@ PrefabInstance:
       propertyPath: m_Name
       value: Slate
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 5876252045297145878, guid: 7b4f6f53ab0b76741a26410a8389b71e, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -601,6 +600,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52f85eb881c1046ca8524e4e2fd6f8b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _debug: 0
+  _warning: 0
+  _error: 0
 --- !u!4 &2017846489
 Transform:
   m_ObjectHideFlags: 0
