@@ -8,7 +8,7 @@ namespace BorderRemover.Runtime
     {
         #region Unity API
 
-        private void Start()
+        private void Awake()
         {
             #if !UNITY_EDITOR
             
@@ -24,10 +24,15 @@ namespace BorderRemover.Runtime
             #endif
         }
 
+        private void Update()
+        {
+            
+        }
+
         #endregion
 
         #region Privates & Protected
-        
+
         private GameObject _borderRemover;
         
         #endregion
