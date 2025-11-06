@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1d617ad48d0ecf45b8a8a016ec8db4d, type: 3}
   m_Name: CameraPanSettings
   m_EditorClassIdentifier: 
-  m_panSpeedmin: 62.4
-  m_panSpeedmax: 215
+  m_panSpeedmin: 1
+  m_panSpeedmax: 2
   m_mousePanSpeedmin: 4
   m_mousePanSpeedmax: 55
   m_zoomSpeed: 100

@@ -1,16 +1,15 @@
 {
-    "name": "WindowUtilMac.Runtime",
-    "rootNamespace": "WindowUtilMac.Runtime",
+    "name": "UpperBar.Runtime",
+    "rootNamespace": "UpperBar.Runtime",
     "references": [
-        "GUID:70ee7783ecf9646f99ae250415f2a80b",
-        "GUID:aece0706ddf3e2649a0bdb368c8c430b"
-    ],
+        "Foundation.Runtime"
+],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
+    "autoReferenced": true,
     "overrideReferences": false,
     "precompiledReferences": [],
-    "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],
     "noEngineReferences": false
