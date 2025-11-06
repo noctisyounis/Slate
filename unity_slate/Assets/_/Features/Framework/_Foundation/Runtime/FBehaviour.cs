@@ -101,11 +101,11 @@ namespace Foundation.Runtime
         #region Private and Protected
         
         // [Header("Console Debug")]
-        // [SerializeField]
+        [SerializeField, HideInInspector]
         protected bool _debug;
-        // [SerializeField]
+        [SerializeField, HideInInspector]
         protected bool _warning;
-        // [SerializeField]
+        [SerializeField, HideInInspector]
         protected bool _error;
         
         protected static FactDictionary GameFacts => GameSystem.m_gameFacts;
