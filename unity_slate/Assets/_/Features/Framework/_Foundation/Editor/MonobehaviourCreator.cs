@@ -93,7 +93,7 @@ namespace {featureName}.Runtime
 {{
     public class {scriptName} : FBehaviour
     {{
-         #region Publics
+         #region Public
 
    
         #endregion
@@ -113,8 +113,7 @@ namespace {featureName}.Runtime
    
         #endregion
 
-
-        #region Privates & Protected
+        #region Private & Protected
 
    
         #endregion
