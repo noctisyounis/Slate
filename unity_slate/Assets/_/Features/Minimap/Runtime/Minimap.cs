@@ -5,6 +5,12 @@ namespace Minimap.Runtime
 {
     public class Minimap : FBehaviour
     {
+        [Header("Screen & Map Dimensions")]
+        [SerializeField] float baseWidth = 250f;
+        [SerializeField] float baseHeight = 250f;
+        [SerializeField] float referenceWidth = 1920f;
+        [SerializeField] float referenceHeight = 1080f;
+
         [Header("Textures & Styles")]
         [SerializeField] Texture2D minimapTexture;
         [SerializeField] Color borderColor = Color.white;
@@ -62,8 +68,12 @@ namespace Minimap.Runtime
 
             GUI.color = new Color(1f, 1f, 1f, currentAlpha);
 
-            float w = 250, h = 250;
-            Rect mapRect = new Rect(Screen.width - w - 20, Screen.height - h - 20, w, h);
+            float scaleX = Screen.width / referenceWidth;
+            float scaleY = Screen.height / referenceHeight;
+            float scale = Mathf.Min(scaleX, scaleY);
+            float w = baseWidth * scale;
+            float h = baseHeight * scale;
+            Rect mapRect = new Rect(Screen.width - w - 20 * scale, Screen.height - h - 20 * scale, w, h);
 
             if (minimapTexture)
                 GUI.DrawTexture(mapRect, minimapTexture, ScaleMode.ScaleToFit);
