@@ -9,8 +9,8 @@ namespace Minimap.Runtime
         [SerializeField] Rect minimapRect = new Rect(0, 0, 200, 200);
         [SerializeField] Color borderColor = Color.white;
 
-        [SerializeField] Vector2 playerPos = new Vector2(0.5f, 0.5f);
-        [SerializeField] Vector2 playerViewSize = new Vector2(0.2f, 0.2f);
+        [SerializeField] Vector2 cameraPos = new Vector2(0.5f, 0.5f);
+        [SerializeField] Vector2 cameraViewSize = new Vector2(0.2f, 0.2f);
 
         public Transform m_camera_position;
         [SerializeField] Vector2 worldMin = new Vector2(-50, -50);
@@ -20,8 +20,8 @@ namespace Minimap.Runtime
         {
             if (m_camera_position)
             {
-                playerPos.x = Mathf.InverseLerp(worldMin.x, worldMax.x, m_camera_position.position.x);
-                playerPos.y = Mathf.InverseLerp(worldMin.y, worldMax.y, m_camera_position.position.y);
+                cameraPos.x = Mathf.InverseLerp(worldMin.x, worldMax.x, m_camera_position.position.x);
+                cameraPos.y = Mathf.InverseLerp(worldMin.y, worldMax.y, m_camera_position.position.y);
             }
         }
 
@@ -35,11 +35,11 @@ namespace Minimap.Runtime
             else
                 GUI.Box(mapRect, "Minimap");
 
-            float innerW = mapRect.width * playerViewSize.x;
-            float innerH = mapRect.height * playerViewSize.y;
+            float innerW = mapRect.width * cameraViewSize.x;
+            float innerH = mapRect.height * cameraViewSize.y;
 
-            float px = mapRect.x + mapRect.width * playerPos.x - innerW / 2f;
-            float py = mapRect.y + mapRect.height * (1 - playerPos.y) - innerH / 2f;
+            float px = mapRect.x + mapRect.width * cameraPos.x - innerW / 2f;
+            float py = mapRect.y + mapRect.height * (1 - cameraPos.y) - innerH / 2f;
 
             Rect viewRect = new Rect(px, py, innerW, innerH);
 
