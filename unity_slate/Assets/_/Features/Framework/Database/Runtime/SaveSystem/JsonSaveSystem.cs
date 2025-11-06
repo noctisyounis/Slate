@@ -54,16 +54,16 @@ namespace Database.Runtime
         public Dictionary<string, IFact> Load(FactDictionary factStore, SaveSlot slot)
         {
             var savePath = GetSavePath(slot);
-            // if (!File.Exists(savePath))
-                // throw new FileNotFoundException($"Save {slot} not found.");
+            if (!File.Exists(savePath))
+                throw new FileNotFoundException($"Save {slot} not found.");
 
                 // TODO: handle this situation properly
-                if (!File.Exists(savePath))
-                {
-                    Debug.LogWarning($"Save {slot} not found. Creating new save.");
-                    factStore.SetFact("",string.Empty, FactDictionary.FactPersistence.Persistent);
-                    Save(factStore.AllFacts, slot);
-                }
+                // if (!File.Exists(savePath))
+                // {
+                //     Debug.LogWarning($"Save {slot} not found. Creating new save.");
+                //     factStore.SetFact("",string.Empty, FactDictionary.FactPersistence.Persistent);
+                //     Save(factStore.AllFacts, slot);
+                // }
 
                 var json = File.ReadAllText(savePath);
             // 
