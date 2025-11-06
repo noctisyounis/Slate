@@ -743,6 +743,7 @@ GameObject:
   - component: {fileID: 1102593569}
   - component: {fileID: 1102593568}
   - component: {fileID: 1102593567}
+  - component: {fileID: 1102593570}
   m_Layer: 0
   m_Name: Slate
   m_TagString: Untagged
@@ -762,6 +763,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd38ac838e4fa467e9a47b3c84bdf9fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _isMovable: 0
 --- !u!114 &1102593568
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -792,6 +794,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1102593570
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1102593566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84a3856068d45084ba3cf126315ce026, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_windowTitle: "Fen\xEAtre de Cr\xE9ation"
 --- !u!1 &1455262925
 GameObject:
   m_ObjectHideFlags: 0
