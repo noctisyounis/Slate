@@ -44,3 +44,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e7d7d1fd582d1f48b7da60f1109d08e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  minimapTexture: {fileID: 0}
+  borderColor: {r: 1, g: 1, b: 1, a: 1}
+  cameraViewSize: {x: 0.2, y: 0.2}
+  worldMin: {x: -50, y: -50}
+  worldMax: {x: 50, y: 50}
+  m_camera_position: {fileID: 0}
+  fadeDuration: 0.3
+  visibleDelay: 0.5

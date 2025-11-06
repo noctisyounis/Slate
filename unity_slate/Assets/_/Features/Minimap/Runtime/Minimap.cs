@@ -39,7 +39,7 @@ namespace Minimap.Runtime
             if (!m_camera_position) return;
 
             cameraPos.x = Mathf.InverseLerp(worldMin.x, worldMax.x, m_camera_position.position.x);
-            cameraPos.y = Mathf.InverseLerp(worldMin.y, worldMax.y, m_camera_position.position.y);
+            cameraPos.y = 1f - Mathf.InverseLerp(worldMin.y, worldMax.y, m_camera_position.position.y);
 
             isMoving = (m_camera_position.position != lastPlayerPos);
 
