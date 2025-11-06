@@ -1,6 +1,6 @@
-using System;
 using Inputs.Runtime;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Slate.Runtime
 {
@@ -60,7 +60,7 @@ namespace Slate.Runtime
         private void HandleKeyboardPan()
         {
             // Pan clavier
-            if (m_isMiddleClickHeld || UnityEngine.InputSystem.Mouse.current.delta.magnitude > 0.0f)
+            if (m_isMiddleClickHeld || Mouse.current.delta.magnitude > 0.0f)
                 return;
 
             float zoomFactor = _camera.orthographic ? _camera.orthographicSize : _camera.fieldOfView * _settings.m_correcZoom;
@@ -95,7 +95,7 @@ namespace Slate.Runtime
 
         private void HandleMousePanTest()
         {
-            var mouse = UnityEngine.InputSystem.Mouse.current;
+            var mouse = Mouse.current;
             if (mouse == null) return;
             
             if (m_isMiddleClickHeld && !_isDragging)
