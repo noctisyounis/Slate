@@ -31,6 +31,7 @@ namespace Foundation.Editor
             _behaviour.m_debug = DebugTypeButton("Debug", _behaviour.m_debug, _debugColor);
             _behaviour.m_warning = DebugTypeButton("Warning", _behaviour.m_warning, _warningColor);
             _behaviour.m_error = DebugTypeButton("Error", _behaviour.m_error, _errorColor);
+            //todo: create "All" button to set all to true or false
             
             EditorGUILayout.EndHorizontal();
             

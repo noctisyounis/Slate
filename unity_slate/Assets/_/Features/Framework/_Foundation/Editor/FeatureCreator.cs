@@ -66,7 +66,7 @@ namespace {name}.Runtime
 {{
     public class {name}Behaviour : FBehaviour 
     {{
-        #region Publics
+        #region Public
 
    
         #endregion
@@ -86,8 +86,7 @@ namespace {name}.Runtime
    
         #endregion
 
-
-        #region Privates & Protected
+        #region Private & Protected
 
    
         #endregion

@@ -1,13 +1,10 @@
 {
-    "name": "Slate.Runtime",
-    "rootNamespace": "Slate.Runtime",
+    "name": "WindowCreator.Runtime",
+    "rootNamespace": "WindowCreator.Runtime",
     "references": [
-        "GUID:56a25bc3d96654d6696bd2bf7846171f",
         "GUID:70ee7783ecf9646f99ae250415f2a80b",
-        "GUID:aece0706ddf3e2649a0bdb368c8c430b",
-        "GUID:75469ad4d38634e559750d17036d5f7c",
-        "GUID:4965918235ae9744fa170470a48fda78",
-        "GUID:881708ca6247946b9acf56e3d8ec9e6a"
+        "GUID:56a25bc3d96654d6696bd2bf7846171f",
+        "GUID:4965918235ae9744fa170470a48fda78"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -56,8 +56,16 @@ namespace Database.Runtime
             var savePath = GetSavePath(slot);
             if (!File.Exists(savePath))
                 throw new FileNotFoundException($"Save {slot} not found.");
-            
-            var json = File.ReadAllText(savePath);
+
+                // TODO: handle this situation properly
+                // if (!File.Exists(savePath))
+                // {
+                //     Debug.LogWarning($"Save {slot} not found. Creating new save.");
+                //     factStore.SetFact("",string.Empty, FactDictionary.FactPersistence.Persistent);
+                //     Save(factStore.AllFacts, slot);
+                // }
+
+                var json = File.ReadAllText(savePath);
             // 
             // var saveFile = JsonConvert.DeserializeObject<Dictionary<string, SerializableFact>>(json);
             var saveFile = JsonUtility.FromJson<SerializableSave>(json);
