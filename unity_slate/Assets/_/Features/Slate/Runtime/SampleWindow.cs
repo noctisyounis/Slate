@@ -48,7 +48,7 @@ namespace Slate.Runtime
         private void OnPanInputChange(bool isPanning)
         {
             Cursor.SetCursor(isPanning ?  _panCursor : null, Vector2.zero, CursorMode.Auto);
-            Cursor.visible = isPanning;
+            // Cursor.visible = isPanning;
             Cursor.lockState = CursorLockMode.None;
         }
         
