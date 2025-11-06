@@ -2,14 +2,15 @@
     "name": "UpperBar.Runtime",
     "rootNamespace": "UpperBar.Runtime",
     "references": [
-        "Foundation.Runtime"
-],
+        "Foundation.Runtime",
+        "UImGui"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "autoReferenced": true,
     "overrideReferences": false,
     "precompiledReferences": [],
+    "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],
     "noEngineReferences": false
