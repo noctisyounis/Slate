@@ -1,4 +1,5 @@
 using Inputs.Runtime;
+using Manager.Runtime;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,6 +12,9 @@ namespace Slate.Runtime
         
         public Vector2 m_moveInput { get; set; }
         public bool m_isMiddleClickHeld{ get; set; }
+
+        public static Vector3 m_MousePanDelta => _mousePanDelta;
+        public static Vector3 m_KeyboardPanDelta => _keyboardPanDelta;
         
         #endregion
         
@@ -32,6 +36,15 @@ namespace Slate.Runtime
             // HandleMousePan();   // ancienne version
             HandleMousePanTest();  // nouvelle version
             HandleZoom();
+            
+            Vector3 worldDelta = _mousePanDelta + _keyboardPanDelta;
+            // transform world delta to screen delta
+            Vector2 screenDelta = WorldDeltaToScreenDelta(worldDelta);
+            if (screenDelta != Vector2.zero)
+                WindowPosManager.MoveWindows(screenDelta);
+            
+            _keyboardPanDelta = Vector3.zero;
+            _mousePanDelta = Vector3.zero;
         }
 
 
@@ -69,8 +82,9 @@ namespace Slate.Runtime
             float interpolant = Mathf.Clamp01(Mathf.InverseLerp(_settings.m_maxOrthoZoom, _settings.m_minOrthoZoom, currentZoom)); 
             float finalSpeed = Mathf.Lerp(-_settings.m_panSpeedmax, -_settings.m_panSpeedmin, interpolant);
             
-            Vector3 move = new Vector3(m_moveInput.x,  m_moveInput.y, 0f) * (finalSpeed * Time.deltaTime);
-            _camera.transform.Translate(move * zoomFactor, Space.World);
+            // Vector3 move = new Vector3(m_moveInput.x,  m_moveInput.y, 0f) * (finalSpeed * Time.deltaTime);
+            _keyboardPanDelta = new Vector3(m_moveInput.x,  m_moveInput.y, 0f) * (finalSpeed * Time.deltaTime);
+            _camera.transform.Translate(_keyboardPanDelta * zoomFactor, Space.World);
         }
         
         /// <summary>
@@ -112,10 +126,10 @@ namespace Slate.Runtime
                 Vector3 mouseScreenPos = mouse.position.ReadValue();
                 mouseScreenPos.z = Mathf.Abs(_camera.transform.position.z);
                 
-                Vector3 currentworld = _camera.ScreenToWorldPoint(mouseScreenPos);
-                Vector3 delta = _dragOriginWorld - currentworld;
-                
-                _camera.transform.Translate(delta, Space.World);
+                Vector3 currentWorld = _camera.ScreenToWorldPoint(mouseScreenPos);
+                //Vector3 delta = _dragOriginWorld - currentworld;
+                _mousePanDelta = _dragOriginWorld - currentWorld;
+                _camera.transform.Translate(_mousePanDelta, Space.World);
                 
                 _dragOriginWorld = _camera.ScreenToWorldPoint(mouseScreenPos);
             }
@@ -150,6 +164,29 @@ namespace Slate.Runtime
         
         #endregion
         
+        #region Utils
+
+        private Vector2 WorldDeltaToScreenDelta(Vector3 worldDelta)
+        {
+            if (worldDelta == Vector3.zero || _camera is null) return Vector2.zero;
+
+            Vector3 worldRef = _camera.transform.position + _camera.transform.forward * 10f;
+            Vector3 worldRefWithDelta = worldRef + worldDelta;
+            Vector3 screenRef = _camera.WorldToScreenPoint(worldRef);
+            Vector3 screenRefWithDelta = _camera.WorldToScreenPoint(worldRefWithDelta);
+            
+            // screen coordinates: (x, y) where y origin is bottom-left in WorldToScreenPoint on Unity.
+            // ImGui expects origin (0,0) at top-left, while Unity's Screen coordinates have (0,0) bottom-left.
+            // Convert Unity screen Y to top-left origin by flipping Y.
+            float screenHeight = Screen.height;
+            Vector2 screenRefV2 = new Vector2(screenRef.x, screenHeight - screenRef.y);
+            Vector2 screenRefWithDeltaV2 = new Vector2(screenRefWithDelta.x, screenHeight - screenRefWithDelta.y);
+            // distance between screen coordinates becomes delta
+            Vector2 delta = -(screenRefWithDeltaV2 - screenRefV2);
+            return delta;
+        }
+        #endregion
+        
         
         #region Private and protected
         
@@ -166,6 +203,8 @@ namespace Slate.Runtime
         // test mousepan
         private bool _isDragging;
         private Vector3 _dragOriginWorld;
+        private static Vector3 _mousePanDelta;
+        private static Vector3 _keyboardPanDelta;
 
         #endregion
     }
