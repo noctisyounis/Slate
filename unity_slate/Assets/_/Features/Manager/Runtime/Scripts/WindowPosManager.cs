@@ -87,6 +87,9 @@ namespace Manager.Runtime
             if (!_windowInitialPosCache.ContainsKey(windowName))
                 _windowInitialPosCache[windowName] = ImGui.GetWindowPos();
             
+            if (!_windowSizeCache.ContainsKey(windowName))
+                _windowSizeCache[windowName] = ImGui.GetWindowSize();
+            
             
             // then if the window needs to move
             if (_hasPendingDeltaThisFrame)
@@ -129,7 +132,7 @@ namespace Manager.Runtime
         /// <summary>
         /// Call inside the window's layout site BEFORE calling ImGui.Begin(windowName).
         /// Returns true if the window should be drawn this frame. If false, skip ImGui.Begin/End entirely.
-        /// This avoids any rendering and input for windows that are fully outside of the camera view.
+        /// This avoids any rendering and input for windows that are fully outside the camera view.
         /// </summary>
         public static bool ShouldDraw(string windowName)
         {
@@ -176,13 +179,17 @@ namespace Manager.Runtime
         
         private static bool IsRectOutsideScreen(Vector2 pos, Vector2 size, float screenW, float screenH)
         {
+            var xSize = size.x - (size.x * .75f);
+            var ySize = size.y - (size.y * .75f);
+            
             // window rect
             float left = pos.x;
             float right = pos.x + size.x;
             float top = pos.y;
-            float bottom = pos.y + size.y;
+            float bottom = pos.y + ySize;
 
-            return (right <= 0f || left >= screenW || bottom <= 0f || top >= screenH);
+            Debug.Log($"Window size: {size.x}:{size.y} | Rect data:  {left}, {right}, {top}, {bottom} | Screen size: {screenW}, {screenH}");
+            return (right <= xSize || left + xSize >= screenW || bottom <= 0f || top >= screenH);
         }
 
         #endregion
