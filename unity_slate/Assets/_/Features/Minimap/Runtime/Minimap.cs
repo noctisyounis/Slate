@@ -54,6 +54,10 @@ namespace Minimap.Runtime
 
             lastPlayerPos = m_camera_position.position;
 
+            float screenRatio = (float)Screen.width / Screen.height;
+            cameraViewSize.x = 0.25f;
+            cameraViewSize.y = cameraViewSize.x / screenRatio;
+
             float targetAlpha = (visibleTimer > 0f) ? 1f : 0f;
             currentAlpha = Mathf.MoveTowards(currentAlpha, targetAlpha, Time.deltaTime / fadeDuration);
 
