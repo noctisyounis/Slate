@@ -523,6 +523,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94de1986169ff4ef7b4436bc05cee1d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _debug: 0
+  _warning: 0
+  _error: 0
 --- !u!4 &888594540
 Transform:
   m_ObjectHideFlags: 0
@@ -744,6 +747,7 @@ GameObject:
   - component: {fileID: 1102593568}
   - component: {fileID: 1102593567}
   - component: {fileID: 1102593570}
+  - component: {fileID: 1102593571}
   m_Layer: 0
   m_Name: Slate
   m_TagString: Untagged
@@ -763,6 +767,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd38ac838e4fa467e9a47b3c84bdf9fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _debug: 0
+  _warning: 0
+  _error: 0
   _isMovable: 0
 --- !u!114 &1102593568
 MonoBehaviour:
@@ -776,6 +783,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fefdf94526573431e80f06d47f4431bf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _debug: 0
+  _warning: 0
+  _error: 0
   _panCursor: {fileID: 2800000, guid: 7ca9faadefe201547ab3430bf6a2bf2d, type: 3}
   _panSettings: {fileID: 11400000, guid: 71558efd1b9bf4c409729a35ea8c0cdc, type: 2}
   _inputsHandler: {fileID: 11400000, guid: 8a2c3149c1f5d3648b30ecc391000d8e, type: 2}
@@ -801,12 +811,33 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1102593566}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 84a3856068d45084ba3cf126315ce026, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _debug: 0
+  _warning: 0
+  _error: 0
   m_windowTitle: "Fen\xEAtre de Cr\xE9ation"
+  m_cameraPanSettings: {fileID: 11400000, guid: 71558efd1b9bf4c409729a35ea8c0cdc, type: 2}
+--- !u!114 &1102593571
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1102593566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ea2c1d67d020a14fbedfcd345d3e444, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _debug: 0
+  _warning: 0
+  _error: 0
+  m_windowTitle: Gestion des Layouts
+  m_newLayoutName: Nouveau Layout
 --- !u!1 &1455262925
 GameObject:
   m_ObjectHideFlags: 0
