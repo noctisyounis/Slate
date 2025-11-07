@@ -19,6 +19,7 @@ namespace Minimap.Runtime
         [SerializeField] Vector2 cameraViewSize = new Vector2(0.2f, 0.2f);
         [SerializeField] Vector2 worldMin = new Vector2(-50, -50);
         [SerializeField] Vector2 worldMax = new Vector2(50, 50);
+        [SerializeField] float minScale = 0.5f;
 
         [Header("References")]
         public Transform m_camera_position;
