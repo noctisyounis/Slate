@@ -13,6 +13,7 @@ public class TestInputs : FBehaviour
     {
         // Z : Ideally would have a method to register events that prevents manual errors
         _inputsHandler.m_move += OnMoveInput;
+        _inputsHandler.m_moveRaw += OnMoveRawInput;
         _inputsHandler.m_zoom += OnZoomInput;
 
         _inputsHandler.m_pan += OnPanInput;
@@ -24,6 +25,7 @@ public class TestInputs : FBehaviour
     {
         // Z : Ideally would have a method to register events that prevents manual errors
         _inputsHandler.m_move -= OnMoveInput;
+        _inputsHandler.m_moveRaw -= OnMoveRawInput;
         _inputsHandler.m_zoom -= OnZoomInput;
 
         _inputsHandler.m_pan -= OnPanInput;
@@ -34,6 +36,7 @@ public class TestInputs : FBehaviour
 
     #region Custom Methods
     private void OnMoveInput(Vector2 moveInput) => _moveHeld = moveInput;
+    private void OnMoveRawInput(Vector2 moveInput) => _moveRawHeld = moveInput;
     private void OnZoomInput(float zoomInput) => _zoomHeld = zoomInput;
 
     private void OnPanInput(bool panInput) => _panHeld = panInput;
@@ -44,6 +47,7 @@ public class TestInputs : FBehaviour
     #region Private Variables
     [Space(15)]
     [SerializeField] private Vector2 _moveHeld = Vector2.zero;
+    [SerializeField] private Vector2 _moveRawHeld = Vector2.zero;
     [SerializeField] private float _zoomHeld = 0.0f;
     [SerializeField] private bool _panHeld = false;
     [SerializeField] private bool _selectHeld = false;

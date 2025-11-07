@@ -1,4 +1,3 @@
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
@@ -7,15 +6,25 @@ using static CustomInputActions;
 
 namespace Inputs.Runtime
 {
-    [CreateAssetMenu(fileName = "Inputs_SO", menuName = "ScriptableObjects/InputsSO")]
+    [CreateAssetMenu(fileName = "InputsHandlerSO", menuName = "ScriptableObjects/Inputs/InputsHandler")]
     public class InputsHandler : ScriptableObject, ISlateActions
     {
+        /// <summary>
+        /// Normalised value for the movement
+        /// </summary>
         public event UnityAction<Vector2> m_move = delegate { };
+        /// <summary>
+        /// Raw value (not normalised) for the movement
+        /// </summary>
+        public event UnityAction<Vector2> m_moveRaw = delegate { };
         public event UnityAction<float> m_zoom = delegate { };
 
         public event UnityAction<bool> m_pan = delegate { };
         public event UnityAction<bool> m_select = delegate { };
         public event UnityAction<bool> m_options = delegate { };
+        
+        // public event UnityAction<bool> m_hide = delegate { };
+        // public event UnityAction<bool> m_border = delegate { };
 
         public CustomInputActions m_inputActions;
 
@@ -27,7 +36,6 @@ namespace Inputs.Runtime
         public bool m_isPressingSelect => m_inputActions.Slate.Select.ReadValue<float>() > 0f;
         public bool m_isPressingOptions => m_inputActions.Slate.Options.ReadValue<float>() > 0f;
         */
-
 
         #region Slate Actions
 
@@ -47,33 +55,36 @@ namespace Inputs.Runtime
             m_inputActions?.Disable();
         }
 
-        public void OnMove(InputAction.CallbackContext context) => OnVector2Update(context, m_move);
-        public void OnZoom(InputAction.CallbackContext context) => m_zoom.Invoke(context.ReadValue<float>());
+        public void OnMove(InputAction.CallbackContext context)
+        {
+            Vector2 rawMove = context.ReadValue<Vector2>();
+            m_moveRaw.Invoke(rawMove);
+            m_move.Invoke(rawMove.normalized);
+        }
+
+        public void OnZoom(InputAction.CallbackContext context)
+            => OnFloatUpdate(context, m_zoom);
 
         public void OnPan(InputAction.CallbackContext context)
-        {
-            bool isPressed = context.ReadValue<float>() > 0f;
-            m_pan.Invoke(isPressed);
-        }
+            => OnBoolUpdate(context, m_pan);
 
         public void OnSelect(InputAction.CallbackContext context)
-        {
-            bool isPressed = context.ReadValue<float>() > 0f;
-            m_select.Invoke(isPressed);
-        }
+            => OnBoolUpdate(context, m_select);
 
         public void OnOptions(InputAction.CallbackContext context)
-        {
-            bool isPressed = context.ReadValue<float>() > 0f;
-            m_options.Invoke(isPressed);
-        }
+            => OnBoolUpdate(context, m_options);
         #endregion
 
         #region Private Methods
 
-        // Z : Ideally create a float & bool version of this method but couldn't get it working for some reason
-        private void OnVector2Update(InputAction.CallbackContext context, UnityAction<Vector2> customEvent)
-            => customEvent.Invoke(context.ReadValue<Vector2>().normalized);
+        private void OnVector2Update(InputAction.CallbackContext context, UnityAction<Vector2> customEvent, bool normalised = true)
+            => customEvent.Invoke(normalised ? context.ReadValue<Vector2>().normalized : context.ReadValue<Vector2>());
+
+        private void OnFloatUpdate(InputAction.CallbackContext context, UnityAction<float> customEvent)
+            => customEvent.Invoke(context.ReadValue<float>());
+
+        private void OnBoolUpdate(InputAction.CallbackContext context, UnityAction<bool> customEvent)
+            => customEvent.Invoke(context.ReadValue<float>() > 0f);
         #endregion
 
         #endregion
