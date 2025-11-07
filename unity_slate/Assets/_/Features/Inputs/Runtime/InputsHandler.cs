@@ -9,7 +9,14 @@ namespace Inputs.Runtime
     [CreateAssetMenu(fileName = "InputsHandlerSO", menuName = "ScriptableObjects/Inputs/InputsHandler")]
     public class InputsHandler : ScriptableObject, ISlateActions
     {
+        /// <summary>
+        /// Normalised value for the movement
+        /// </summary>
         public event UnityAction<Vector2> m_move = delegate { };
+        /// <summary>
+        /// Raw value (not normalised) for the movement
+        /// </summary>
+        public event UnityAction<Vector2> m_moveRaw = delegate { };
         public event UnityAction<float> m_zoom = delegate { };
 
         public event UnityAction<bool> m_pan = delegate { };
@@ -48,8 +55,13 @@ namespace Inputs.Runtime
             m_inputActions?.Disable();
         }
 
-        public void OnMove(InputAction.CallbackContext context) 
-            => OnVector2Update(context, m_move);
+        public void OnMove(InputAction.CallbackContext context)
+        {
+            Vector2 rawMove = context.ReadValue<Vector2>();
+            m_moveRaw.Invoke(rawMove);
+            m_move.Invoke(rawMove.normalized);
+        }
+
         public void OnZoom(InputAction.CallbackContext context)
             => OnFloatUpdate(context, m_zoom);
 
@@ -65,8 +77,8 @@ namespace Inputs.Runtime
 
         #region Private Methods
 
-        private void OnVector2Update(InputAction.CallbackContext context, UnityAction<Vector2> customEvent)
-            => customEvent.Invoke(context.ReadValue<Vector2>().normalized);
+        private void OnVector2Update(InputAction.CallbackContext context, UnityAction<Vector2> customEvent, bool normalised = true)
+            => customEvent.Invoke(normalised ? context.ReadValue<Vector2>().normalized : context.ReadValue<Vector2>());
 
         private void OnFloatUpdate(InputAction.CallbackContext context, UnityAction<float> customEvent)
             => customEvent.Invoke(context.ReadValue<float>());
