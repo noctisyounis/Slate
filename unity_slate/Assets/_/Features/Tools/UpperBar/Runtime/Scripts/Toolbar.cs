@@ -176,13 +176,20 @@ namespace UpperBar.Runtime
                 }
                 
                 // Si le mode ou la résolution a changé, on met à jour nos références
-                if (_prevMode == Screen.fullScreenMode && _prevW == Screen.width && _prevH == Screen.height) return;
-                _prevMode = Screen.fullScreenMode;
-                _prevW = Screen.width;
-                _prevH = Screen.height;
+                if (_prevMode != Screen.fullScreenMode)
+                {
+                    _prevMode = Screen.fullScreenMode;
+
+                    if (Screen.fullScreenMode == FullScreenMode.Windowed)
+                    {
+                        // On programme un re-apply après un court délai
+                        _reapplyBorderlessAt = Time.unscaledTime + 0.35f; // debounce
+                        _reapplyScheduled = true;
+                    }
+                }
 
                 // Si on vient de revenir en fenêtré : ré-appliquer le borderless après 1–2 frames
-                if (Screen.fullScreenMode == FullScreenMode.Windowed)
+                if (_reapplyScheduled && Time.unscaledTime >= _reapplyBorderlessAt)
                 {
 #if UNITY_STANDALONE_WIN
                     StartCoroutine(ReapplyBorderlessNextFrame());
@@ -298,12 +305,9 @@ namespace UpperBar.Runtime
                     var w = _savedWindowedRes ? _windowedW : 1280;
                     var h = _savedWindowedRes ? _windowedH : 720;
                     Screen.SetResolution(w, h, FullScreenMode.Windowed);
-
-#if UNITY_STANDALONE_WIN
-                    StartCoroutine(ReapplyBorderlessNextFrame());
-#elif UNITY_STANDALONE_OSX && !UNITY_EDITOR
-                    StartCoroutine(ReapplyBorderlessMacNextFrame());
-#endif
+                    
+                    _reapplyScheduled   = true;
+                    _reapplyBorderlessAt = Time.unscaledTime + 0.35f;
                 }
                 else
                 {
@@ -336,16 +340,17 @@ namespace UpperBar.Runtime
                 if (go == null) go = new GameObject("BorderRemover");
 
                 // S’il y a déjà un NoBorderWin, on le détruit proprement pour relancer Start()
-                var old = go.GetComponent<NoBorderWin>();
-                if (old != null)
-                {
-                    // OnDestroy() rétablit bien l'ancien WndProc chez toi — safe
-                    Destroy(old);
-                    yield return null; // laisse OnDestroy s’exécuter
-                }
+                var nb = go.GetComponent<NoBorderWin>();
+                if (nb == null) nb = go.AddComponent<NoBorderWin>();
 
-                // Recrée le composant → Start() est rappelé → styles borderless ré-appliqués
-                go.AddComponent<NoBorderWin>();
+                // Si NoBorderWin expose une méthode publique Apply()/Refresh(), on essaie
+                var mi = typeof(NoBorderWin).GetMethod("Apply",
+                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
+                if (mi != null)
+                {
+                    try { mi.Invoke(nb, null); }
+                    catch (System.Exception e) { Debug.LogWarning($"[Toolbar] NoBorderWin.Apply() a levé: {e.Message}"); }
+                }
             }
 #endif
         
@@ -439,15 +444,15 @@ namespace UpperBar.Runtime
             bool _bootArmed;
             bool _savedWindowedRes;
             bool _mouseMovedSinceBoot;
+            bool _reapplyScheduled;
+            float _reapplyBorderlessAt;
             float _bootStartTime;
             int _windowedW, _windowedH;
             Vector3 _lastMouse;
             [SerializeField] float _closeTolerance = 0f;
             [SerializeField] float _bootGuardSeconds = 0.35f;
-#if UNITY_STANDALONE_WIN
             FullScreenMode _prevMode;
             int _prevW, _prevH;
-#endif
         
         #endregion
     }
