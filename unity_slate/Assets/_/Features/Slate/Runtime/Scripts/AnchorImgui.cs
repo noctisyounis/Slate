@@ -40,15 +40,17 @@ namespace Slate.Runtime
         private void OnDeinitialize(UImGui.UImGui obj) { }
         private void OnLayout(UImGui.UImGui obj)
         {
-            // window style to avoid window clamping
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, Vector2.zero);
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0f);
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 0f);
-            ImGui.PushStyleVar(ImGuiStyleVar.WindowMinSize, Vector2.zero);
-            
             string windowName = "Anchored Window";
 
             WindowPosManager.RegisterWindow(windowName);
+            
+            // visibility test before Begin
+            if (!WindowPosManager.ShouldDraw(windowName))
+            {
+                ImGui.PopStyleVar(4);
+                return;
+                // fully skip window rendering
+            }
 
             if (ImGui.Begin(windowName, ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoResize))
             {
@@ -62,9 +64,10 @@ namespace Slate.Runtime
                 // Apply pending delta (if any)
                 WindowPosManager.SyncWindowPosition(windowName);
                 ImGui.Text(windowName + " content");
+                
+                Info($"New position: {ImGui.GetWindowPos()} || Camera pos: {Camera.main.transform.position}");
             }
             ImGui.End();
-            ImGui.PopStyleVar(4);
         }
    
         #endregion
