@@ -76,6 +76,7 @@ namespace Minimap.Runtime
             float scaleX = Screen.width / referenceWidth;
             float scaleY = Screen.height / referenceHeight;
             float scale = Mathf.Min(scaleX, scaleY);
+            scale = Mathf.Max(scale, minScale);
             float w = baseWidth * scale;
             float h = baseHeight * scale;
             Rect mapRect = new Rect(Screen.width - w - 20 * scale, Screen.height - h - 20 * scale, w, h);
