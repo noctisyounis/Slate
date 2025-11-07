@@ -1,6 +1,5 @@
 using Foundation.Runtime;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace Inputs.Runtime
 {
@@ -21,7 +20,9 @@ namespace Inputs.Runtime
         }
 
         #region Private Variables
+
         [SerializeField] private InputsHandler _inputsHandler;
+
         #endregion
     }
 }
