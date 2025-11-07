@@ -58,7 +58,7 @@ namespace Slate.Runtime
                 // so that we can apply delta to it without snapping.
                 if (ImGui.IsWindowAppearing())
                 {
-                    WindowPosManager.UpdateWindowCache(windowName);
+                    // WindowPosManager.UpdateWindowCache(windowName);
                 }
                 
                 // Apply pending delta (if any)
