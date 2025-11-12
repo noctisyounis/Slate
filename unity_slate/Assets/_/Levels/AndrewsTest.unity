@@ -600,9 +600,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52f85eb881c1046ca8524e4e2fd6f8b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _debug: 0
+  _debug: 1
   _warning: 0
   _error: 0
+  _windowName: Anchor window
 --- !u!4 &2017846489
 Transform:
   m_ObjectHideFlags: 0
