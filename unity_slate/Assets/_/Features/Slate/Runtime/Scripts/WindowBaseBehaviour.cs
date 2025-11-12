@@ -1,0 +1,95 @@
+using UnityEngine;
+using Foundation.Runtime;
+using ImGuiNET;
+using Manager.Runtime;
+using UImGui;
+
+namespace Slate.Runtime
+{
+    public abstract class WindowBaseBehaviour : FBehaviour
+    {
+        #region Public
+
+        public  string WindowName {get => _windowName; set => _windowName = value;}
+   
+        #endregion
+
+        #region Unity API
+
+        protected virtual void OnEnable()
+        {
+            UImGuiUtility.OnInitialize += OnInitialize;
+            UImGuiUtility.OnDeinitialize += OnDeinitialize;
+            UImGuiUtility.Layout += OnLayout;
+        }
+        protected virtual void OnDisable()
+        {
+            UImGuiUtility.Layout -= OnLayout;
+            UImGuiUtility.OnDeinitialize -= OnDeinitialize;
+            UImGuiUtility.OnInitialize -= OnInitialize;
+        }
+
+        protected virtual void LateUpdate()
+        {
+            WindowPosManager.EndOfFrame();
+        }
+
+        #endregion
+
+        #region Main Methods
+
+        protected virtual void OnInitialize(UImGui.UImGui imgui) { }
+        protected virtual void OnDeinitialize(UImGui.UImGui imgui) { }
+
+        private void OnLayout(UImGui.UImGui imgui)
+        {
+            if (string.IsNullOrEmpty(_windowName))
+            {
+                Error("Window name is not set! Give window a name in inspector.");
+                return;
+            }
+            WindowPosManager.RegisterWindow(_windowName);
+            
+            // visibility test before Begin
+            // if false, fully skip window rendering
+            if (!WindowPosManager.ShouldDraw(_windowName))
+                return;
+
+            if (ImGui.Begin(_windowName))
+            {
+                bool mouseDragging = ImGui.IsMouseDragging(ImGuiMouseButton.Left);
+                // Initialize cache from actual window position the first frame it appears,
+                // so that we can apply delta to it without snapping.
+                if (ImGui.IsWindowAppearing())
+                {
+                    WindowPosManager.UpdateWindowCache(_windowName);
+                }
+                
+                // Apply pending delta (if any)
+                WindowPosManager.SyncWindowPosition(_windowName);
+                // ImGui.Text(_windowName + " content");
+
+                if(mouseDragging) WindowPosManager.UpdateWindowCache(_windowName);
+                WindowLayout();
+                
+                Info($"New position: {ImGui.GetWindowPos()} || Camera pos: {Camera.main.transform.position}");
+            }
+            ImGui.End();
+        }
+   
+        #endregion
+
+        #region Utils
+
+        protected abstract void WindowLayout();
+   
+        #endregion
+
+        #region Private & Protected
+
+        [SerializeField]
+        protected string _windowName;
+   
+        #endregion
+    }
+}
