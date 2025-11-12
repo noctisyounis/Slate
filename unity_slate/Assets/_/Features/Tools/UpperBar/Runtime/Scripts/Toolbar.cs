@@ -3,9 +3,8 @@ using UnityEngine;
 using ImGuiNET;
 using System;
 using UImGui;
-#if UNITY_STANDALONE_WIN
+using Slate.Runtime;
 using System.Runtime.InteropServices;
-#endif
 
 namespace UpperBar.Runtime
 {
@@ -14,21 +13,29 @@ namespace UpperBar.Runtime
         #region Publics
         
 #if UNITY_STANDALONE_WIN
-        const int _sWMinimize = 6;
+        const int m_sWMinimize = 6;
 #endif
         
         #endregion
         
-#if UNITY_STANDALONE_WIN
-
         #region DllImport
 
-            [DllImport("user32.dll")] static extern IntPtr GetActiveWindow();
-            [DllImport("user32.dll")] static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-
-        #endregion
+#if UNITY_STANDALONE_WIN
+        
+            [DllImport("user32.dll")] private static extern IntPtr GetActiveWindow();
+            [DllImport("user32.dll")] private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
 #endif
+#if UNITY_STANDALONE_OSX
+
+            [DllImport("no_border_mac")] private static extern void MakeWindowBorderless();
+            [DllImport("no_border_mac")] private static extern void MakeWindowMovable();
+            [DllImport("no_border_mac")] private static extern void MakeWindowNotMovable();
+            [DllImport("no_border_mac")] private static extern void ResetWindowStyle();
+
+#endif
+        
+        #endregion
 
         #region Header
 
@@ -58,8 +65,19 @@ namespace UpperBar.Runtime
         
             void OnEnable()
             {
+                _prevMode = Screen.fullScreenMode;
+                _prevW = Screen.width;
+                _prevH = Screen.height;
+                
+                _isOpen = false; 
                 _hiddenY = -Mathf.Max(1f, barHeight);
                 _y = _hiddenY;
+                
+                _bootStartTime = Time.unscaledTime;
+                _bootArmed = false;
+                _mouseMovedSinceBoot = false;
+                _lastMouse = Input.mousePosition;
+                
                 UImGuiUtility.Layout += OnLayout;
             }
 
@@ -70,21 +88,36 @@ namespace UpperBar.Runtime
 
             void Update()
             {
+                // --- Boot guard ---
+                if (!_bootArmed)
+                {
+                    if ((Time.unscaledTime - _bootStartTime) >= _bootGuardSeconds)
+                        _bootArmed = true;
+
+                    if ((Input.mousePosition - _lastMouse).sqrMagnitude > 1f)
+                    {
+                        _mouseMovedSinceBoot = true;
+                        _bootArmed = true;
+                    }
+                }
+                _lastMouse = Input.mousePosition;
+
+                // --- Inputs / géométrie ---
                 var m = Input.mousePosition;
-                float mouseY = Screen.height - m.y;
+                var mouseY = Screen.height - m.y;
 
-                float hiddenY  = -Mathf.Max(1f, barHeight) - 2f;
-                float visibleH = Mathf.Clamp(barHeight + _y, 0f, barHeight);
+                _hiddenY  = -Mathf.Max(1f, barHeight) - 2f;        // cache = -barHeight - marge
+                var visibleH = Mathf.Clamp(barHeight + _y, 0f, barHeight);
 
-                // Géométrie visible stricte
-                float barTop    = 0f;
+                var inActivationZone = _bootArmed && (mouseY <= topRevealZone);
+                var overVisibleBar   = mouseY >= 0f && mouseY <= visibleH;
 
-                bool inActivationZone = mouseY <= topRevealZone;
-                bool overVisibleBar = mouseY >= 0f && mouseY <= visibleH;
-
-                // ======== FSM (avec logs d'événements) ========
+                // =================================================================
+                // FSM : décision d'état (OUVERT / FERME) + temporisation de fermeture
+                // =================================================================
                 if (!_isOpen)
                 {
+                    // Fermé -> Ouvrir seulement si on touche la zone d'activation
                     if (inActivationZone)
                     {
                         _isOpen = true;
@@ -93,65 +126,114 @@ namespace UpperBar.Runtime
                 }
                 else
                 {
+                    // Ouvert -> rester ouvert si on est dans la barre visible OU dans la zone d'activation
                     if (overVisibleBar || inActivationZone)
-                        _closeArmTime = -1f;
+                    {
+                        _closeArmTime = -1f; // on désarme la fermeture
+                    }
                     else
                     {
+                        // Curseur sorti -> armer le timer de fermeture
+                        if (_closeArmTime < 0f)
+                            _closeArmTime = Time.unscaledTime;
+
+                        // Fermer après hideDelay
                         if (Time.unscaledTime - _closeArmTime >= hideDelay)
                         {
                             _isOpen = false;
                             _closeArmTime = -1f;
 
-                            _y = hiddenY;
+                            // Snap hors écran pour éviter tout “collage”
                             _vy = 0f;
+                            _y  = _hiddenY;
                         }
                     }
                 }
 
-                // ======== Animation ========
-                float targetY = _isOpen ? 0f : hiddenY;
-                float raw = Mathf.SmoothDamp(_y, targetY, ref _vy, smoothTime);
-
-                if (useEaseOut)
+                // =====================
+                // Animation (UN SEUL bloc)
+                // =====================
+                if (_isOpen)
                 {
-                    float t = Mathf.InverseLerp(hiddenY, 0f, raw);
-                    t = 1f - Mathf.Pow(1f - t, 3f);
-                    _y = Mathf.Lerp(hiddenY, 0f, t);
+                    // Slide d'ouverture vers 0
+                    var raw = Mathf.SmoothDamp(_y, 0f, ref _vy, smoothTime);
+                    if (useEaseOut)
+                    {
+                        var t = Mathf.InverseLerp(_hiddenY, 0f, raw);
+                        t = 1f - Mathf.Pow(1f - t, 3f);          // easeOutCubic
+                        _y = Mathf.Lerp(_hiddenY, 0f, t);
+                    }
+                    else
+                    {
+                        _y = raw;
+                    }
                 }
                 else
                 {
-                    _y = raw;
+                    // Fermé : pas d'anim (on plaque pour éviter le drift)
+                    _vy = 0f;
+                    _y  = _hiddenY;
+                }
+                
+                // Si le mode ou la résolution a changé, on met à jour nos références
+                if (_prevMode != Screen.fullScreenMode)
+                {
+                    _prevMode = Screen.fullScreenMode;
+
+                    if (Screen.fullScreenMode == FullScreenMode.Windowed)
+                    {
+                        // On programme un re-apply après un court délai
+                        _reapplyBorderlessAt = Time.unscaledTime + 0.35f; // debounce
+                        _reapplyScheduled = true;
+                    }
+                }
+
+                // Si on vient de revenir en fenêtré : ré-appliquer le borderless après 1–2 frames
+                if (_reapplyScheduled && Time.unscaledTime >= _reapplyBorderlessAt)
+                {
+#if UNITY_STANDALONE_WIN
+                    StartCoroutine(ReapplyBorderlessNextFrame());
+#elif UNITY_STANDALONE_OSX && !UNITY_EDITOR
+                    StartCoroutine(ReapplyBorderlessMacNextFrame());
+#endif
                 }
             }
 
-            void OnLayout(UImGui.UImGui ui)
+            private void OnLayout(UImGui.UImGui ui)
             {
-                Vector2 pos = new Vector2(0f, _y);
-                Vector2 size = new Vector2(Screen.width, barHeight);
+                if (!_isOpen && _y <= _hiddenY + 0.01f)
+                    return;
+                
+                var visibleH = Mathf.Clamp(barHeight + _y, 0f, barHeight);
+                
+                var pos = new Vector2(0f, 0f); // on laisse à 0 pour éviter tout clamp
+                var size = new Vector2(Screen.width, visibleH);
 
                 ImGui.SetNextWindowPos(pos, ImGuiCond.Always);
                 ImGui.SetNextWindowSize(size, ImGuiCond.Always);
 
                 ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 0f);
                 ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0f);
-                ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(bgColor.r, bgColor.g, bgColor.b, bgAlpha));
 
-                var flags = ImGuiWindowFlags.NoTitleBar |
-                            ImGuiWindowFlags.NoResize |
-                            ImGuiWindowFlags.NoMove |
-                            ImGuiWindowFlags.NoScrollbar |
-                            ImGuiWindowFlags.NoScrollWithMouse |
-                            ImGuiWindowFlags.NoCollapse |
-                            ImGuiWindowFlags.NoSavedSettings;
+                var k = (barHeight > 0f) ? (visibleH / barHeight) : 0f;
+                ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(bgColor.r, bgColor.g, bgColor.b, bgAlpha * k));
 
-                ImGui.Begin("TopRevealToolbar", flags);
+                const ImGuiWindowFlags baseFlags =
+                    ImGuiWindowFlags.NoTitleBar |
+                    ImGuiWindowFlags.NoResize |
+                    ImGuiWindowFlags.NoMove |
+                    ImGuiWindowFlags.NoScrollbar |
+                    ImGuiWindowFlags.NoScrollWithMouse |
+                    ImGuiWindowFlags.NoCollapse |
+                    ImGuiWindowFlags.NoSavedSettings;
 
-                // _hoveredThisFrame = ImGui.IsWindowHovered(ImGuiHoveredFlags.AllowWhenBlockedByActiveItem);
+                ImGui.Begin("TopRevealToolbar", baseFlags);
 
                 ImGui.SetCursorPosX(horizontalPadding);
 
-                float totalButtonsWidth = ComputeButtonsWidth();
-                float rightStartX = size.x - horizontalPadding - totalButtonsWidth;
+                var winSize = ImGui.GetWindowSize();
+                var totalButtonsWidth = ComputeButtonsWidth();
+                var rightStartX = winSize.x - horizontalPadding - totalButtonsWidth;
 
                 var cur = ImGui.GetCursorPos();
                 ImGui.SetCursorPos(new Vector2(rightStartX, cur.y));
@@ -162,35 +244,12 @@ namespace UpperBar.Runtime
                 ImGui.SameLine(0f, buttonSpacing);
                 DrawGhostButton(labelThree, QuitApp);
                 
-                if (debugHUD)
-                {
-                    // Un petit overlay non interactif pour debug
-                    ImGui.SetNextWindowPos(new Vector2(10, barHeight + 10), ImGuiCond.Always);
-                    ImGui.SetNextWindowBgAlpha(0.6f);
-                    ImGui.Begin("ToolbarDebug##overlay",
-                        ImGuiWindowFlags.NoTitleBar | ImGuiWindowFlags.AlwaysAutoResize |
-                        ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoSavedSettings |
-                        ImGuiWindowFlags.NoInputs);
-
-                    float hiddenY  = -Mathf.Max(1f, barHeight);
-                    float visibleH = Mathf.Clamp(barHeight + _y, 0f, barHeight);
-                    float mouseY   = Screen.height - Input.mousePosition.y;
-
-                    ImGui.Text($"open:      {_isOpen}");
-                    ImGui.Text($"y:         {_y:F2}  (hiddenY={hiddenY:F2})");
-                    ImGui.Text($"visibleH:  {visibleH:F1} / {barHeight:F1}");
-                    ImGui.Text($"mouseYTop: {mouseY:F1}");
-                    ImGui.Text($"zone:      {(mouseY <= topRevealZone ? "YES" : "no")}");
-                    ImGui.Text($"armed:     {(_closeArmTime >= 0f ? (Time.unscaledTime - _closeArmTime).ToString("F2")+"s" : "-")}");
-                    ImGui.End();
-                }
-
                 ImGui.End();
                 ImGui.PopStyleColor();
                 ImGui.PopStyleVar(2);
             }
-            
-            static void DrawGhostButton(string label, Action onClick)
+
+            private static void DrawGhostButton(string label, Action onClick)
             {
                 ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0, 0, 0, 0));
                 ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(1, 1, 1, 0.08f));
@@ -202,9 +261,9 @@ namespace UpperBar.Runtime
                 ImGui.PopStyleColor(3);
             }
 
-            float ComputeButtonsWidth()
+            private float ComputeButtonsWidth()
             {
-                float w = 0f;
+                var w = 0f;
                 w += GhostButtonWidth(labelOne);
                 w += buttonSpacing;
                 w += GhostButtonWidth(labelTwo);
@@ -214,25 +273,23 @@ namespace UpperBar.Runtime
                 return w;
             }
 
-            static float GhostButtonWidth(string label)
+            private static float GhostButtonWidth(string label)
             {
                 var sz = ImGui.CalcTextSize(label);
                 return sz.x + 12f;
             }
             
             // — Minimiser la fenêtre (Windows standalone uniquement) —
-            public void MinimizeWindow()
+            private static void MinimizeWindow()
             {
 #if UNITY_STANDALONE_WIN
                 var hWnd = GetActiveWindow();
-                if (hWnd != IntPtr.Zero) ShowWindow(hWnd, _sWMinimize);
-#else
-            Debug.LogWarning("MinimizeWindow: non supporté nativement hors Windows standalone.");
+                if (hWnd != IntPtr.Zero) ShowWindow(hWnd, m_sWMinimize);
 #endif
             }
 
             // — Toggle plein écran fenêtré (borderless) <-> fenêtré —
-            public void ToggleBorderless()
+            private void ToggleBorderless()
             {
                 // Sauvegarde la résolution fenêtrée la première fois
                 if (!_savedWindowedRes && Screen.fullScreenMode == FullScreenMode.Windowed)
@@ -245,23 +302,24 @@ namespace UpperBar.Runtime
                 if (Screen.fullScreenMode == FullScreenMode.FullScreenWindow)
                 {
                     // Revenir en fenêtré à la résolution sauvegardée (fallback = 1280x720)
-                    int w = _savedWindowedRes ? _windowedW : 1280;
-                    int h = _savedWindowedRes ? _windowedH : 720;
+                    var w = _savedWindowedRes ? _windowedW : 1280;
+                    var h = _savedWindowedRes ? _windowedH : 720;
                     Screen.SetResolution(w, h, FullScreenMode.Windowed);
-                    Debug.Log($"[Toolbar] Windowed {w}x{h}");
+                    
+                    _reapplyScheduled   = true;
+                    _reapplyBorderlessAt = Time.unscaledTime + 0.35f;
                 }
                 else
                 {
                     // Passer en borderless sur la résolution du display principal
-                    int w = Display.main.systemWidth;
-                    int h = Display.main.systemHeight;
+                    var w = Display.main.systemWidth;
+                    var h = Display.main.systemHeight;
                     Screen.SetResolution(w, h, FullScreenMode.FullScreenWindow);
-                    Debug.Log($"[Toolbar] FullScreenWindow {w}x{h}");
                 }
             }
 
             // — Quitter l’application (Editor-safe) —
-            public void QuitApp()
+            private void QuitApp()
             {
 #if UNITY_EDITOR
                 UnityEditor.EditorApplication.isPlaying = false;
@@ -269,6 +327,97 @@ namespace UpperBar.Runtime
             Application.Quit();
 #endif
             }
+            
+#if UNITY_STANDALONE_WIN
+            private System.Collections.IEnumerator ReapplyBorderlessNextFrame()
+            {
+                // Laisse Unity finir le switch de mode/résolution
+                yield return null; // N+1
+                yield return null; // N+2 (drivers lents)
+
+                // Trouve/Crée le GO porteur
+                var go = GameObject.Find("BorderRemover");
+                if (go == null) go = new GameObject("BorderRemover");
+
+                // S’il y a déjà un NoBorderWin, on le détruit proprement pour relancer Start()
+                var nb = go.GetComponent<NoBorderWin>();
+                if (nb == null) nb = go.AddComponent<NoBorderWin>();
+
+                // Si NoBorderWin expose une méthode publique Apply()/Refresh(), on essaie
+                var mi = typeof(NoBorderWin).GetMethod("Apply",
+                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
+                if (mi != null)
+                {
+                    try { mi.Invoke(nb, null); }
+                    catch (System.Exception e) { Debug.LogWarning($"[Toolbar] NoBorderWin.Apply() a levé: {e.Message}"); }
+                }
+            }
+#endif
+        
+#if UNITY_STANDALONE_OSX && !UNITY_EDITOR
+            private System.Collections.IEnumerator ReapplyBorderlessMacNextFrame()
+            {
+                // Laisse Unity terminer le switch en Windowed
+                yield return null; // N+1
+                yield return null; // N+2
+
+                // Re-applique le borderless et verrouille le non-déplacement par défaut
+                try
+                {
+                    MakeWindowBorderless();
+                    MakeWindowNotMovable(); // ou MakeWindowMovable() si tu préfères
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogWarning($"[Toolbar/macOS] Reapply borderless failed: {e.Message}");
+                }
+            }
+#endif
+        
+#if UNITY_STANDALONE_WIN
+            private static Component EnsureBorderRemoverGO()
+            {
+                // 1) Trouver / créer le GameObject
+                var go = GameObject.Find("BorderRemover");
+                if (go == null) go = new GameObject("BorderRemover");
+
+                // 2) Retrouver le type "BorderRemover" quel que soit son namespace
+                Type type = null;
+                foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+                {
+                    Type[] types;
+                    try { types = asm.GetTypes(); } catch { continue; }
+                    foreach (var t in types)
+                    {
+                        if (t.Name == "BorderRemover") { type = t; break; }
+                    }
+                    if (type != null) break;
+                }
+
+                if (type == null)
+                {
+                    Debug.LogWarning("[Toolbar] Type 'BorderRemover' introuvable.");
+                    return null;
+                }
+
+                // 3) Ajouter le composant si absent
+                var comp = go.GetComponent(type);
+                if (comp == null) comp = go.AddComponent(type);
+
+                // 4) Appeler Apply() si dispo (public ou non)
+                var mi = type.GetMethod("Apply",
+                    System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.Public |
+                    System.Reflection.BindingFlags.NonPublic);
+                if (mi != null)
+                {
+                    try { mi.Invoke(comp, null); }
+                    catch (Exception e) { Debug.LogWarning($"[Toolbar] BorderRemover.Apply() a levé: {e.Message}"); }
+                }
+
+                return comp;
+            }
+#endif
         
         #endregion
 
@@ -288,15 +437,22 @@ namespace UpperBar.Runtime
             float _vy;
             float _hiddenY;
             float _mouseLeftAt = -1f;
+            float _closeArmTime = -1f;
             bool _hoveredThisFrame;
             bool _wantOpen;
             bool _isOpen;
-            float _closeArmTime = -1f;
-            int _windowedW, _windowedH;
+            bool _bootArmed;
             bool _savedWindowedRes;
-            [SerializeField] float closeTolerance = 0f;
-            [SerializeField] bool debugLogs = true;
-            [SerializeField] bool debugHUD  = true;
+            bool _mouseMovedSinceBoot;
+            bool _reapplyScheduled;
+            float _reapplyBorderlessAt;
+            float _bootStartTime;
+            int _windowedW, _windowedH;
+            Vector3 _lastMouse;
+            [SerializeField] float _closeTolerance = 0f;
+            [SerializeField] float _bootGuardSeconds = 0.35f;
+            FullScreenMode _prevMode;
+            int _prevW, _prevH;
         
         #endregion
     }

@@ -3,7 +3,9 @@
     "rootNamespace": "UpperBar.Runtime",
     "references": [
         "Foundation.Runtime",
-        "UImGui"
+        "UImGui",
+        "WindowUtilWindows.Runtime",
+        "WindowUtilMac.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
