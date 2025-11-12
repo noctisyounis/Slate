@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Foundation.Runtime;
 using ImGuiNET;
@@ -20,7 +21,7 @@ namespace WindowCreator.Runtime
     }
 
     [Serializable]
-    public class LayoutCoutainer
+    public class LayoutContainer
     {
         public List<LayoutData> m_layouts;
         public int m_nextId;
@@ -38,10 +39,25 @@ namespace WindowCreator.Runtime
 
         #region Api Unity
 
+        private void Awake()
+        {
+            LoadLayoutsFromFacts();
+            if (_container == null)
+            {
+                _container = new LayoutContainer{ m_layouts = new List<LayoutData>(), m_nextId = 1};
+                SaveLayoutsToFacts();
+            }
+        }
+
         private void OnEnable()
         {
             UImGuiUtility.Layout += OnImGuiLayout;
+        }
+
+        private void Start()
+        {
             LoadLayoutsFromFacts();
+            _uiSyncPending = true;
         }
 
         private void OnDisable()
@@ -57,9 +73,9 @@ namespace WindowCreator.Runtime
         public void CreateNewLayout(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
-                name = $"Layout_{_nextId++}";
+                name = $"Layout{_container.m_nextId}";
 
-            if (_layouts.Exists(l => l.m_name == name))
+            if (_container.m_layouts.Exists(l => l.m_name == name))
             {
                 Warning($"Un layout nommé '{name}' existe déjà.");
             }
@@ -75,7 +91,7 @@ namespace WindowCreator.Runtime
                 m_extraButtons = new List<string>()
             };
                 
-                _layouts.Add(layout);
+                _container.m_layouts.Add(layout);
                 SaveLayoutsToFacts();
                 InfoDone($"Layout créé : {layout.m_name}");
                 
@@ -90,40 +106,39 @@ namespace WindowCreator.Runtime
 
         private void SaveLayoutsToFacts()
         {
-            _container.m_layouts = _layouts;
-            _container.m_nextId = _nextId;
-            
-            SetFact("Layout_List", _layouts, true);
+            SetFact("WindowCreator.LayoutContainer", _container, true);
             Save();
             InfoDone("Layout persistés dans GameFacs.");
         }
 
         private void LoadLayoutsFromFacts()
         {
-            if (FactExists("Layout_Countainer", out LayoutCoutainer saved))
+            
+            if (FactExists("WindowCreator.LayoutContainer", out LayoutContainer saved))
             {
                 _container = saved;
                 _layouts = _container.m_layouts ?? new List<LayoutData>();
                 _nextId = _container.m_nextId;
                 InfoDone($"Layouts chargés depuis GameFacts : {_layouts.Count}");
+
+                foreach (var layout in _layouts)
+                {
+                    if (layout.m_open)
+                    {
+                        Info($"Réouverture automatique du layout '{layout.m_name}'");
+                    }
+                }
             }
 
             else
             {
                 _layouts = new List<LayoutData>();
                 _nextId = 1;
+                _container = null; 
                 InfoInProgress("Aucun layout trouvé - initialisation vide");
             }
         }
-
-        private int CalculateNextId()
-        {
-            int max = 0;
-            foreach (var l in _layouts)
-                if (l.m_id > max) max = l.m_id;
-            return max + 1;
-        }
-
+        
         private void ReopenLayouts(string name)
         {
             for (int i = 0; i < _layouts.Count; i++)
@@ -144,6 +159,18 @@ namespace WindowCreator.Runtime
 
         private void OnImGuiLayout(UImGui.UImGui uImGui)
         {
+            if (_uiSyncPending)
+            {
+                foreach (var layout in _layouts)
+                {
+                    if (layout.m_open)
+                    {
+                        Info($"Réouverture automatique du layout '{layout.m_name}'");
+                    }
+                }
+                
+                _uiSyncPending = false;
+            }
             DrawMainWindow();
             DrawLayouts();
             CleanupClosed();
@@ -210,7 +237,7 @@ namespace WindowCreator.Runtime
                     ImGui.InputText("##Title", ref layout.m_title, 64);
                     
                     ImGui.Text("Description :");
-                    ImGui.InputTextMultiline("##desc", ref layout.m_descrition, 512, new Vector2(-1, 80));
+                    ImGui.InputTextMultiline("##desc", ref layout.m_descrition, 256, new Vector2(-1, 80));
 
                     if (ImGui.Button("Sauvegarder"))
                     {
@@ -254,10 +281,11 @@ namespace WindowCreator.Runtime
         #region Private and Protected
 
         private List<LayoutData> _layouts = new ();
-        private LayoutCoutainer _container = new();
+        private LayoutContainer _container = new();
         private List<string> _toRemove = new();
         private List<string> _toReopen = new();
         private int _nextId = 1;
+        private bool _uiSyncPending;
 
         #endregion
         

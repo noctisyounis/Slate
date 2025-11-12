@@ -183,7 +183,7 @@ namespace Slate.Runtime
             Vector2 screenRefWithDeltaV2 = new Vector2(screenRefWithDelta.x, screenHeight - screenRefWithDelta.y);
             // distance between screen coordinates becomes delta
             Vector2 delta = -(screenRefWithDeltaV2 - screenRefV2);
-            return delta;
+            return delta * _worldToScreenDeltaMultiplier;
         }
         #endregion
         
@@ -205,6 +205,7 @@ namespace Slate.Runtime
         private Vector3 _dragOriginWorld;
         private static Vector3 _mousePanDelta;
         private static Vector3 _keyboardPanDelta;
+        private float _worldToScreenDeltaMultiplier = 3f;
 
         #endregion
     }

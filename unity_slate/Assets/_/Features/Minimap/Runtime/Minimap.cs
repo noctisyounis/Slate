@@ -19,6 +19,7 @@ namespace Minimap.Runtime
         [SerializeField] Vector2 cameraViewSize = new Vector2(0.2f, 0.2f);
         [SerializeField] Vector2 worldMin = new Vector2(-50, -50);
         [SerializeField] Vector2 worldMax = new Vector2(50, 50);
+        [SerializeField] float minScale = 0.5f;
 
         [Header("References")]
         public Transform m_camera_position;
@@ -75,6 +76,7 @@ namespace Minimap.Runtime
             float scaleX = Screen.width / referenceWidth;
             float scaleY = Screen.height / referenceHeight;
             float scale = Mathf.Min(scaleX, scaleY);
+            scale = Mathf.Max(scale, minScale);
             float w = baseWidth * scale;
             float h = baseHeight * scale;
             Rect mapRect = new Rect(Screen.width - w - 20 * scale, Screen.height - h - 20 * scale, w, h);
