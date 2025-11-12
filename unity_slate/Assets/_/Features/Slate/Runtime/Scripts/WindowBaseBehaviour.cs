@@ -69,7 +69,11 @@ namespace Slate.Runtime
                 WindowPosManager.SyncWindowPosition(_windowName);
                 // ImGui.Text(_windowName + " content");
 
-                if(mouseDragging) WindowPosManager.UpdateWindowCache(_windowName);
+                if (!mouseDragging && _wasDraggedLastFrame)
+                {
+                    WindowPosManager.UpdateWindowCache(_windowName);
+                }
+                _wasDraggedLastFrame = mouseDragging;
                 WindowLayout();
                 
                 Info($"New position: {ImGui.GetWindowPos()} || Camera pos: {Camera.main.transform.position}");
@@ -89,7 +93,9 @@ namespace Slate.Runtime
 
         [SerializeField]
         protected string _windowName;
-   
+
+        private bool _wasDraggedLastFrame;
+
         #endregion
     }
 }
