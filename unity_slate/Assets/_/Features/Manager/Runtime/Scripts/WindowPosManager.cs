@@ -114,6 +114,7 @@ namespace Manager.Runtime
             var pos = ImGui.GetWindowPos();
             // _windowOffsetCache[windowName] = pos;
             _windowInitialPosCache[windowName] = pos;
+            _windowOffsetCache[windowName] = Vector2.zero;
         }
 
         /// <summary>
@@ -188,7 +189,7 @@ namespace Manager.Runtime
             float top = pos.y;
             float bottom = pos.y + ySize;
 
-            Debug.Log($"Window size: {size.x}:{size.y} | Rect data:  {left}, {right}, {top}, {bottom} | Screen size: {screenW}, {screenH}");
+            //Debug.Log($"Window size: {size.x}:{size.y} | Rect data:  {left}, {right}, {top}, {bottom} | Screen size: {screenW}, {screenH}");
             return (right <= xSize || left + xSize >= screenW || bottom <= 0f || top >= screenH);
         }
 
