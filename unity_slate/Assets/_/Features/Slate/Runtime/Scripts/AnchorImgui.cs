@@ -52,18 +52,21 @@ namespace Slate.Runtime
                 // fully skip window rendering
             }
 
-            if (ImGui.Begin(windowName, ImGuiWindowFlags.NoBringToFrontOnFocus | ImGuiWindowFlags.NoResize))
+            if (ImGui.Begin(windowName))
             {
+                bool mouseDragging = ImGui.IsMouseDragging(ImGuiMouseButton.Left);
                 // Initialize cache from actual window position the first frame it appears,
                 // so that we can apply delta to it without snapping.
                 if (ImGui.IsWindowAppearing())
                 {
-                    // WindowPosManager.UpdateWindowCache(windowName);
+                    WindowPosManager.UpdateWindowCache(windowName);
                 }
                 
                 // Apply pending delta (if any)
                 WindowPosManager.SyncWindowPosition(windowName);
                 ImGui.Text(windowName + " content");
+
+                if(mouseDragging) WindowPosManager.UpdateWindowCache(windowName);
                 
                 Info($"New position: {ImGui.GetWindowPos()} || Camera pos: {Camera.main.transform.position}");
             }
