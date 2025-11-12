@@ -6,33 +6,46 @@ namespace Inputs.Runtime
     public class TrackpadInputs : MonoBehaviour
     {
         [SerializeField] private float panSpeed = 0.2f;
+        private Transform _mainCamTransform;
+
+        private void OnGUI()
+        {
+            float test = Input.GetAxis("Horizontal");
+            GUILayout.Button(test.ToString());
+        }
+
+        private void Awake()
+        {
+            _mainCamTransform = Camera.main.transform;
+        }
 
         private void Update()
         {
             if (Mouse.current == null)
                 return;
 
-            // Two-finger swipe (trackpad scroll gesture)
+            // unfortunately 2 fingers gesture is embedded in mouse.scroll.value
             Vector2 scrollDelta = Mouse.current.scroll.ReadValue();
-
-            if (scrollDelta.sqrMagnitude <= 0.0f || scrollDelta.y >= 0.05f)
+            float magnitude = scrollDelta.magnitude;
+            if (magnitude <= 0.0f)
                 return;
 
-            GetMousePosDelta();
-            _posLastFrame = Mouse.current.position.value;
-            // Convert the delta to a "pan" vector — note that
-            // trackpads often invert Y relative to user expectation
-            Vector2 panDelta = new Vector2(scrollDelta.x, scrollDelta.y) * panSpeed;
+            // we ended up opting for Amplify way of handling gestures (trackpad)
+            // on touchpad we would have : 
+            // - Move inside Plate : RMB + mouse Delta
+            // - Move Plate Window : Hover top of Plate window +  LMB + Mousedelta
 
-            // Apply to your camera or scene panning system
-            Debug.Log($"Panning by {panDelta}");
+            bool movingHorizontally = scrollDelta.x != 0 && Mathf.Abs(scrollDelta.y) <= 0.02f;
+            bool movingVertically = scrollDelta.y != 0 && Mathf.Abs(scrollDelta.x) <= 0.02f;
+            if (movingHorizontally)
+            {
+                _mainCamTransform.position += transform.up * scrollDelta.y + transform.right * scrollDelta.x;
+
+            }
+            else if (movingVertically)
+            {
+                _mainCamTransform.position += transform.up * scrollDelta.y;
+            }
         }
-
-        private void GetMousePosDelta()
-        {
-            Vector2 dir = Mouse.current.position.value - _posLastFrame;
-        }
-
-        private Vector2 _posLastFrame;
     }
 }
