@@ -1,6 +1,10 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:unity_slate/Assets/_/Levels/Artyom.unity.meta
+guid: 34d2ba3c1ed7c1f4a8e955cd71b1789b
+========
 guid: f54d1bd14bd3ca042bd867b519fee8cc
 folderAsset: yes
+>>>>>>>> 88804417c08aa0a3a025f60feb3c34bdcbedacf6:unity_slate/Assets/TextMesh Pro.meta
 DefaultImporter:
   externalObjects: {}
   userData: 

@@ -33,31 +33,31 @@ namespace Slate.Runtime
         {
             if (value)
             {
-                _inputsHandler.m_move += OnMovePressed;
+                _inputsHandler.m_moveRaw += OnMovePressed;
                 _inputsHandler.m_options += OnOptionsPressed;
             }
             else
             {
-                _inputsHandler.m_move -= OnMovePressed;
+                _inputsHandler.m_moveRaw -= OnMovePressed;
                 _inputsHandler.m_options -= OnOptionsPressed;
             }
         }
         private void OnOptionsPressed(bool optionsPressed)
             => _optionsPressed = optionsPressed;
 
-        private void OnMovePressed(Vector2 move) => _movement = move;
+        private void OnMovePressed(Vector2 move) => _rawMovement = move;
 
         private void WindowPositionManagement()
         {
             if (!Application.isFocused)
                 return;
 
-            bool isMoving = Mathf.Abs(_movement.magnitude) >= 0.01f;
+            bool isMoving = Mathf.Abs(_rawMovement.normalized.magnitude) >= 0.01f;
 
             if (!isMoving || !_optionsPressed)
                 return;
 
-            MoveWindowByOffset(_movement);
+            MoveWindowByOffset(_rawMovement);
         }
 
         private int FloatToExtremeInt(float value)
@@ -105,11 +105,10 @@ namespace Slate.Runtime
             int width = rect.Right - rect.Left;
             int height = rect.Bottom - rect.Top;
 
-            // OPTI Z : We should get mouse movement on Windows and then properly displace our build window
-            // based on the actual mouse movement but unfortunately I ain't got time
-            int newX = currentX + FloatToExtremeInt(Mathf.RoundToInt(movement.x) * _moveSpeedAppX);
+            // Z : The fact I'm casting to an int probably causes the small displacement when moving the mouse with it but that seems acceptable
+            int newX = currentX + FloatToExtremeInt(Mathf.RoundToInt(movement.x));
             // Z : dk why I need to negate movementY but it's working
-            int newY = currentY + FloatToExtremeInt(Mathf.RoundToInt(-movement.y) * _moveSpeedAppY);
+            int newY = currentY + FloatToExtremeInt(Mathf.RoundToInt(-movement.y));
 
             SetWindowPos(hWnd, IntPtr.Zero, newX, newY, width, height, SWP_SHOWWINDOW);
         }
@@ -119,12 +118,10 @@ namespace Slate.Runtime
 
         #region Private variables
         [SerializeField] private InputsHandler _inputsHandler; 
-        [SerializeField] private float _moveSpeedAppX = 10.0f;
-        [SerializeField] private float _moveSpeedAppY = 10.0f;
 
-        private Vector2 _movement;
+        private Vector2 _rawMovement;
         private bool _optionsPressed = false;
-        
+
         private const uint SWP_SHOWWINDOW = 0x0040;
         #endregion
 #endif
