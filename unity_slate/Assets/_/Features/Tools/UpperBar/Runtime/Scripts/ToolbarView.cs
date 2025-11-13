@@ -2,6 +2,7 @@
 using ImGuiNET;
 using Foundation.Runtime;
 using UImGui;
+using SharedData.Runtime;
 
 namespace UpperBar.Runtime
 {
@@ -18,18 +19,12 @@ namespace UpperBar.Runtime
             public float m_bgAlpha = 0.65f;
             public Color m_bgColor = new Color(0f, 0f, 0f, 1f);
 
+            [Header("State (SO)")]
+            public ToolbarSharedState m_state;
+
             [Header("Refs")]
             public ToolbarMenu m_menus;
             public ToolbarButton m_buttons;
-            public Toolbar m_logic;
-
-        #endregion
-
-        #region Public
-
-            public bool m_isOpen;
-            public float m_y;
-            public float m_visibleH => Mathf.Clamp(m_barHeight + m_y, 0f, m_barHeight);
 
         #endregion
         
@@ -44,16 +39,21 @@ namespace UpperBar.Runtime
 
             private void OnLayout(UImGui.UImGui ui)
             {
-                if (!m_isOpen && m_y <= -Mathf.Max(1f, m_barHeight) + 0.01f) return;
+                if (m_state == null) return;
 
-                var visH = m_visibleH;
+                var isOpen = m_state.m_isToolbarDisplayed;
+                var y = m_state.m_y;
+
+                if (!isOpen && y <= -Mathf.Max(1f, m_barHeight) + 0.01f) return;
+
+                var visibleH = Mathf.Clamp(m_barHeight + y, 0f, m_barHeight);
 
                 ImGui.SetNextWindowPos(new Vector2(0, 0), ImGuiCond.Always);
-                ImGui.SetNextWindowSize(new Vector2(Screen.width, visH), ImGuiCond.Always);
+                ImGui.SetNextWindowSize(new Vector2(Screen.width, visibleH), ImGuiCond.Always);
 
                 ImGui.PushStyleVar(ImGuiStyleVar.WindowRounding, 0f);
                 ImGui.PushStyleVar(ImGuiStyleVar.WindowBorderSize, 0f);
-                var k = m_barHeight > 0 ? (visH / m_barHeight) : 0f;
+                var k = m_barHeight > 0 ? (visibleH / m_barHeight) : 0f;
                 ImGui.PushStyleColor(ImGuiCol.WindowBg, new Vector4(m_bgColor.r, m_bgColor.g, m_bgColor.b, m_bgAlpha * k));
 
                 const ImGuiWindowFlags flags =
@@ -77,12 +77,7 @@ namespace UpperBar.Runtime
                     m_menus?.DrawMenusLeft();
 
                     ImGui.TableSetColumnIndex(2);
-                    if (m_buttons != null)
-                    {
-                        m_buttons.OnToggleBorderless = (m_logic != null) ? new System.Action(m_logic.ToggleBorderless) : null;
-                        m_buttons.OnQuitApp = (m_logic != null) ? new System.Action(Toolbar.QuitApp) : null;
-                        m_buttons.DrawRightAligned();
-                    }
+                    m_buttons?.DrawRightAligned();
 
                     ImGui.EndTable();
                 }

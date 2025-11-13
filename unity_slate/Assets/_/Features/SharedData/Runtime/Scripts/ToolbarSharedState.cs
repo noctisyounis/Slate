@@ -13,7 +13,6 @@ namespace SharedData.Runtime
         {
             public string m_label = "Item";
             public bool m_separator = false;
-            public MenuNode[] m_children;
             public UnityEvent m_onClick; // laissé null si noeud avec children
         }
 
@@ -36,8 +35,11 @@ namespace SharedData.Runtime
         public string m_btnMinLabel = "_";
         public string m_btnBorderlessLabel = "□";
         public string m_btnQuitLabel = "X";
-        public UnityEvent m_onToggleBorderless;   // assigner Toolbar.ToggleBorderless
-        public UnityEvent m_onQuit;               // assigner Toolbar.QuitApp
+
+        [Header("Requêtes boutons (logic polling)")]
+        [NonSerialized] public bool m_requestMinimize = false;
+        [NonSerialized] public bool m_requestToggleBorderless = false;
+        [NonSerialized] public bool m_requestQuit = false;
 
         [Header("Debug")]
         public bool m_debugHUD = false;

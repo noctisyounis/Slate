@@ -12,8 +12,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bfaacc4cfb2443eb6971ada3e70e25c, type: 3}
   m_Name: ToolbarSharedState
   m_EditorClassIdentifier: 
-  isAnyMenuOpen: 0
-  isPointerInToolbar: 0
-  menusTotalWidth: 0
-  popupMaxHeight: 280
-  debugHUD: 0
+  m_isToolbarDisplayed: 0
+  m_y: -32
+  m_isAnyMenuOpen: 0
+  m_isPointerInToolbar: 0
+  m_menusTotalWidth: 230
+  m_popupMaxHeight: 280
+  m_menuPreviewWidth: 110
+  m_menuItemSpacing: 10
+  m_menuPopupMaxWidth: 360
+  m_menuOne:
+  - m_label: File
+    m_separator: 0
+    m_onClick:
+      m_PersistentCalls:
+        m_Calls: []
+  - m_label: Test
+    m_separator: 0
+    m_onClick:
+      m_PersistentCalls:
+        m_Calls: []
+  m_menuTwo:
+  - m_label: View
+    m_separator: 0
+    m_onClick:
+      m_PersistentCalls:
+        m_Calls: []
+  - m_label: New
+    m_separator: 0
+    m_onClick:
+      m_PersistentCalls:
+        m_Calls: []
+  m_btnMinLabel: _
+  m_btnBorderlessLabel: "\u25A1"
+  m_btnQuitLabel: X
+  m_debugHUD: 0
