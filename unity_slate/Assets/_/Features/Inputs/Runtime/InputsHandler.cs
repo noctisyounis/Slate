@@ -22,6 +22,7 @@ namespace Inputs.Runtime
         public event UnityAction<bool> m_pan = delegate { };
         public event UnityAction<bool> m_select = delegate { };
         public event UnityAction<bool> m_options = delegate { };
+        public event UnityAction<float> m_MIDI = delegate { };
         
         // public event UnityAction<bool> m_hide = delegate { };
         // public event UnityAction<bool> m_border = delegate { };
@@ -73,6 +74,9 @@ namespace Inputs.Runtime
 
         public void OnOptions(InputAction.CallbackContext context)
             => OnBoolUpdate(context, m_options);
+
+        public void OnMIDI(InputAction.CallbackContext context)
+            => OnFloatUpdate(context, m_MIDI);
         #endregion
 
         #region Private Methods
@@ -85,6 +89,7 @@ namespace Inputs.Runtime
 
         private void OnBoolUpdate(InputAction.CallbackContext context, UnityAction<bool> customEvent)
             => customEvent.Invoke(context.ReadValue<float>() > 0f);
+
         #endregion
 
         #endregion
