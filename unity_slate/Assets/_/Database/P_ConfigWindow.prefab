@@ -153,7 +153,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e99e4d461f00a401e9ac0f28b2d31d2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _debug: 0
+  _warning: 0
+  _error: 0
+  _windowName: Localisation
   _test: {fileID: 3465966708943006445}
   _number: 0
   inputnumber: 0
   pos: {x: 0, y: 0}
+  jsonFile: {fileID: 0}

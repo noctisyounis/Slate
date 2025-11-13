@@ -50,6 +50,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "MIDI",
+                    "type": "Value",
+                    "id": "c61f97c1-ad32-45e5-92b6-73614a375207",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -226,6 +235,17 @@
                     "processors": "",
                     "groups": ";KeyboardMouse",
                     "action": "Options",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6ac72792-6ccb-4f98-a65d-439f16266dc1",
+                    "path": "<MidiDevice>/control032",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MIDI",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
