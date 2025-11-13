@@ -114,6 +114,17 @@ namespace Manager.Runtime
             var pos = ImGui.GetWindowPos();
             // _windowOffsetCache[windowName] = pos;
             _windowInitialPosCache[windowName] = pos;
+            _windowOffsetCache[windowName] = Vector2.zero;
+            
+            // Add offset if dragged position is outside of screen bounds
+            if (!ShouldDraw(windowName))
+            {
+                var size = new Vector2(ImGui.GetWindowSize().x, ImGui.GetWindowSize().y);
+                var sizeBounds = new Vector2(size.x - (size.x * .75f), size.y - (size.y * .75f));
+                var newPosX = Mathf.Clamp(pos.x, sizeBounds.x, ImGui.GetIO().DisplaySize.x - sizeBounds.x);
+                var newPosY = Mathf.Clamp(pos.y, sizeBounds.y, ImGui.GetIO().DisplaySize.y - sizeBounds.y);
+                _windowInitialPosCache[windowName] = new Vector2(newPosX, newPosY);
+            }
         }
 
         /// <summary>
@@ -188,7 +199,7 @@ namespace Manager.Runtime
             float top = pos.y;
             float bottom = pos.y + ySize;
 
-            Debug.Log($"Window size: {size.x}:{size.y} | Rect data:  {left}, {right}, {top}, {bottom} | Screen size: {screenW}, {screenH}");
+            //Debug.Log($"Window size: {size.x}:{size.y} | Rect data:  l:{left}, r:{right}, t:{top}, b:{bottom} | Screen size: w:{screenW}, h:{screenH}");
             return (right <= xSize || left + xSize >= screenW || bottom <= 0f || top >= screenH);
         }
 
