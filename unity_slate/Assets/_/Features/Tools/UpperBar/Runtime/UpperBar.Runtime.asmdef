@@ -5,7 +5,8 @@
         "Foundation.Runtime",
         "UImGui",
         "WindowUtilWindows.Runtime",
-        "WindowUtilMac.Runtime"
+        "WindowUtilMac.Runtime",
+        "SharedData.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

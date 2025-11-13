@@ -47,30 +47,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 521d3b12faccefa48b5cee41909db458, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  barHeight: 30
-  horizontalPadding: 12
-  topRevealZone: 30
-  smoothTime: 0.12
-  hideDelay: 0.15
-  useEaseOut: 1
-  m_view: {fileID: 3874552343587680791}
-  m_menus: {fileID: 3227176543383857047}
-  bootGuardSeconds: 0.35
-  _y: 0
-  _vy: 0
-  _hiddenY: 0
-  _isOpen: 0
-  _closeArmTime: -1
-  _bootArmed: 0
-  _bootStartTime: 0
-  _lastMouse: {x: 0, y: 0, z: 0}
-  _mouseMovedSinceBoot: 0
-  _reapplyScheduled: 0
-  _reapplyAt: 0
-  _prevMode: 0
-  _savedWindowedRes: 0
-  _windowedW: 0
-  _windowedH: 0
+  _debug: 0
+  _warning: 0
+  _error: 0
+  m_barHeight: 30
+  m_horizontalPadding: 12
+  m_topRevealZone: 30
+  m_smoothTime: 0.12
+  m_hideDelay: 0.15
+  m_useEaseOut: 1
+  m_state: {fileID: 11400000, guid: 09d6f524959f50f419448b271eef4fd7, type: 2}
+  m_bootGuardSeconds: 0.35
+  m_y: 0
+  m_vy: 0
+  m_hiddenY: 0
+  m_isOpen: 0
+  m_closeArmTime: -1
+  m_bootArmed: 0
+  m_bootStartTime: 0
+  m_lastMouse: {x: 0, y: 0, z: 0}
+  m_mouseMovedSinceBoot: 0
+  m_reapplyScheduled: 0
+  m_reapplyAt: 0
+  m_prevMode: 0
+  m_savedWindowedRes: 0
+  m_windowedW: 0
+  m_windowedH: 0
 --- !u!114 &3874552343587680791
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -83,15 +85,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 191ab24b4ee446b694dc5994d1b6361c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _debug: 0
+  _warning: 0
+  _error: 0
   m_barHeight: 30
   m_horizontalPadding: 12
   m_bgAlpha: 0.65
   m_bgColor: {r: 0, g: 0, b: 0, a: 1}
+  m_state: {fileID: 11400000, guid: 09d6f524959f50f419448b271eef4fd7, type: 2}
   m_menus: {fileID: 3227176543383857047}
   m_buttons: {fileID: 6620590746088927893}
-  m_logic: {fileID: 2599113679472432524}
-  m_isOpen: 0
-  m_y: 0
 --- !u!114 &3227176543383857047
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -104,12 +107,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4144ac316fd4d728f5ec4dffda991ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_menuOneLabel: Fichier
-  m_menuTwoLabel: Affichage
-  m_menuWidth: 110
-  m_popupMaxWidth: 320
-  m_popupMaxHeight: 280
-  m_itemSpacing: 10
+  _debug: 0
+  _warning: 0
+  _error: 0
+  m_state: {fileID: 11400000, guid: 09d6f524959f50f419448b271eef4fd7, type: 2}
 --- !u!114 &6620590746088927893
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -122,7 +123,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b828b9bff63a40f590581a354b290048, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  labelOne: _
-  labelTwo: "\u25A1"
-  labelThree: X
-  spacing: 10
+  _debug: 0
+  _warning: 0
+  _error: 0
+  m_state: {fileID: 11400000, guid: 09d6f524959f50f419448b271eef4fd7, type: 2}

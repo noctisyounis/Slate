@@ -25,6 +25,7 @@ namespace Slate.Runtime
                 Error("Pan Cursor texture reference is missing", this);
 
             RegisterEvents(true);
+            _camera.orthographicSize = _panSettings.m_startZoom;
         }
 
         private void Update()

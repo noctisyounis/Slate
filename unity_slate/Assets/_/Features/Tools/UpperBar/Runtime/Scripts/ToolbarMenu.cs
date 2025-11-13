@@ -1,7 +1,7 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using ImGuiNET;
 using Foundation.Runtime;
+using SharedData.Runtime;
 
 namespace UpperBar.Runtime
 {
@@ -10,22 +10,8 @@ namespace UpperBar.Runtime
     {
         #region Header
 
-            [Header("Menus")]
-            public string m_menuOneLabel = "Fichier";
-            public string m_menuTwoLabel = "Affichage";
-
-            [Header("UI / Menus")]
-            public float m_menuWidth = 110f;
-            public float m_popupMaxWidth = 320f;
-            public float m_popupMaxHeight = 280f;
-            public float m_itemSpacing = 10f;
-
-        #endregion
-
-        #region Public
-
-            public bool  m_isAnyMenuOpen { get; private set; }
-            public float m_totalMenusWidth { get; private set; }
+            [Header("State (SO)")]
+            public ToolbarSharedState m_state;
 
         #endregion
 
@@ -33,20 +19,8 @@ namespace UpperBar.Runtime
 
             private void Awake()
             {
-                _menuOneItems ??= new (string, Action)[]
-                {
-                    ("Nouveau", () => Debug.Log("[Toolbar] Fichier/Nouveau")),
-                    ("Ouvrir…",  () => Debug.Log("[Toolbar] Fichier/Ouvrir")),
-                    ("Enregistrer", () => Debug.Log("[Toolbar] Fichier/Enregistrer")),
-                    ("—", null),
-                    ("Quitter", () => Application.Quit()),
-                };
-                _menuTwoItems ??= new (string, Action)[]
-                {
-                    ("Zoom 100%", () => Debug.Log("[Toolbar] Affichage/Zoom 100%")),
-                    ("Zoom +",    () => Debug.Log("[Toolbar] Affichage/Zoom +")),
-                    ("Zoom −",    () => Debug.Log("[Toolbar] Affichage/Zoom −")),
-                };
+                if (m_state != null && m_state.m_popupMaxHeight <= 0f)
+                    m_state.m_popupMaxHeight = 280f;
             }
 
         #endregion
@@ -55,29 +29,32 @@ namespace UpperBar.Runtime
         
             public void DrawMenusLeft()
             {
-                m_isAnyMenuOpen = false;
-                m_totalMenusWidth = 0f;
+                if (m_state == null) return;
+
+                m_state.m_isAnyMenuOpen = false;
+                m_state.m_menusTotalWidth = 0f;
 
                 var first = true;
-                if (_menuOneItems is { Length: > 0 })
+                if (m_state.m_menuOne is { Length: > 0 })
                 {
-                    var opened = DrawDropdownFixed(m_menuOneLabel, _menuOneItems, m_menuWidth, m_popupMaxWidth, m_popupMaxHeight);
-                    m_isAnyMenuOpen |= opened;
-                    m_totalMenusWidth += m_menuWidth;
+                    if (!first) ImGui.SameLine(0f, m_state.m_menuItemSpacing);
+                    var opened = DrawMenuPopupFixed("File", m_state.m_menuOne, m_state.m_menuPreviewWidth, m_state.m_menuPopupMaxWidth, m_state.m_popupMaxHeight);
+                    m_state.m_isAnyMenuOpen |= opened;
+                    m_state.m_menusTotalWidth += m_state.m_menuPreviewWidth;
                     first = false;
                 }
-                if (_menuTwoItems is { Length: > 0 })
+                if (m_state.m_menuTwo is { Length: > 0 })
                 {
-                    if (!first) ImGui.SameLine(0f, m_itemSpacing);
-                    var opened = DrawDropdownFixed(m_menuTwoLabel, _menuTwoItems, m_menuWidth, m_popupMaxWidth, m_popupMaxHeight);
-                    m_isAnyMenuOpen |= opened;
-                    m_totalMenusWidth += m_menuWidth;
+                    if (!first) ImGui.SameLine(0f, m_state.m_menuItemSpacing);
+                    var opened = DrawMenuPopupFixed("Display", m_state.m_menuTwo, m_state.m_menuPreviewWidth, m_state.m_menuPopupMaxWidth, m_state.m_popupMaxHeight);
+                    m_state.m_isAnyMenuOpen |= opened;
+                    m_state.m_menusTotalWidth += m_state.m_menuPreviewWidth;
                 }
 
                 var count = 0;
-                if (_menuOneItems is { Length: > 0 }) count++;
-                if (_menuTwoItems is { Length: > 0 }) count++;
-                if (count > 1) m_totalMenusWidth += (count - 1) * m_itemSpacing;
+                if (m_state.m_menuOne is { Length: > 0 }) count++;
+                if (m_state.m_menuTwo is { Length: > 0 }) count++;
+                if (count > 1) m_state.m_menusTotalWidth += (count - 1) * m_state.m_menuItemSpacing;
             }
             
         #endregion
@@ -87,9 +64,8 @@ namespace UpperBar.Runtime
             private static string EllipseToFit(string s, float maxPx)
             {
                 var style = ImGui.GetStyle();
-                var arrow = ImGui.GetFrameHeight();
                 var padding = style.FramePadding.x * 2f;
-                var budget = Mathf.Max(0f, maxPx - (padding + arrow));
+                var budget = Mathf.Max(0f, maxPx - padding);
                 if (ImGui.CalcTextSize(s).x <= budget) return s;
                 const string ell = "…";
                 int lo = 0, hi = s.Length;
@@ -102,44 +78,55 @@ namespace UpperBar.Runtime
                 return (lo <= 0) ? ell : s.Substring(0, lo) + ell;
             }
 
-            private static bool DrawDropdownFixed(string label, (string, Action)[] items,
-                                          float fixedWidth, float popupMaxW, float popupMaxH)
+            private static bool DrawMenuPopupFixed(string label, ToolbarSharedState.MenuNode[] items,
+                float fixedWidth, float popupMaxW, float popupMaxH)
             {
-                var id = "##" + label;
-                var preview = EllipseToFit(label, fixedWidth);
+                var id = "##menu_" + label;
+                var preview = EllipseToFit(label + "…", fixedWidth);
 
-                ImGui.SetNextItemWidth(fixedWidth);
-                ImGui.PushStyleColor(ImGuiCol.FrameBg, new Vector4(0, 0, 0, 0));
-                ImGui.PushStyleColor(ImGuiCol.FrameBgHovered, new Vector4(1, 1, 1, 0.08f));
-                ImGui.PushStyleColor(ImGuiCol.FrameBgActive, new Vector4(1, 1, 1, 0.12f));
+                ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0,0,0,0));
+                ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(1,1,1,0.08f));
+                ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(1,1,1,0.12f));
 
-                ImGui.SetNextWindowSizeConstraints(new Vector2(100f, 0f), new Vector2(popupMaxW, popupMaxH));
+                ImGui.BeginGroup();
+                var start = ImGui.GetCursorPos();
+                ImGui.InvisibleButton(id + "_ibox", new Vector2(fixedWidth, ImGui.GetFrameHeight()));
+                ImGui.SetCursorPos(new Vector2(start.x + ImGui.GetStyle().FramePadding.x, start.y));
+                ImGui.TextUnformatted(preview);
+                var clicked = ImGui.IsItemClicked(ImGuiMouseButton.Left);
+                ImGui.EndGroup();
+
+                if (clicked) ImGui.OpenPopup(id);
+
+                var screenPos = ImGui.GetItemRectMin();
+                ImGui.SetNextWindowPos(new Vector2(screenPos.x, screenPos.y + ImGui.GetFrameHeight()));
+                ImGui.SetNextWindowSizeConstraints(new Vector2(140f, 0f), new Vector2(popupMaxW, popupMaxH));
 
                 var opened = false;
-                if (ImGui.BeginCombo(id, preview, ImGuiComboFlags.None))
+                if (ImGui.BeginPopup(id, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoSavedSettings))
                 {
                     opened = true;
-                    foreach (var it in items)
-                    {
-                        if (it.Item1 is "—" or "---" or "-") { ImGui.Separator(); continue; }
-                        if (ImGui.Selectable(it.Item1)) it.Item2?.Invoke();
-                    }
-                    ImGui.EndCombo();
+                    DrawNodes(items);
+                    ImGui.EndPopup();
                 }
 
                 ImGui.PopStyleColor(3);
                 return opened;
             }
             
-        #endregion
-        
-        
+            private static void DrawNodes(ToolbarSharedState.MenuNode[] nodes)
+            {
+                if (nodes == null) return;
+                foreach (var n in nodes)
+                {
+                    if (n == null) continue;
 
-        #region Private
-
-            private (string, Action)[] _menuOneItems;
-            private (string, Action)[] _menuTwoItems;
-
+                    if (n.m_separator) { ImGui.Separator(); continue; }
+                    if (ImGui.Selectable(n.m_label ?? "…"))
+                        n.m_onClick?.Invoke();
+                }
+            }
+            
         #endregion
     }
 }

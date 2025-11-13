@@ -2,6 +2,7 @@
 using ImGuiNET;
 using System;
 using Foundation.Runtime;
+using SharedData.Runtime;
 using System.Runtime.InteropServices;
 
 namespace UpperBar.Runtime
@@ -11,29 +12,8 @@ namespace UpperBar.Runtime
     {
         #region Header
 
-            [Header("Boutons")]
-            public string labelOne = "_";
-            public string labelTwo = "□";
-            public string labelThree = "X";
-            public float spacing = 10f;
-
-        #endregion
-
-        #region Public
-
-            public Action OnToggleBorderless;
-            public Action OnQuitApp;
-
-        #endregion
-
-        #region WinAPI
-
-#if UNITY_STANDALONE_WIN
-        const int m_sWMinimize = 6;
-        
-        [DllImport("user32.dll")] static extern IntPtr GetActiveWindow();
-        [DllImport("user32.dll")] static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-#endif
+        [Header("State (SO)")]
+        public ToolbarSharedState m_state;
 
         #endregion
         
@@ -41,23 +21,25 @@ namespace UpperBar.Runtime
         
             public void DrawRightAligned()
             {
+                if (m_state == null) return;
+
                 var rightGroupWidth =
-                    GhostButtonWidth(labelOne)
-                    + spacing
-                    + GhostButtonWidth(labelTwo)
-                    + spacing
-                    + GhostButtonWidth(labelThree);
+                    GhostButtonWidth(m_state.m_btnMinLabel)
+                    + 10f
+                    + GhostButtonWidth(m_state.m_btnBorderlessLabel)
+                    + 10f
+                    + GhostButtonWidth(m_state.m_btnQuitLabel);
 
                 var cur = ImGui.GetCursorPos();
                 var avail = ImGui.GetContentRegionAvail().x;
                 var startX = cur.x + Mathf.Max(0f, avail - rightGroupWidth);
                 ImGui.SetCursorPos(new Vector2(startX, cur.y));
 
-                DrawGhostButton(labelOne, MinimizeWindow);
-                ImGui.SameLine(0f, spacing);
-                DrawGhostButton(labelTwo, () => OnToggleBorderless?.Invoke());
-                ImGui.SameLine(0f, spacing);
-                DrawGhostButton(labelThree, () => OnQuitApp?.Invoke());
+                DrawGhostButton(m_state.m_btnMinLabel, () => m_state.m_requestMinimize = true);
+                ImGui.SameLine(0f, 10f);
+                DrawGhostButton(m_state.m_btnBorderlessLabel, () => m_state.m_requestToggleBorderless  = true);
+                ImGui.SameLine(0f, 10f);
+                DrawGhostButton(m_state.m_btnQuitLabel, () => m_state.m_requestQuit = true);
             }
             
         #endregion
@@ -78,14 +60,6 @@ namespace UpperBar.Runtime
                 ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(1, 1, 1, 0.12f));
                 if (ImGui.Button(label)) onClick?.Invoke();
                 ImGui.PopStyleColor(3);
-            }
-
-            static void MinimizeWindow()
-            {
-#if UNITY_STANDALONE_WIN
-                var hWnd = GetActiveWindow();
-                if (hWnd != IntPtr.Zero) ShowWindow(hWnd, m_sWMinimize);
-#endif
             }
             
         #endregion

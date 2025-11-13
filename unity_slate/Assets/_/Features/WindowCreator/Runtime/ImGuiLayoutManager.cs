@@ -1,6 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using Foundation.Runtime;
 using ImGuiNET;
 using UImGui;
@@ -8,6 +8,40 @@ using UnityEngine;
 
 namespace WindowCreator.Runtime
 {
+
+    [Serializable]
+    public class LayoutZone
+    {
+        public string Key;      // Nom de la donnée
+        public string Type;     // Type de valeur (int, float, string, bool ...)
+        public string Value;    // Valeur stockée en string pour sérialisation simple
+    }
+
+    [Serializable]
+    public class RecordData
+    {
+        public string m_name; // Nom de l'enregistrement
+        public string m_guid = Guid.NewGuid().ToString();
+        
+        [SerializeField] private List<LayoutZone> _fields = new List<LayoutZone>();
+        public IReadOnlyList<LayoutZone> Fields => _fields;
+        
+        public int FieldCount => _fields.Count;
+        public LayoutZone GetField(int index)
+        {
+            if (index < 0 || index >= _fields.Count)
+                return null;
+            return _fields[index];
+        }
+
+        public void AddField(LayoutZone zone) => _fields.Add(zone);
+        public void RemoveField(LayoutZone zone) => _fields.Remove(zone);
+        public void RemoveFieldAt(int index)
+        {
+            if (index < 0 || index >= _fields.Count)
+                _fields.RemoveAt(index);
+        }
+    }
     [Serializable]
     public class LayoutData
     {
@@ -17,7 +51,8 @@ namespace WindowCreator.Runtime
         public bool m_open;
         public string m_descrition;
         public string m_lastAction;
-        public List<string> m_extraButtons;
+        public List<RecordData> m_records = new List<RecordData>() ;
+
     }
 
     [Serializable]
@@ -41,11 +76,28 @@ namespace WindowCreator.Runtime
 
         private void Awake()
         {
-            LoadLayoutsFromFacts();
-            if (_container == null)
+            string saveFolder = Path.Combine(Application.persistentDataPath, "Saves");
+            if (!Directory.Exists(saveFolder))
+                Directory.CreateDirectory(saveFolder);
+
+            _savePath = Path.Combine(saveFolder, "layouts.json");
+            if (!File.Exists(_savePath))
+                File.WriteAllText(_savePath, "{}");
+
+            // Initialisation du SaveSystem
+            SaveSystem.SetPath(saveFolder);
+
+            // Chargement des layouts
+            try
             {
-                _container = new LayoutContainer{ m_layouts = new List<LayoutData>(), m_nextId = 1};
-                SaveLayoutsToFacts();
+                Load(); 
+                LoadLayoutsFromFacts();
+            }
+            catch (FileNotFoundException)
+            {
+                InfoInProgress("Aucun fichier de sauvegarde trouvé. Création d'un container vide.");
+                _container = new LayoutContainer { m_layouts = new List<LayoutData>(), m_nextId = 1 };
+                _layouts = new List<LayoutData>(_container.m_layouts ??  new List<LayoutData>());
             }
         }
 
@@ -53,16 +105,11 @@ namespace WindowCreator.Runtime
         {
             UImGuiUtility.Layout += OnImGuiLayout;
         }
-
-        private void Start()
-        {
-            LoadLayoutsFromFacts();
-            _uiSyncPending = true;
-        }
-
+        
         private void OnDisable()
         {
             UImGuiUtility.Layout -= OnImGuiLayout;
+            if (_layoutsDirty) SaveLayoutsToFacts();
         }
 
         #endregion
@@ -73,30 +120,35 @@ namespace WindowCreator.Runtime
         public void CreateNewLayout(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
-                name = $"Layout{_container.m_nextId}";
+                name = $"Layout{_container.m_layouts.Count}";
+   
 
             if (_container.m_layouts.Exists(l => l.m_name == name))
             {
                 Warning($"Un layout nommé '{name}' existe déjà.");
+                return;
             }
 
             var layout = new LayoutData
             {
-                m_id = _nextId++,
+                m_id = _container.m_nextId,
                 m_name = name,
                 m_title = name,
                 m_open = true,
                 m_descrition = "",
                 m_lastAction = "",
-                m_extraButtons = new List<string>()
+                m_records = new List<RecordData>()
             };
                 
-                _container.m_layouts.Add(layout);
-                SaveLayoutsToFacts();
-                InfoDone($"Layout créé : {layout.m_name}");
+            _container.m_layouts.Add(layout);
+            _layouts.Add(layout);
+            _container.m_nextId++;
+            _layoutsDirty = true;
+            
+            _focusLayoutId =  layout.m_id;
                 
-                string debugJson = JsonUtility.ToJson(_container, true);
-                Debug.Log($"[ImGuiLayoutManager] JSON sauvegardé : \n {debugJson}");
+            InfoDone($"Layout créé : {layout.m_name}");
+                
         }
         
         #endregion
@@ -106,8 +158,10 @@ namespace WindowCreator.Runtime
 
         private void SaveLayoutsToFacts()
         {
+            SyncContainerOpenState();
             SetFact("WindowCreator.LayoutContainer", _container, true);
             Save();
+            _layoutsDirty = false;
             InfoDone("Layout persistés dans GameFacs.");
         }
 
@@ -117,9 +171,7 @@ namespace WindowCreator.Runtime
             if (FactExists("WindowCreator.LayoutContainer", out LayoutContainer saved))
             {
                 _container = saved;
-                _layouts = _container.m_layouts ?? new List<LayoutData>();
-                _nextId = _container.m_nextId;
-                InfoDone($"Layouts chargés depuis GameFacts : {_layouts.Count}");
+                _layouts = new List<LayoutData>(_container.m_layouts ?? new List<LayoutData>());
 
                 foreach (var layout in _layouts)
                 {
@@ -132,48 +184,73 @@ namespace WindowCreator.Runtime
 
             else
             {
+                _container = new LayoutContainer{ m_layouts = new List<LayoutData>(), m_nextId = 1 }; 
                 _layouts = new List<LayoutData>();
-                _nextId = 1;
-                _container = null; 
                 InfoInProgress("Aucun layout trouvé - initialisation vide");
             }
         }
         
         private void ReopenLayouts(string name)
         {
-            for (int i = 0; i < _layouts.Count; i++)
+            var layout = _layouts.Find(l => l.m_name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+            if (layout != null)
             {
-                if (_layouts[i].m_name.Equals(name, StringComparison.OrdinalIgnoreCase))
+                if (!layout.m_open)
                 {
-                    var layout = _layouts[i];
                     layout.m_open = true;
-                    _layouts[i] = layout;
+                    _layoutsDirty = true;
                     Info($"Layout rouvert : {layout.m_name}");
-                    SaveLayoutsToFacts();
-                    return;
+                    
                 }
             }
-            
-            Warning($"Aucun layout trouvé avec le nom '{name}'.");
+            else
+            {
+                Warning($"Aucun layout trouvé avec le nom '{name}'.");
+            }
         }
 
         private void OnImGuiLayout(UImGui.UImGui uImGui)
         {
-            if (_uiSyncPending)
-            {
-                foreach (var layout in _layouts)
-                {
-                    if (layout.m_open)
-                    {
-                        Info($"Réouverture automatique du layout '{layout.m_name}'");
-                    }
-                }
-                
-                _uiSyncPending = false;
-            }
             DrawMainWindow();
             DrawLayouts();
+
+            if (_toRemoveRecords.Count > 0)
+            {
+                foreach (var (layout, record) in _toRemoveRecords)
+                    layout.m_records.Remove(record);
+                _toRemoveRecords.Clear();
+                _layoutsDirty = true;
+            }
+
+            if (_toRemoveLayouts.Count > 0)
+            {
+                foreach (var layout in _toRemoveLayouts)
+                {
+                    _layouts.Remove(layout);
+                    _container.m_layouts?.RemoveAll(l => l.m_id == layout.m_id);
+                }
+                
+                _toRemoveLayouts.Clear();
+                _layoutsDirty  = true;
+            }
+
+            if (_layoutsDirty)
+            {
+                SaveLayoutsToFacts();
+                _layoutsDirty = false;
+            }
+
+            if (_toReopen.Count > 0)
+            {
+                foreach (var name in _toReopen )
+                {
+                    ReopenLayouts(name);
+                }
+                _toReopen.Clear();
+            }
+            
             CleanupClosed();
+            // GameUImGui.DrawGameWindows();
         }
 
         private void DrawMainWindow()
@@ -187,14 +264,25 @@ namespace WindowCreator.Runtime
                 CreateNewLayout(m_newLayoutName);
             
             ImGui.SameLine();
-            if (ImGui.Button("Sauvegarder tous les layouts"))
+            if (ImGui.Button("Sauvegarder tous"))
                 SaveLayoutsToFacts();
             
             ImGui.SameLine();
             if (ImGui.Button("Recharger"))
                 LoadLayoutsFromFacts();
+
+            // if (ImGui.Button("Quêtes")) GameUImGui.m_questsWindowOpen = true;
+            // ImGui.SameLine();
+            // if (ImGui.Button("Personnages")) GameUImGui.m_charactersWindowOpen = true;
+            // ImGui.SameLine();
+            // if (ImGui.Button("Monsters")) GameUImGui.m_monstersWindowOpen = true;
+            // ImGui.SameLine();
+            // if (ImGui.Button("Inventaire")) GameUImGui.m_itemsWindowOpen = true;
             
             ImGui.Separator();
+            
+            ImGui.BeginChild("LayoutList", new Vector2(0, 200), ImGuiChildFlags.None);
+            
             foreach (var layout in _layouts )
             {
                 ImGui.Text($"{layout.m_title}");
@@ -204,13 +292,10 @@ namespace WindowCreator.Runtime
                     ImGui.SameLine();
                     ImGui.TextDisabled("[Ouvert]");
                 }
-                else
-                {
-                    ImGui.SameLine();
-                    if (ImGui.SmallButton($"Ouvrir##{layout.m_name}"))
-                       _toReopen.Add(layout.m_name);
-                }
+                else if (ImGui.SmallButton($"Ouvrir##{layout.m_name}"))
+                            _toReopen.Add(layout.m_name);
             }
+            ImGui.EndChild();
             ImGui.End();
 
             if (_toReopen.Count > 0)
@@ -222,73 +307,179 @@ namespace WindowCreator.Runtime
                 
                 _toReopen.Clear();
             }
+
         }
         
         private void DrawLayouts()
         {
-            for (int i = 0; i < _layouts.Count; i++)
+            foreach (var layout in _layouts)
             {
-                var layout = _layouts[i];
-                bool open =  layout.m_open;
+                bool open = layout.m_open;
+                string layoutWindowId = $"LayoutWindow##layout_{layout.m_id}";
 
-                if (open && ImGui.Begin(layout.m_title, ref open))
+                if (open && ImGui.Begin(layoutWindowId, ref open, ImGuiWindowFlags.AlwaysVerticalScrollbar))
                 {
                     ImGui.Text("Titre :");
-                    ImGui.InputText("##Title", ref layout.m_title, 64);
-                    
-                    ImGui.Text("Description :");
-                    ImGui.InputTextMultiline("##desc", ref layout.m_descrition, 256, new Vector2(-1, 80));
 
-                    if (ImGui.Button("Sauvegarder"))
+                    if (_focusLayoutId == layout.m_id)
                     {
-                        layout.m_lastAction = "Sauvegarder";
-                        SaveLayoutsToFacts();
+                        ImGui.SetKeyboardFocusHere();
+                        _focusLayoutId = -1;
                     }
-                    
-                    ImGui.SameLine();
-                    if (ImGui.Button("Modifier"))
-                        layout.m_lastAction = "Modification";
-                    
-                    ImGui.SameLine();
-                    if (ImGui.Button("Fermer"))
-                        open = false;
-                    
-                    ImGui.SameLine();
-                    if (ImGui.Button("Supprimer"))
-                        _toRemove.Add(layout.m_name);
-                    
-                    ImGui.Text($"Dernière action : {layout.m_lastAction}");
+                    ImGui.InputText($"##Title_{layout.m_id}", ref layout.m_title, 64);
+
+                    ImGui.Text("Description :");
+                    ImGui.InputTextMultiline($"##desc_{layout.m_id}", ref layout.m_descrition, 512, new Vector2(-1, 80));
+
+                    ImGui.Separator();
+                    ImGui.Text("Enregistrements :");
+
+                    ImGui.BeginChild($"Records_{layout.m_id}", new Vector2(0, 200), ImGuiChildFlags.None);
+
+                    foreach (var record in layout.m_records)
+                    {
+                        string recId = $"rec_{layout.m_id}_{record.m_guid}";
+                        ImGui.Separator();
+
+                        ImGui.InputText($"Nom##{recId}", ref record.m_name, 64);
+
+                        for (int z = 0; z < record.Fields.Count; z++)
+                        {
+                            var zone = record.GetField(z);
+                            if (zone == null) continue;
+
+                            string zoneId = $"{recId}_field_{z}";
+
+                            ImGui.InputText($"Clé##{zoneId}", ref zone.Key, 64);
+
+                            string[] types = { "string", "int", "float", "bool" };
+                            int currentTypeIndex = Mathf.Max(0, Array.IndexOf(types, zone.Type));
+                            if (ImGui.Combo($"Type##{zoneId}", ref currentTypeIndex, types, types.Length))
+                                zone.Type = types[currentTypeIndex];
+
+                            ImGui.InputText($"Valeur##{zoneId}", ref zone.Value, 64);
+
+                            ImGui.SameLine();
+                            if (ImGui.SmallButton($"X##{zoneId}"))
+                            {
+                                record.RemoveFieldAt(z);
+                                _layoutsDirty = true;
+                                break;
+                            }
+                        }
+
+                        if (ImGui.Button($"+ Ajouter Zone##{recId}"))
+                        {
+                            record.AddField(new LayoutZone { Key = "NouvelleZone", Type = "string", Value = "" });
+                            _layoutsDirty = true;
+                        }
+
+                        ImGui.SameLine();
+                        if (ImGui.Button($"Supprimer Enregistrement##{recId}"))
+                        {
+                            _toRemoveRecords.Add((layout, record));
+                            _layoutsDirty = true;
+                        }
+                    }
+
+                    ImGui.EndChild();
+
+                    if (ImGui.Button($"Ajouter Enregistrement##addrec_{layout.m_id}"))
+                    {
+                        var newrec = new RecordData { m_name = "NouvelEnregistrement" };
+                        layout.m_records.Add(newrec);
+                        _layoutsDirty = true;
+                    }
+
+                    DrawLayoutButton(layout);
                     ImGui.End();
                 }
-                
+
                 layout.m_open = open;
-                _layouts[i] = layout;
             }
+        }
+        
+        private void DrawLayoutButton(LayoutData layout)
+        {
+            if (ImGui.Button("Sauvegarder"))
+            {
+                layout.m_lastAction = "Sauvegarder";
+                SaveLayoutsToFacts();
+            }
+                    
+            ImGui.SameLine();
+            if (ImGui.Button("Modifier"))
+                layout.m_lastAction = "Modification";
+                    
+            ImGui.SameLine();
+            if (ImGui.Button("Fermer"))
+            {
+                layout.m_open = false;
+                layout.m_lastAction = "Fermeture";
+                _layoutsDirty = true;
+            }
+                    
+            ImGui.SameLine();
+            if (ImGui.Button("Supprimer"))
+                _toRemove.Add(layout.m_name);
+                    
+            ImGui.Text($"Dernière action : {layout.m_lastAction}");
         }
 
         private void CleanupClosed()
         {
-            if (_toRemove.Count == 0) return;
-
-            _layouts.RemoveAll(l => _toRemove.Contains(l.m_name));
-            _toRemove.Clear();
-            SaveLayoutsToFacts();
+            if (_toRemove.Count > 0)
+            {
+                _layouts.RemoveAll(l => _toRemove.Contains(l.m_name));
+                _toRemove.Clear();
+                _layoutsDirty = true;
+            }
         }
 
+        private void CleanupRecords()
+        {
+            if (_toRemoveRecords.Count > 0)
+            {
+                foreach (var (layout, record) in  _toRemoveRecords )
+                {
+                    layout.m_records.Remove(record);
+                }
+
+                _toRemoveRecords.Clear();
+                _layoutsDirty = true;
+            }
+        }
+
+        private void SyncContainerOpenState()
+        {
+            foreach (var layout in _layouts)
+            {
+                var containerLayout = _container.m_layouts.Find(l => l.m_id == layout.m_id);
+                if (containerLayout != null) containerLayout.m_open = layout.m_open;
+            }
+        }
+
+        
+        
         #endregion
 
 
         #region Private and Protected
 
         private List<LayoutData> _layouts = new ();
+        private List<LayoutData> _toRemoveLayouts = new ();
         private LayoutContainer _container = new();
         private List<string> _toRemove = new();
         private List<string> _toReopen = new();
-        private int _nextId = 1;
-        private bool _uiSyncPending;
+        private List<(LayoutData layout, RecordData record)> _toRemoveRecords = new();
+        private bool _layoutsDirty  = false;
+        private string _savePath;
+        private bool _dataChanged;
+        private int _focusLayoutId = -1;
+        // private int _nextId = 1;
 
         #endregion
-        
+
 
 
     }
