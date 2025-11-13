@@ -1,21 +1,23 @@
-﻿using Foundation.Runtime;
-using Inputs.Runtime;
-using SharedData.Runtime;
+﻿using UnityEngine;
 using System;
+using Foundation.Runtime;
+using SharedData.Runtime;
+
+using Inputs.Runtime;
 using System.Runtime.InteropServices;
-using UnityEngine;
-using UnityEngine.XR;
 
 namespace Slate.Runtime
 {
     /// <summary>
-    /// Allows displacement of Slate Window at the top based on edge detection + drag & drop
+    /// Allows displacement of Slate Window at the top based on edge detection + drag & drop.
+    /// Z : This script should ideally be enclosed within a #if !UNITY_EDITOR as it should only be ran in builds.
+    /// Otherwise, this script technically allows users to move Unity window when holding the top bar within the editor.
+    /// I've been told to move on as it wasn't high prio, sorry my friends, HF.
     /// </summary>
     public class MoveSlateWindow : FBehaviour
     {
-
-#if !UNITY_EDITOR
-#if UNITY_STANDALONE_WIN
+        // This
+#if UNITY_STANDALONE_WIN 
 
         #region Monobehaviour Methods
         private void Awake()
@@ -193,7 +195,6 @@ namespace Slate.Runtime
         const uint SWP_NOACTIVATE = 0x0010;
         const uint SWP_SHOWWINDOW = 0x0040;
         #endregion
-#endif
 #endif
     }
 }
