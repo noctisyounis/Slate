@@ -47,6 +47,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 521d3b12faccefa48b5cee41909db458, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _debug: 0
+  _warning: 0
+  _error: 0
   barHeight: 30
   horizontalPadding: 12
   topRevealZone: 30
@@ -83,6 +86,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 191ab24b4ee446b694dc5994d1b6361c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _debug: 0
+  _warning: 0
+  _error: 0
   m_barHeight: 30
   m_horizontalPadding: 12
   m_bgAlpha: 0.65
@@ -104,8 +110,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4144ac316fd4d728f5ec4dffda991ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_menuOneLabel: Fichier
-  m_menuTwoLabel: Affichage
+  _debug: 0
+  _warning: 0
+  _error: 0
+  m_menuOneLabel: File
+  m_menuTwoLabel: Display
   m_menuWidth: 110
   m_popupMaxWidth: 320
   m_popupMaxHeight: 280
@@ -122,6 +131,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b828b9bff63a40f590581a354b290048, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _debug: 0
+  _warning: 0
+  _error: 0
   labelOne: _
   labelTwo: "\u25A1"
   labelThree: X

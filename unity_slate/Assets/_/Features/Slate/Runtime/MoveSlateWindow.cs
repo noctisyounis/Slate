@@ -1,8 +1,10 @@
-﻿using Foundation.Runtime;
-using Inputs.Runtime;
+﻿using UnityEngine;
 using System;
+
+using Foundation.Runtime;
+using Inputs.Runtime;
+using SharedData.Runtime;
 using System.Runtime.InteropServices;
-using UnityEngine;
 
 namespace Slate.Runtime
 {
@@ -56,7 +58,7 @@ namespace Slate.Runtime
                 return;
 
             bool isMoving = Mathf.Abs(_rawMovement.normalized.magnitude) >= 0.01f;
-            bool tryingToMoveWindow = isMoving && _selectPressed && true;
+            bool tryingToMoveWindow = isMoving && _selectPressed && _toolbarSO.m_isPointerInToolbar;
             if (!tryingToMoveWindow)
                 return;
 
@@ -121,6 +123,7 @@ namespace Slate.Runtime
 
         #region Private variables
         [SerializeField] private InputsHandler _inputsHandler;
+        [SerializeField] private ToolbarSharedState _toolbarSO;
 
         private Vector2 _rawMovement;
         private bool _selectPressed = false;
