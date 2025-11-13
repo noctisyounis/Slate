@@ -14,6 +14,7 @@ namespace Slate.Runtime
     public class MoveSlateWindow : FBehaviour
     {
 
+#if !UNITY_EDITOR
 #if UNITY_STANDALONE_WIN
 
         #region Monobehaviour Methods
@@ -192,6 +193,7 @@ namespace Slate.Runtime
         const uint SWP_NOACTIVATE = 0x0010;
         const uint SWP_SHOWWINDOW = 0x0040;
         #endregion
+#endif
 #endif
     }
 }
