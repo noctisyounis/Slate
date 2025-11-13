@@ -1,4 +1,5 @@
 using Foundation.Runtime;
+using Slate.Runtime;
 using UnityEngine;
 
 namespace BorderRemover.Runtime
@@ -10,7 +11,7 @@ namespace BorderRemover.Runtime
         private void Awake()
         {
             #if !UNITY_EDITOR
-            
+
             _borderRemover = Instantiate(new GameObject("BorderRemover"));
             _borderRemover.transform.SetParent(transform);
             #if UNITY_STANDALONE_WIN
