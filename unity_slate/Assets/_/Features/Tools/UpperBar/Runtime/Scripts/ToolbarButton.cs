@@ -53,7 +53,7 @@ namespace UpperBar.Runtime
                 return text + style.FramePadding.x * 2f;
             }
 
-            static void DrawGhostButton(string label, Action onClick)
+            public static void DrawGhostButton(string label, Action onClick)
             {
                 ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0, 0, 0, 0));
                 ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(1, 1, 1, 0.08f));
