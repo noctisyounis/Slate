@@ -15,7 +15,13 @@ namespace Slate.Runtime
 
         public static Vector3 m_MousePanDelta => _mousePanDelta;
         public static Vector3 m_KeyboardPanDelta => _keyboardPanDelta;
-        
+
+        public float WorldToScreenDeltaMultiplier
+        {
+            get => _worldToScreenDeltaMultiplier;
+            set => _worldToScreenDeltaMultiplier = value;
+        }
+
         #endregion
         
         
