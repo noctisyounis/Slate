@@ -33,7 +33,6 @@ namespace Slate.Runtime
         public void UpdatePan()
         {
             HandleKeyboardPan();
-            // HandleMousePan();   // ancienne version
             HandleMousePanTest();  // nouvelle version
             HandleZoom();
             
@@ -87,26 +86,6 @@ namespace Slate.Runtime
             _camera.transform.Translate(_keyboardPanDelta * zoomFactor, Space.World);
         }
         
-        /// <summary>
-        /// Old version MousePan
-        /// </summary>
-        private void HandleMousePan()
-        {
-            if (!m_isMiddleClickHeld)
-                return;
-
-            // Pan souris (Middleclick maintenu)
-            // float zoomFactor = _camera.orthographic ? _camera.orthographicSize : _camera.fieldOfView * _settings.m_correcZoom;
-
-            float currentZoom = _camera.orthographicSize;
-            float interpolant = Mathf.Clamp01(Mathf.InverseLerp(_settings.m_maxOrthoZoom, _settings.m_minOrthoZoom, currentZoom)); 
-            float finalSpeed = Mathf.Lerp(-_settings.m_mousePanSpeedmax, -_settings.m_mousePanSpeedmin, interpolant);
-            
-            Vector3 mouseMove = new Vector3(m_moveInput.x, m_moveInput.y, 0f) * (finalSpeed * Time.deltaTime);
-            //Debug.Log($"{mouseMove} / {finalSpeed}");
-            _camera.transform.Translate(mouseMove, Space.World);
-        }
-
         private void HandleMousePanTest()
         {
             var mouse = Mouse.current;
