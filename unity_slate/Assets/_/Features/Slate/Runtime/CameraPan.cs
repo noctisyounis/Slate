@@ -1,3 +1,4 @@
+using ImGuiNET;
 using Inputs.Runtime;
 using Manager.Runtime;
 using UnityEngine;
@@ -15,6 +16,14 @@ namespace Slate.Runtime
 
         public static Vector3 m_MousePanDelta => _mousePanDelta;
         public static Vector3 m_KeyboardPanDelta => _keyboardPanDelta;
+
+        public float WorldToScreenDeltaMultiplier
+        {
+            get => _worldToScreenDeltaMultiplier;
+            set => _worldToScreenDeltaMultiplier = value;
+        }
+
+        public float m_midiInput => _midiInput;
         
         #endregion
         
@@ -26,6 +35,7 @@ namespace Slate.Runtime
             _input.m_move -= ctx => m_moveInput = ctx;
             _input.m_zoom -= ctx => _zoomDelta = ctx;
             _input.m_pan -= ctx => m_isMiddleClickHeld = ctx;
+            _input.m_MIDI -= ctx => _midiInput = ctx;
 
             _input.DisableInputsHandling();
         }
@@ -36,7 +46,7 @@ namespace Slate.Runtime
             HandleMousePanTest();  // nouvelle version
             HandleZoom();
             
-            Vector3 worldDelta = _mousePanDelta + _keyboardPanDelta;
+            Vector3 worldDelta = _mousePanDelta + _keyboardPanDelta * 1.669291f;
             // transform world delta to screen delta
             Vector2 screenDelta = WorldDeltaToScreenDelta(worldDelta);
             if (screenDelta != Vector2.zero)
@@ -44,6 +54,8 @@ namespace Slate.Runtime
             
             _keyboardPanDelta = Vector3.zero;
             _mousePanDelta = Vector3.zero;
+
+            Debug.Log("Midi input: " + _midiInput);
         }
 
 
@@ -62,6 +74,7 @@ namespace Slate.Runtime
             _input.m_move += ctx => m_moveInput = ctx;
             _input.m_zoom += ctx => _zoomDelta = ctx;
             _input.m_pan += ctx => m_isMiddleClickHeld = ctx;
+            _input.m_MIDI += ctx => _midiInput = ctx + _midiStartValue;
         }
         
         #endregion
@@ -185,6 +198,9 @@ namespace Slate.Runtime
         private static Vector3 _mousePanDelta;
         private static Vector3 _keyboardPanDelta;
         private float _worldToScreenDeltaMultiplier = 3f;
+
+        private float _midiInput;
+        private float _midiStartValue = 1f;
 
         #endregion
     }

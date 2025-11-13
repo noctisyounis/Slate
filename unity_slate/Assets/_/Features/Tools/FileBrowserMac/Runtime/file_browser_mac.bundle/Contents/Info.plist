@@ -6,16 +6,14 @@
 	<string>24G90</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
-	<key>CFBundleDisplayName</key>
-	<string>no_border_mac</string>
 	<key>CFBundleExecutable</key>
-	<string>no_border_mac</string>
+	<string>file_browser_mac</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.lex.no-border-mac</string>
+	<string>com.lex.file-browser-mac</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>no_border_mac</string>
+	<string>file_browser_mac</string>
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
 	<key>CFBundleShortVersionString</key>

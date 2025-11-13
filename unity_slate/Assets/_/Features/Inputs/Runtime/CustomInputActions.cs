@@ -136,6 +136,15 @@ public partial class @CustomInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""MIDI"",
+                    ""type"": ""Value"",
+                    ""id"": ""c61f97c1-ad32-45e5-92b6-73614a375207"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -204,6 +213,17 @@ public partial class @CustomInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""Options"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6ac72792-6ccb-4f98-a65d-439f16266dc1"",
+                    ""path"": ""<MidiDevice>/control032"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MIDI"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -234,6 +254,7 @@ public partial class @CustomInputActions: IInputActionCollection2, IDisposable
         m_Slate_Select = m_Slate.FindAction("Select", throwIfNotFound: true);
         m_Slate_Zoom = m_Slate.FindAction("Zoom", throwIfNotFound: true);
         m_Slate_Options = m_Slate.FindAction("Options", throwIfNotFound: true);
+        m_Slate_MIDI = m_Slate.FindAction("MIDI", throwIfNotFound: true);
     }
 
     ~@CustomInputActions()
@@ -319,6 +340,7 @@ public partial class @CustomInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Slate_Select;
     private readonly InputAction m_Slate_Zoom;
     private readonly InputAction m_Slate_Options;
+    private readonly InputAction m_Slate_MIDI;
     /// <summary>
     /// Provides access to input actions defined in input action map "Slate".
     /// </summary>
@@ -350,6 +372,10 @@ public partial class @CustomInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Slate/Options".
         /// </summary>
         public InputAction @Options => m_Wrapper.m_Slate_Options;
+        /// <summary>
+        /// Provides access to the underlying input action "Slate/MIDI".
+        /// </summary>
+        public InputAction @MIDI => m_Wrapper.m_Slate_MIDI;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -391,6 +417,9 @@ public partial class @CustomInputActions: IInputActionCollection2, IDisposable
             @Options.started += instance.OnOptions;
             @Options.performed += instance.OnOptions;
             @Options.canceled += instance.OnOptions;
+            @MIDI.started += instance.OnMIDI;
+            @MIDI.performed += instance.OnMIDI;
+            @MIDI.canceled += instance.OnMIDI;
         }
 
         /// <summary>
@@ -417,6 +446,9 @@ public partial class @CustomInputActions: IInputActionCollection2, IDisposable
             @Options.started -= instance.OnOptions;
             @Options.performed -= instance.OnOptions;
             @Options.canceled -= instance.OnOptions;
+            @MIDI.started -= instance.OnMIDI;
+            @MIDI.performed -= instance.OnMIDI;
+            @MIDI.canceled -= instance.OnMIDI;
         }
 
         /// <summary>
@@ -505,5 +537,12 @@ public partial class @CustomInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnOptions(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "MIDI" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnMIDI(InputAction.CallbackContext context);
     }
 }
