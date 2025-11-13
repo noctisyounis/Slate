@@ -1,5 +1,4 @@
 using Foundation.Runtime;
-using Slate.Runtime;
 using UnityEngine;
 
 namespace BorderRemover.Runtime
@@ -22,11 +21,6 @@ namespace BorderRemover.Runtime
             #endif
 
             #endif
-        }
-
-        private void Update()
-        {
-            
         }
 
         #endregion
