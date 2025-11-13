@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using FileBrowserMac.Runtime;
-using Foundation.Runtime;
 using UnityEngine;
 using ImGuiNET;
 using Manager.Runtime;
 using Newtonsoft.Json;
 using Slate.Runtime;
-using UImGui;
-using UnityEditor.PackageManager.UI;
 
 public class ConfigurableWindowBehaviour : WindowBaseBehaviour
 {
@@ -107,9 +104,6 @@ public class ConfigurableWindowBehaviour : WindowBaseBehaviour
             
             DrawOpenJsonEditors();
         }
-
-        private void OnInitialize(UImGui.UImGui obj) { }
-        private void OnDeinitialize(UImGui.UImGui obj) { }
 
     #endregion
 
