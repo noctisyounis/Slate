@@ -18,37 +18,30 @@ public class WindowUtilMacBehaviour : FBehaviour
 
         private void Start()
         {
-            #if UNITY_STANDALONE_OSX
-                try
-                {
-                    MakeWindowBorderless();
-                    Info("Fenêtre borderless appliquée");
-                    Debug.Log("Fenêtre borderless appliquée");
-                }
-                catch (DllNotFoundException e)
-                {
-                    Error($"Plugin not found: {e.Message}");
-                }
-                catch (EntryPointNotFoundException e)
-                {
-                    Error($"Function not found in plugin: {e.Message}");
-                }
-            #endif
+            Debug.Log("WindowUtilMacBehaviour Start");
+            
+                //MakeWindowBorderless();
+                //SetWindowStyleSafe();
         }
 
 
         private void Update()
         {
+            //Debug.Log("Is fullscreen ? :" + IsWindowFullScreen());
             #if UNITY_STANDALONE_OSX
                 if (Input.GetKey(KeyCode.B))
                 {
                     ResetWindowStyle();
                 }
+                if (Input.GetKey(KeyCode.J))
+                {
+                    SetWindowStyleSafe();
+                    //Debug.Log("Is FS ? :" + IsWindowFullScreen());
+                }
                 if (Input.GetKey(KeyCode.H))
                 {
                     MakeWindowBorderless();
                 }
-
                 if (Input.GetKey(KeyCode.L))
                 {
                     _isMovable = false;
@@ -64,8 +57,6 @@ public class WindowUtilMacBehaviour : FBehaviour
                     MakeWindowMovable();
                     InfoInProgress("Window Can move");
                     Debug.Log("Window Can move");
-                    
-                    
                 }
                 else
                 {
@@ -115,13 +106,26 @@ public class WindowUtilMacBehaviour : FBehaviour
         private bool showTooltip = false;
         
         [DllImport("no_border_mac")]
-        private static extern void MakeWindowBorderless();
+        public static extern void MakeWindowBorderless();
         
         [DllImport("no_border_mac")]
-        private static extern void MakeWindowMovable();
+        public static extern void MakeWindowMovable();
     
         [DllImport("no_border_mac")]
-        private static extern void MakeWindowNotMovable();
+        public static extern void MakeWindowNotMovable();
+        
+        [DllImport("no_border_mac")]
+        public static extern bool IsWindowFullScreen();
+
+        [DllImport("no_border_mac")]
+        public static extern void SetWindowStyleSafe();
+    
+        [DllImport("no_border_mac")]
+        public static extern void SetWindowFullScreen();
+    
+        [DllImport("no_border_mac")]
+        public static extern void ToggleFullScreen();
+        
         
     #endregion
     
