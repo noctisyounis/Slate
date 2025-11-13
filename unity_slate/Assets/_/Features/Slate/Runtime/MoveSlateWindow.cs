@@ -1,12 +1,17 @@
-﻿using Foundation.Runtime;
-using Inputs.Runtime;
+﻿using UnityEngine;
 using System;
+
+using Foundation.Runtime;
+using Inputs.Runtime;
+using SharedData.Runtime;
 using System.Runtime.InteropServices;
-using UnityEngine;
 
 namespace Slate.Runtime
 {
-    public class MoveSlate : FBehaviour
+    /// <summary>
+    /// Allows displacement of Slate Window at the top based on edge detection + drag & drop
+    /// </summary>
+    public class MoveSlateWindow : FBehaviour
     {
 
 #if UNITY_STANDALONE_WIN
@@ -34,16 +39,16 @@ namespace Slate.Runtime
             if (value)
             {
                 _inputsHandler.m_moveRaw += OnMovePressed;
-                _inputsHandler.m_options += OnOptionsPressed;
+                _inputsHandler.m_select += OnSelectPressed;
             }
             else
             {
                 _inputsHandler.m_moveRaw -= OnMovePressed;
-                _inputsHandler.m_options -= OnOptionsPressed;
+                _inputsHandler.m_select -= OnSelectPressed;
             }
         }
-        private void OnOptionsPressed(bool optionsPressed)
-            => _optionsPressed = optionsPressed;
+        private void OnSelectPressed(bool selectPressed)
+            => _selectPressed = selectPressed;
 
         private void OnMovePressed(Vector2 move) => _rawMovement = move;
 
@@ -53,8 +58,8 @@ namespace Slate.Runtime
                 return;
 
             bool isMoving = Mathf.Abs(_rawMovement.normalized.magnitude) >= 0.01f;
-
-            if (!isMoving || !_optionsPressed)
+            bool tryingToMoveWindow = isMoving && _selectPressed && _toolbarSO.m_isPointerInToolbar;
+            if (!tryingToMoveWindow)
                 return;
 
             MoveWindowByOffset(_rawMovement);
@@ -117,10 +122,11 @@ namespace Slate.Runtime
         #endregion
 
         #region Private variables
-        [SerializeField] private InputsHandler _inputsHandler; 
+        [SerializeField] private InputsHandler _inputsHandler;
+        [SerializeField] private ToolbarSharedState _toolbarSO;
 
         private Vector2 _rawMovement;
-        private bool _optionsPressed = false;
+        private bool _selectPressed = false;
 
         private const uint SWP_SHOWWINDOW = 0x0040;
         #endregion

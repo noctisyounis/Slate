@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace UpperBar.Runtime
+namespace SharedData.Runtime
 {
     
     [CreateAssetMenu(fileName = "ToolbarSharedState", menuName = "ScriptableObjects/ToolbarSharedState")]
