@@ -282,6 +282,17 @@ public partial class @CustomInputActions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""997525af-0769-48cd-9df6-993cfb74188b"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";KeyboardMouse"",
+                    ""action"": ""Pan"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""44909ad4-eefd-4344-9772-b32aa9ccab54"",
                     ""path"": ""<Mouse>/leftButton"",
                     ""interactions"": """",

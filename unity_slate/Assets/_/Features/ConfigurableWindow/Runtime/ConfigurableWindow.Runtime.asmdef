@@ -3,7 +3,10 @@
     "rootNamespace": "ConfigurableWindow.Runtime",
     "references": [
         "Foundation.Runtime",
-        "UImGui"
+        "UImGui",
+        "FileBrowserMac",
+        "Slate.Runtime",
+        "Manager.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
