@@ -6,7 +6,8 @@
         "UImGui",
         "FileBrowserMac",
         "Slate.Runtime",
-        "Manager.Runtime"
+        "Manager.Runtime",
+        "Localisation.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
