@@ -1,7 +1,10 @@
 {
-    "name": "Style.Runtime",
-    "rootNamespace": "Style.Runtime",
-    "references": [],
+    "name": "Localisation.Runtime",
+    "rootNamespace": "Localisation.Runtime",
+    "references": [
+        "Foundation.Runtime",
+        "Manager.Runtime"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
