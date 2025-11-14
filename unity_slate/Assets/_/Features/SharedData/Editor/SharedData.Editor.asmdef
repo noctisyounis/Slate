@@ -1,6 +1,6 @@
 {
-    "name": "Template.Editor",
-    "rootNamespace": "Template.Editor",
+    "name": "SharedData.Editor",
+    "rootNamespace": "SharedData.Editor",
     "references": [],
     "includePlatforms": [
         "Editor"
