@@ -1,5 +1,6 @@
 using System.Globalization;
 using ImGuiNET;
+using UnityEngine;
 
 namespace WindowCreator.Runtime
 {
@@ -19,6 +20,9 @@ namespace WindowCreator.Runtime
                     break;
                 case LayoutType.LayoutValueType.Float:
                     DrawFloat(zone, idSuffix);
+                    break;
+                case LayoutType.LayoutValueType.Slider:
+                    DrawSlider(zone, idSuffix);
                     break;
                 case LayoutType.LayoutValueType.String:
                 default:
@@ -68,6 +72,36 @@ namespace WindowCreator.Runtime
             }
             result = false;
             return false;
+        }
+
+        private static void DrawSlider(DataModels.LayoutZone zone, string id)
+        {
+            float value = 0f;
+            float.TryParse(zone.Value, NumberStyles.Float, CultureInfo.InvariantCulture, out value);
+
+            // Afficher et éditer Min et Max
+            ImGui.PushID(id + "_slider_range");
+            float min = zone.SliderMin;
+            float max = zone.SliderMax;
+
+            ImGui.Text("Min:");
+            ImGui.SameLine();
+            if (ImGui.InputFloat("##min", ref min, 0.1f, 1f, "%.2f"))
+                zone.SliderMin = min;
+
+            ImGui.Text("Max:");
+            ImGui.SameLine();
+            if (ImGui.InputFloat("##max", ref max, 0.1f, 1f, "%.2f"))
+                zone.SliderMax = max;
+
+            ImGui.PopID();
+
+            // Clamp value pour rester entre min et max
+            value = Mathf.Clamp(value, zone.SliderMin, zone.SliderMax);
+
+            // Slider principal
+            if (ImGui.SliderFloat($"{zone.Key}##{id}", ref value, zone.SliderMin, zone.SliderMax))
+                zone.Value = value.ToString(CultureInfo.InvariantCulture);
         }
     }
 }

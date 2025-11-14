@@ -13,6 +13,7 @@ namespace WindowCreator.Runtime
             Color = 6,
             AssetReference = 7,
             Enum = 8,
+            Slider = 9
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using Foundation.Runtime;
@@ -284,7 +285,7 @@ namespace WindowCreator.Runtime
 
         private void DrawMainWindow()
         {
-            ImGui.Begin(m_windowTitle);
+                       ImGui.Begin(m_windowTitle);
 
             // Barre d’outils
             ImGui.Text("Create a new Layout:");
@@ -300,10 +301,9 @@ namespace WindowCreator.Runtime
 
             ImGui.Separator();
 
-            // --- Zone principale avec deux colonnes ---
+            // Left / right panels
             ImGui.BeginChild("LeftPanel", new Vector2(250, 0), ImGuiChildFlags.Border);
 
-            // Liste des layouts
             ImGui.Text("Layouts:");
             ImGui.Separator();
             foreach (var layout in _layouts)
@@ -317,9 +317,8 @@ namespace WindowCreator.Runtime
             }
             ImGui.EndChild();
 
-            ImGui.SameLine(); // <-- Affiche la zone de droite sur la même ligne
+            ImGui.SameLine();
 
-            // --- Détails du layout sélectionné ---
             ImGui.BeginChild("RightPanel", new Vector2(0, 0), ImGuiChildFlags.Border);
 
             var selectedLayout = _layouts.Find(l => l.m_id == _focusLayoutId);
@@ -349,7 +348,7 @@ namespace WindowCreator.Runtime
                         if (zone == null) continue;
 
                         string zoneId = $"{recId}_field_{z}";
-                        float width = ImGui.GetContentRegionAvail().x/3f;
+                        float width = ImGui.GetContentRegionAvail().x / 3f;
                         ImGui.SetNextItemWidth(width);
                         ImGui.InputText($"Key##{zoneId}", ref zone.Key, 32);
 
@@ -357,28 +356,53 @@ namespace WindowCreator.Runtime
                         int currentTypeIndex = (int)zone.TypeEnum;
                         ImGui.SameLine();
                         ImGui.SetNextItemWidth(width);
-                        ImGui.PushStyleColor(ImGuiCol.FrameBg, new Vector4(0,0,0,1));
-                        ImGui.PushStyleColor(ImGuiCol.PopupBg,new Vector4(0.08f,0.08f,0.08f,1));
-                        ImGui.PushStyleVar(ImGuiStyleVar.FrameRounding,6f);
-                        ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, new Vector2(6,4));
-                        
+                        ImGui.PushStyleColor(ImGuiCol.FrameBg, new Vector4(0, 0, 0, 1));
+                        ImGui.PushStyleColor(ImGuiCol.PopupBg, new Vector4(0.08f, 0.08f, 0.08f, 1));
+                        ImGui.PushStyleVar(ImGuiStyleVar.FrameRounding, 6f);
+                        ImGui.PushStyleVar(ImGuiStyleVar.ItemSpacing, new Vector2(6, 4));
+
                         float width2 = ImGui.GetContentRegionAvail().x;
                         ImGui.SetNextItemWidth(width2);
                         if (ImGui.Combo($"Type##{zoneId}", ref currentTypeIndex, types, types.Length))
                         {
-                            zone.TypeEnum =  (LayoutType.LayoutValueType)currentTypeIndex;
+                            zone.TypeEnum = (LayoutType.LayoutValueType)currentTypeIndex;
+                            zone.Type = zone.TypeEnum.ToString();
                             if (zone.TypeEnum == LayoutType.LayoutValueType.Bool && string.IsNullOrEmpty(zone.Value))
                                 zone.Value = "false";
-                            zone.Type = zone.TypeEnum.ToString();
 
+                            if (zone.TypeEnum == LayoutType.LayoutValueType.Slider)
+                            {
+                                zone.SliderMin = 0f;
+                                zone.SliderMax = 1f;
+                            }
+                            zone.Type = zone.TypeEnum.ToString();
                         }
-                        
-                        ImGui.PopStyleVar(2);
-                        ImGui.PopStyleColor(4);
-                        
+                        ImGui.SameLine();
                         ImGui.SetNextItemWidth(width);
-                        ImGui.InputText($"Value##{zoneId}", ref zone.Value, 32);
-                        
+
+                        if (zone.TypeEnum == LayoutType.LayoutValueType.Slider)
+                        {
+                            ImGui.SetNextItemWidth(100);
+                            ImGui.DragFloat($"Min##{zoneId}", ref zone.SliderMin, 0.1f);
+                            ImGui.SameLine();
+                            ImGui.SetNextItemWidth(100);
+                            ImGui.DragFloat($"Max##{zoneId}", ref zone.SliderMax, 0.1f);
+
+                            float value = 0f;
+                            float.TryParse(zone.Value, NumberStyles.Float, CultureInfo.InvariantCulture, out value);
+                            ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().x);
+                            if (ImGui.SliderFloat($"{zone.Key}##{zoneId}", ref value, zone.SliderMin, zone.SliderMax))
+                            {
+                                zone.Value = value.ToString(CultureInfo.InvariantCulture);
+                                _layoutsDirty = true;
+                            }
+                        }
+
+                        else
+                        {
+                            ImGui.InputText($"value##{zoneId}", ref zone.Value, 32);
+                        }
+
                         ImGui.SameLine();
                         if (ImGui.Button($"Delete##{zoneId}"))
                         {
@@ -400,7 +424,7 @@ namespace WindowCreator.Runtime
                         _toRemoveRecords.Add((selectedLayout, record));
                         _layoutsDirty = true;
                     }
-                    
+
                     ImGui.SameLine();
                     if (ImGui.Button($"Open Window##open_{selectedLayout.m_id}_{record.m_guid}"))
                     {
@@ -409,15 +433,15 @@ namespace WindowCreator.Runtime
                         {
                             var win = new DataModels.RuntimeWindow
                             {
-                                m_windowID = _nextRuntimeWindowId,
+                                m_windowID = _nextRuntimeWindowId++,
                                 m_layoutId = selectedLayout.m_id,
                                 m_recordGuid = record.m_guid,
                                 m_title = $"{selectedLayout.m_title} - {record.m_name}",
                                 m_open = true
                             };
                             _runtimeWindows.Add(win);
+                            
                         }
-
                         else
                         {
                             existing.m_open = true;
@@ -444,7 +468,7 @@ namespace WindowCreator.Runtime
             ImGui.EndChild();
             ImGui.End();
 
-            // Réouverture éventuelle
+            // re-open requests
             if (_toReopen.Count > 0)
             {
                 foreach (var name in _toReopen)
@@ -558,8 +582,5 @@ namespace WindowCreator.Runtime
         private int _nextInfoWindowId = 1;
 
         #endregion
-
-
-
     }
 }

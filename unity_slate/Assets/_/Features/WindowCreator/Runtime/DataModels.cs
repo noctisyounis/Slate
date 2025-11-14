@@ -33,6 +33,9 @@ namespace WindowCreator.Runtime
                     }
                 }
             }
+
+            public float SliderMin  = 0;
+            public float SliderMax  = 1f;
         }
 
         [Serializable]
