@@ -11,6 +11,11 @@ namespace Minimap.Runtime
         [SerializeField] float referenceWidth = 1920f;
         [SerializeField] float referenceHeight = 1080f;
 
+        [Header("Zoom Settings")]
+        [SerializeField] Camera targetCamera;
+        [SerializeField] float zoomMin = 5f;
+        [SerializeField] float zoomMax = 50f;
+
         [Header("Textures & Styles")]
         [SerializeField] Texture2D minimapTexture;
         [SerializeField] Color borderColor = Color.white;
@@ -55,8 +60,24 @@ namespace Minimap.Runtime
 
             lastPlayerPos = m_camera_position.position;
 
+            float zoomNormalized = 0.5f;
+
+            if (targetCamera.orthographic)
+            {
+                zoomNormalized = Mathf.InverseLerp(zoomMax, zoomMin, targetCamera.orthographicSize);
+            }
+            else
+            {
+                float camZ = Mathf.Abs(targetCamera.transform.position.z);
+                zoomNormalized = Mathf.InverseLerp(zoomMax, zoomMin, camZ);
+            }
+
+            float minView = 0.05f;
+            float maxView = 0.35f;
+
+            cameraViewSize.x = Mathf.Lerp(minView, maxView, zoomNormalized);
+
             float screenRatio = (float)Screen.width / Screen.height;
-            cameraViewSize.x = 0.25f;
             cameraViewSize.y = cameraViewSize.x / screenRatio;
 
             float targetAlpha = (visibleTimer > 0f) ? 1f : 0f;
