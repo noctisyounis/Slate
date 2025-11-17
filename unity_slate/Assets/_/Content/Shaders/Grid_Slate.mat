@@ -14,6 +14,8 @@ Material:
   m_ValidKeywords: []
   m_InvalidKeywords:
   - _DRAWSECONDARYGRID_ON
+  - _RECEIVESHADOWS_OFF
+  - _RECEIVE_SHADOWS_OFF
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -40,12 +42,13 @@ Material:
     m_Floats:
     - _AddPrecomputedVelocity: 1
     - _AlphaCutoff: 0.5
-    - _DrawDistance: 20
+    - _DrawDistance: 25
     - _DrawSecondaryGrid: 1
     - _Float0: 0.5
     - _Float11: 1
     - _GridCount: 1.01
     - _LineWidth: 0.2
+    - _MaxDrawDistance: 16.99
     - _PrimaryGridSize: 50
     - _PrimaryGridSizecm: 50
     - _PrimaryGridSpacing: 50
@@ -53,7 +56,7 @@ Material:
     - _PrimaryGridWidth: 2
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _ReceiveShadows: 1
+    - _ReceiveShadows: 0
     - _SecondaryGridColourAttenuation: 0.5
     - _SecondaryGridPercentage: 20
     - _SecondaryGridRatio: 0.2
@@ -63,10 +66,10 @@ Material:
     - __dirty: 0
     - _test: 10
     m_Colors:
-    - _BackgroundColor: {r: 0.10588236, g: 0.10980393, b: 0.121568635, a: 1}
+    - _BackgroundColor: {r: 0.105882324, g: 0.10980389, b: 0.12156858, a: 1}
     - _Color0: {r: 1, g: 0, b: 0, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
-    - _GridColor: {r: 0.05660379, g: 0.05660379, b: 0.05660379, a: 0}
+    - _GridColor: {r: 0.05490196, g: 0.05490196, b: 0.05490196, a: 0}
     - _LinesColor: {r: 0.05660379, g: 0.05660379, b: 0.05660379, a: 0}
     - _Vector1: {r: 1, g: 1, b: 0, a: 0}
   m_BuildTextureStacks: []
