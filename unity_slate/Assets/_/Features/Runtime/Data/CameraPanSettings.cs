@@ -20,6 +20,7 @@ public class CameraPanSettings : ScriptableObject
     [Header("Camera Orthographic")]
     [Tooltip("Minimum limit for zoom on orthographic cam")] public float m_minOrthoZoom = 2f;
     [Tooltip("Maximum limit for zoom on orthographic cam")] public float m_maxOrthoZoom = 50f;
+    [HideInInspector, Tooltip("Current zoom value (normalized)")] public float m_zoomNormalized;
     [Tooltip("Correctif de la caméra orthograpgique")] public float m_correcZoom = 0.1f;
     [Tooltip("Position du Zoom au Start")] public float m_startZoom = 25f;
     [Space(5)]

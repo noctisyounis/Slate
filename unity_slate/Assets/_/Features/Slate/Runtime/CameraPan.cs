@@ -1,4 +1,3 @@
-using ImGuiNET;
 using Inputs.Runtime;
 using Manager.Runtime;
 using UnityEngine;
@@ -24,7 +23,7 @@ namespace Slate.Runtime
         }
 
         public float m_midiInput => _midiInput;
-        
+
         #endregion
         
         
@@ -40,10 +39,15 @@ namespace Slate.Runtime
             _input.DisableInputsHandling();
         }
 
+        public void CustomAwake()
+        {
+            RefreshCurrentZoom();
+        }
+
         public void UpdatePan()
         {
             HandleKeyboardPan();
-            HandleMousePanTest();  // nouvelle version
+            HandleMousePanTest();
             HandleZoom();
             
             Vector3 worldDelta = _mousePanDelta + _keyboardPanDelta * 1.669291f;
@@ -54,8 +58,6 @@ namespace Slate.Runtime
             
             _keyboardPanDelta = Vector3.zero;
             _mousePanDelta = Vector3.zero;
-
-            Debug.Log("Midi input: " + _midiInput);
         }
 
 
@@ -130,32 +132,39 @@ namespace Slate.Runtime
             {
                 _isDragging = false;
             }
-            
+
         }
-        
+
         private void HandleZoom()
         {
             if (Mathf.Abs(_zoomDelta) <= 0.01f) return;
 
             if (_camera.orthographic)
             {
-                // Zoom caméra orthographique : on ajuste la taille
-                
                 _camera.orthographicSize -= _zoomDelta * (_settings.m_zoomSpeed)* _camera.orthographicSize *  Time.deltaTime;
                 _camera.orthographicSize = Mathf.Clamp(_camera.orthographicSize, _settings.m_minOrthoZoom, _settings.m_maxOrthoZoom);
+
+                RefreshCurrentZoom();
             }
             else
             {
-                // Zoom caméra perspective : on ajuste la position Z
                 Vector3 pos = _camera.transform.position;
                 pos.z += _zoomDelta * _settings.m_zoomSpeed * Time.deltaTime;
                 pos.z = Mathf.Clamp(pos.z, _settings.m_minZoom, _settings.m_maxZoom);
                 _camera.transform.position = pos;
             }
         }
-        
+
+        private void RefreshCurrentZoom()
+        {
+            _zoomNormalized = Remap(_camera.orthographicSize, 8, 2, 0, 1);
+            _settings.m_zoomNormalized = _zoomNormalized;
+
+            Shader.SetGlobalFloat("ZoomNormalised", _zoomNormalized); // update shader global value
+        }
+
         #endregion
-        
+
         #region Utils
 
         private Vector2 WorldDeltaToScreenDelta(Vector3 worldDelta)
@@ -177,11 +186,14 @@ namespace Slate.Runtime
             Vector2 delta = -(screenRefWithDeltaV2 - screenRefV2);
             return delta * _worldToScreenDeltaMultiplier;
         }
+
+        private float Remap(float value, float from1, float to1, float from2, float to2)
+            => (value - from1) / (to1 - from1) * (to2 - from2) + from2;
         #endregion
-        
-        
-        #region Private and protected
-        
+
+
+            #region Private and protected
+
         private Camera _camera;
         private readonly InputsHandler _input;
         private CameraPanSettings _settings;
@@ -191,6 +203,7 @@ namespace Slate.Runtime
         private Vector2 _cursorHotspot =  Vector2.zero;
         
         private float _zoomDelta;
+        private float _zoomNormalized;
         
         // test mousepan
         private bool _isDragging;
