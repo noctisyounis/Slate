@@ -28,6 +28,7 @@ namespace Slate.Runtime
 
             SetFact<float>("midi/01", _cameraPan.m_midiInput, false);
             _camera.orthographicSize = _panSettings.m_startZoom;
+            _cameraPan.CustomAwake();
         }
 
         private void Update()
