@@ -24,12 +24,6 @@ MonoBehaviour:
   m_menuItemSpacing: 10
   m_menuPopupMaxWidth: 360
   m_menuOne:
-  - m_label: File
-    m_separator: 0
-    m_commandId: 
-    m_onClick:
-      m_PersistentCalls:
-        m_Calls: []
   - m_label: Test
     m_separator: 0
     m_commandId: 
@@ -37,15 +31,9 @@ MonoBehaviour:
       m_PersistentCalls:
         m_Calls: []
   m_menuTwo:
-  - m_label: View
+  - m_label: Settings
     m_separator: 0
-    m_commandId: 
-    m_onClick:
-      m_PersistentCalls:
-        m_Calls: []
-  - m_label: New
-    m_separator: 0
-    m_commandId: 
+    m_commandId: settings
     m_onClick:
       m_PersistentCalls:
         m_Calls: []
