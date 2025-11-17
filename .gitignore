@@ -2,3 +2,4 @@ unity_slate/Assets/Plugins
 unity_slate/ProjectSettings/AmplifyShaderEditor.asset
 latest/*
 *.DS_Store
+unity_slate/SceneBackups

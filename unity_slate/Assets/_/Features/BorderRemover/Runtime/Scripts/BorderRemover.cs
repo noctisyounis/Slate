@@ -11,7 +11,7 @@ namespace BorderRemover.Runtime
         private void Awake()
         {
             #if !UNITY_EDITOR
-            
+
             _borderRemover = Instantiate(new GameObject("BorderRemover"));
             _borderRemover.transform.SetParent(transform);
             #if UNITY_STANDALONE_WIN
@@ -22,11 +22,6 @@ namespace BorderRemover.Runtime
             #endif
 
             #endif
-        }
-
-        private void Update()
-        {
-            
         }
 
         #endregion

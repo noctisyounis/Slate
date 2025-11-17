@@ -136,119 +136,18 @@ public partial class @CustomInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""MIDI"",
+                    ""type"": ""Value"",
+                    ""id"": ""c61f97c1-ad32-45e5-92b6-73614a375207"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
-                {
-                    ""name"": ""WASD"",
-                    ""id"": ""51e76f59-4a4a-444e-bc25-fee31f7c8a4a"",
-                    ""path"": ""2DVector"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": true,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""up"",
-                    ""id"": ""9c86d349-43f7-4028-bd8a-4ef3fd5f5e71"",
-                    ""path"": ""<Keyboard>/w"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""down"",
-                    ""id"": ""da77c384-9048-41fb-a6e6-dbeaf6b724d3"",
-                    ""path"": ""<Keyboard>/s"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""left"",
-                    ""id"": ""0cc7a52b-cfc6-4195-8e58-daf3c89a2008"",
-                    ""path"": ""<Keyboard>/a"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""right"",
-                    ""id"": ""de568e24-5819-4159-b7ee-9a367f4bbdc8"",
-                    ""path"": ""<Keyboard>/d"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""Arrows"",
-                    ""id"": ""6878383a-4b8f-4d93-aab1-4ca7802bfdd8"",
-                    ""path"": ""2DVector"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": true,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": ""up"",
-                    ""id"": ""44e3f4e8-5c04-43f7-8d58-1b62d8aa2e5c"",
-                    ""path"": ""<Keyboard>/upArrow"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""down"",
-                    ""id"": ""22f50b7a-ec21-4489-ae4c-c39456a1a699"",
-                    ""path"": ""<Keyboard>/downArrow"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""left"",
-                    ""id"": ""4b770ebd-f5fe-4bbc-bb8f-3909833e4f2f"",
-                    ""path"": ""<Keyboard>/leftArrow"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
-                {
-                    ""name"": ""right"",
-                    ""id"": ""5c3ed6ba-7477-4765-8296-192efffe678b"",
-                    ""path"": ""<Keyboard>/rightArrow"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Move"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": true
-                },
                 {
                     ""name"": """",
                     ""id"": ""1eeeb8b7-41f7-45d6-b29d-ef95ec1a26e5"",
@@ -314,6 +213,17 @@ public partial class @CustomInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""Options"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6ac72792-6ccb-4f98-a65d-439f16266dc1"",
+                    ""path"": ""<MidiDevice>/control032"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MIDI"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -344,6 +254,7 @@ public partial class @CustomInputActions: IInputActionCollection2, IDisposable
         m_Slate_Select = m_Slate.FindAction("Select", throwIfNotFound: true);
         m_Slate_Zoom = m_Slate.FindAction("Zoom", throwIfNotFound: true);
         m_Slate_Options = m_Slate.FindAction("Options", throwIfNotFound: true);
+        m_Slate_MIDI = m_Slate.FindAction("MIDI", throwIfNotFound: true);
     }
 
     ~@CustomInputActions()
@@ -429,6 +340,7 @@ public partial class @CustomInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Slate_Select;
     private readonly InputAction m_Slate_Zoom;
     private readonly InputAction m_Slate_Options;
+    private readonly InputAction m_Slate_MIDI;
     /// <summary>
     /// Provides access to input actions defined in input action map "Slate".
     /// </summary>
@@ -460,6 +372,10 @@ public partial class @CustomInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Slate/Options".
         /// </summary>
         public InputAction @Options => m_Wrapper.m_Slate_Options;
+        /// <summary>
+        /// Provides access to the underlying input action "Slate/MIDI".
+        /// </summary>
+        public InputAction @MIDI => m_Wrapper.m_Slate_MIDI;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -501,6 +417,9 @@ public partial class @CustomInputActions: IInputActionCollection2, IDisposable
             @Options.started += instance.OnOptions;
             @Options.performed += instance.OnOptions;
             @Options.canceled += instance.OnOptions;
+            @MIDI.started += instance.OnMIDI;
+            @MIDI.performed += instance.OnMIDI;
+            @MIDI.canceled += instance.OnMIDI;
         }
 
         /// <summary>
@@ -527,6 +446,9 @@ public partial class @CustomInputActions: IInputActionCollection2, IDisposable
             @Options.started -= instance.OnOptions;
             @Options.performed -= instance.OnOptions;
             @Options.canceled -= instance.OnOptions;
+            @MIDI.started -= instance.OnMIDI;
+            @MIDI.performed -= instance.OnMIDI;
+            @MIDI.canceled -= instance.OnMIDI;
         }
 
         /// <summary>
@@ -615,5 +537,12 @@ public partial class @CustomInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnOptions(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "MIDI" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnMIDI(InputAction.CallbackContext context);
     }
 }

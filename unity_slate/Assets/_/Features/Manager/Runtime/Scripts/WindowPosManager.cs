@@ -175,17 +175,11 @@ namespace Manager.Runtime
             float screenW = io.DisplaySize.x;
             float screenH = io.DisplaySize.y;
          
-            // Check if the window would be outside the screen
-            // if (IsRectOutsideScreen(targetPos, size, screenW, screenH))
-            // {
-            //     ImGui.SetWindowCollapsed(true, ImGuiCond.Always);
-            //     return;
-            // }
-            //
-            // ImGui.SetWindowCollapsed(false, ImGuiCond.Always);
             
             bool outside = IsRectOutsideScreen(targetPos, size, screenW, screenH);
-            return !outside;
+            _windowVisibility[windowName] = !outside;
+            
+            return _windowVisibility[windowName];
         }
         
         private static bool IsRectOutsideScreen(Vector2 pos, Vector2 size, float screenW, float screenH)

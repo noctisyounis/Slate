@@ -1,224 +1,185 @@
 using System;
-using Foundation.Runtime;
-using ImGuiNET;
-using UImGui;
+using System.Collections.Generic;
+using System.Linq;
+using System.IO;
+using FileBrowserMac.Runtime;
 using UnityEngine;
-using Random = System.Random;
+using ImGuiNET;
+using Manager.Runtime;
+using Newtonsoft.Json;
+using Slate.Runtime;
 
-public class ConfigurableWindowBehaviour : FBehaviour
+public class ConfigurableWindowBehaviour : WindowBaseBehaviour
 {
-    #region Public
-
-        [Header("Debug")]
-        public GameObject _test;
-        public int _number;
-        public int inputnumber;
-        public Vector2 pos;
-        
+    #region Publics
+    
     
     #endregion
-    
-   
-    #region Unity API
 
-        private void Awake()
-        {
-          
-        }
+    #region Unity API
 
         private void Start()
         {
-            _renderer = _test.GetComponent<Renderer>();
-            Load();
-
-            if (FactExists("backgroundColor", out _backgroundColor));
-            if (FactExists("gameObjectTestColor", out _gameObjectTestColor));
-            if (FactExists("number", out _number));
-            if (FactExists("color", out _color))
-            {
-                _renderer.material.color = _color;
-            }
-            else _renderer.material.color = Color.white;
+            LoadFactsOnStart();
         }
-        
-        private void OnEnable()
-        {
-            UImGuiUtility.Layout += OnLayout;
-        }
-
-        
-        private void OnDisable()
-        {
-            UImGuiUtility.Layout -= OnLayout;
-            UImGuiUtility.OnInitialize -= OnInitialize;
-            UImGuiUtility.OnDeinitialize -= OnDeinitialize;
-        }
-        
+   
     #endregion
 
+    #region ImGUI Main
 
-    #region ImGUI
-
-        private void OnLayout(UImGui.UImGui obj)
+        protected override void WindowLayout()
         {
             if (!showWindow) return;
             
-            ImGui.SetNextWindowSize(new Vector2(400, 300), ImGuiCond.Once);
-            ImGui.Begin("Configurable Window");
-
-            string[] tabs = { "Debug commands", "SlateConfigs" };
-            if (ImGui.BeginTabBar("##tabs"))
-            {
-                if (ImGui.BeginTabItem(tabs[0]))
-                {
-                    DrawDebugCommands();
-                    ImGui.EndTabItem();
-                }
-
-                if (ImGui.BeginTabItem(tabs[1]))
-                {
-                    DrawSlateConfigs();
-                    ImGui.Spacing();
-
-                    if (ImGui.Button("Save"))
-                    {
-                        SaveColor();
-                        Save();
-                    }
-
-                    ImGui.EndTabItem();
-                }
-
-                ImGui.EndTabBar();
-            }
+            DrawWindowTabs();
 
             if (ImGui.Button("Fermer"))
             {
                 showWindow = false;
             }
-
-            ImGui.End();
-        }
-        
-        private void OnInitialize(UImGui.UImGui obj)
-        {
-            // runs after UImGui.OnEnable();
-        
-        }
-
-        private void OnDeinitialize(UImGui.UImGui obj)
-        {
-            // runs after UImGui.OnDisable();
+            
+            DrawOpenJsonEditors();
         }
 
     #endregion
 
+    #region Debug / Slate
 
-
-    #region Context Menus
-        
-        [ContextMenu("Set blue")]
-        public void SetBlue()
+        private void DrawWindowTabs()
         {
-            _number = inputnumber;
-            SetFact("number", _number,true);
+            if (ImGui.BeginTabBar("##tabs"))
+            {
+                for (int i = 0; i < _tabs.Length; i++)
+                {
+                    // WindowPosManager.RegisterWindow(tab);
+                    // WindowPosManager.SyncWindowPosition(tab);
+                    if (ImGui.BeginTabItem(_tabs[i]))
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                DrawDebugCommands();
+                                break;
+                            case 1:
+                                DrawColorPicker();
+                                break;
+                            case 2:
+                                jsonLoader.DrawUI();
+                                break;
+                            case 3:
+                                _localisation.DrawUI();
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+                        ImGui.EndTabItem();
+                    }
+                } 
+                ImGui.EndTabBar();
+            }
             
-            var color = Color.blue;
-            _renderer.material.color = color; 
             
-            SetFact("color", color, true);
-            Save();
-
+            // if (ImGui.BeginTabBar("##tabs"))
+            // {
+            //     if (ImGui.BeginTabItem(_tabs[0]))
+            //     {
+            //         DrawDebugCommands();
+            //         ImGui.EndTabItem();
+            //     }
+            //
+            //     if (ImGui.BeginTabItem(_tabs[1]))
+            //     {
+            //         DrawColorPicker();
+            //         ImGui.EndTabItem();
+            //     }
+            //
+            //     if (ImGui.BeginTabItem(_tabs[2]))
+            //     {
+            //         jsonLoader.DrawUI();
+            //         ImGui.EndTabItem();
+            //     }
+            //
+            //     if (ImGui.BeginTabItem(_tabs[3]))
+            //     {
+            //         _localisation.DrawUI();
+            //         ImGui.EndTabItem();
+            //     }
+            //
+            //     ImGui.EndTabBar();
+            // }
         }
-        
-        [ContextMenu("Set Red")]
-        public void SetRed()
-        {
-            _number = inputnumber;
-            SetFact("number", _number,true);
-            
-            var color = Color.red;
-            _renderer.material.color = color; 
-            
-            SetFact("color", color, true);
-            Save();
-
-        }
-        
-        [ContextMenu("Set Yellow")]
-        public void SetYellow()
-        {
-            _number = inputnumber;
-            SetFact("number", _number,true);
-            
-            var color = Color.yellow;
-            _renderer.material.color = color; 
-            
-            SetFact("color", color, true);
-            Save();
-
-        }
-
         private void DrawDebugCommands()
         {
             ImGui.Text("Show borders : B");
             ImGui.Text("Hide borders : H");
             ImGui.Text("Lock Window : L");
+            ImGui.Text("Quit FullScreen : J");
             ImGui.Text("Unlock Window : U");
         }
 
-        private void DrawSlateConfigs()
+        private void DrawColorPicker()
         {
-            ImGui.Text("Configure la couleur ici :");
+            ImGui.Text("Pick Color:");
             ImGui.ColorEdit4("Color Picker", ref colorValue);
+            if (ImGui.Button("Save color"))
+            {
+                SaveColor();
+            }
         }
 
         private void SaveColor()
         {
-            if (_test != null)
+            _color = new Color(colorValue.x, colorValue.y, colorValue.z, colorValue.w);
+        }
+
+    #endregion
+
+    #region Json Loader UI & Logic
+        
+        private JsonLoader jsonLoader = new JsonLoader();
+        
+        private void DrawOpenJsonEditors()
+        {
+            foreach (var editor in jsonLoader.OpenEditors.ToList())
             {
-                var renderer = _test.GetComponent<Renderer>();
-                if (renderer != null)
+                if (editor.ShowWindow)
                 {
-                    _color = new Color(colorValue.x, colorValue.y, colorValue.z, colorValue.w);
-                    renderer.material.color = _color;
+                    editor.Draw();
+                }
+                else
+                {
+                    jsonLoader.OpenEditors.Remove(editor);
                 }
             }
-                        
-            SetFact("color", _color, true);
         }
-        private void HandleZoom()
-        {
-            var io = ImGui.GetIO();
-            if (io.MouseWheel != 0)
-            {
-                zoom += io.MouseWheel * 0.1f;
-                zoom = Mathf.Clamp(zoom, 0.5f, 3.0f);
-                ImGui.GetStyle().ScaleAllSizes(zoom);
-            }
-
-            ImGui.Begin("Ma Fenêtre zoomable");
-
-            ImGui.Text($"Zoom actuel : {zoom}");
-            var rnd = new Random();
-            ImGui.End();
-        }
-        
+    
     #endregion
     
+
+    #region Privates and Protected (conservés)
     
-    #region Privates and Protected
-    
-    
-        private Color _gameObjectTestColor;
+        private Localisation.Runtime.Localisation _localisation = new Localisation.Runtime.Localisation();
         private Color _backgroundColor;
-        private Renderer _renderer;
         private Color _color;
         private Vector4 colorValue = new Vector4(1, 1, 1, 1);
+
+        private string[] _tabs = { "Debug commands", "Color Picker", "Json Editor(test)", "Localisation" };
         
         private bool showWindow = true;
-        private int currentTab = 0; 
-        private float zoom = 1f;
-        
+
+    #endregion
+
+    
+    #region Helpers (optionnel)
+
+    
+        private void LoadFactsOnStart()
+        {
+            // if (FactExists("color", out _color)) { if (_renderer != null) _renderer.material.color = _color; }
+        }
+
     #endregion
 }
+
+
+

@@ -1,0 +1,80 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Grid_Slate
+  m_Shader: {fileID: 4800000, guid: 6a6043ba726472244a4f189177fa430d, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords:
+  - _DRAWSECONDARYGRID_ON
+  - _RECEIVESHADOWS_OFF
+  - _RECEIVE_SHADOWS_OFF
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _AddPrecomputedVelocity: 1
+    - _AlphaCutoff: 0.5
+    - _DrawDistance: 25
+    - _DrawSecondaryGrid: 1
+    - _Float0: 57
+    - _Float1: 5
+    - _Float11: 1
+    - _GridCount: 1.01
+    - _LineWidth: 0.2
+    - _MaxDrawDistance: 25
+    - _PrimaryGridSize: 50
+    - _PrimaryGridSizecm: 50
+    - _PrimaryGridSpacing: 50
+    - _PrimaryGridSpacingcm: 100
+    - _PrimaryGridWidth: 2
+    - _QueueControl: 0
+    - _QueueOffset: 0
+    - _ReceiveShadows: 0
+    - _SecondaryGridAmount: 5
+    - _SecondaryGridColourAttenuation: 0.5
+    - _SecondaryGridPercentage: 20
+    - _SecondaryGridRatio: 0.2
+    - _SecondaryGridWidthandSpacingRatio: 0.2
+    - _SecondaryLinesAttenuation: 0.5
+    - _SmallLinesAttenuation: 0
+    - __dirty: 0
+    - _test: 10
+    m_Colors:
+    - _BackgroundColor: {r: 0.105882294, g: 0.10980386, b: 0.12156855, a: 1}
+    - _Color0: {r: 1, g: 0, b: 0, a: 0}
+    - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
+    - _GridColor: {r: 0.056603737, g: 0.056603737, b: 0.056603737, a: 0}
+    - _GridSpacingMinMax: {r: 80, g: 57, b: 0, a: 0}
+    - _GridWidthMinMax: {r: 3, g: 1.9, b: 0, a: 0}
+    - _LinesColor: {r: 0.05660379, g: 0.05660379, b: 0.05660379, a: 0}
+    - _Vector1: {r: 1, g: 1, b: 0, a: 0}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

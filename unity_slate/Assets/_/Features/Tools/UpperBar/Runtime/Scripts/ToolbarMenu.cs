@@ -38,16 +38,42 @@ namespace UpperBar.Runtime
                 if (m_state.m_menuOne is { Length: > 0 })
                 {
                     if (!first) ImGui.SameLine(0f, m_state.m_menuItemSpacing);
-                    var opened = DrawMenuPopupFixed("File", m_state.m_menuOne, m_state.m_menuPreviewWidth, m_state.m_menuPopupMaxWidth, m_state.m_popupMaxHeight);
-                    m_state.m_isAnyMenuOpen |= opened;
+
+                    var labelOne = string.IsNullOrEmpty(m_state.m_menuOneLabel)
+                        ? "File"
+                        : m_state.m_menuOneLabel;
+
+                    var opened = DrawMenuPopupFixed(
+                        labelOne,
+                        m_state.m_menuOne,
+                        m_state.m_menuPreviewWidth,
+                        m_state.m_menuPopupMaxWidth,
+                        m_state.m_popupMaxHeight,
+                        m_state
+                    );
+
+                    m_state.m_isAnyMenuOpen   |= opened;
                     m_state.m_menusTotalWidth += m_state.m_menuPreviewWidth;
                     first = false;
                 }
                 if (m_state.m_menuTwo is { Length: > 0 })
                 {
                     if (!first) ImGui.SameLine(0f, m_state.m_menuItemSpacing);
-                    var opened = DrawMenuPopupFixed("Display", m_state.m_menuTwo, m_state.m_menuPreviewWidth, m_state.m_menuPopupMaxWidth, m_state.m_popupMaxHeight);
-                    m_state.m_isAnyMenuOpen |= opened;
+
+                    var labelTwo = string.IsNullOrEmpty(m_state.m_menuTwoLabel)
+                        ? "View"
+                        : m_state.m_menuTwoLabel;
+
+                    var opened = DrawMenuPopupFixed(
+                        labelTwo,
+                        m_state.m_menuTwo,
+                        m_state.m_menuPreviewWidth,
+                        m_state.m_menuPopupMaxWidth,
+                        m_state.m_popupMaxHeight,
+                        m_state
+                    );
+
+                    m_state.m_isAnyMenuOpen   |= opened;
                     m_state.m_menusTotalWidth += m_state.m_menuPreviewWidth;
                 }
 
@@ -67,7 +93,7 @@ namespace UpperBar.Runtime
                 var padding = style.FramePadding.x * 2f;
                 var budget = Mathf.Max(0f, maxPx - padding);
                 if (ImGui.CalcTextSize(s).x <= budget) return s;
-                const string ell = "…";
+                const string ell = "...";
                 int lo = 0, hi = s.Length;
                 while (lo < hi)
                 {
@@ -79,34 +105,60 @@ namespace UpperBar.Runtime
             }
 
             private static bool DrawMenuPopupFixed(string label, ToolbarSharedState.MenuNode[] items,
-                float fixedWidth, float popupMaxW, float popupMaxH)
+                float fixedWidth, float popupMaxW, float popupMaxH, ToolbarSharedState state)
             {
+                if (state == null) return false;
                 var id = "##menu_" + label;
-                var preview = EllipseToFit(label + "…", fixedWidth);
+                var preview = EllipseToFit(label + "...", fixedWidth);
+                
+                var style = ImGui.GetStyle();
+                var textW = ImGui.CalcTextSize(preview).x;
+                var fullW = textW + style.FramePadding.x * 2f;
+
+                var boxW = Mathf.Min(fixedWidth, fullW);
 
                 ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0,0,0,0));
                 ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(1,1,1,0.08f));
                 ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(1,1,1,0.12f));
 
-                ImGui.BeginGroup();
-                var start = ImGui.GetCursorPos();
-                ImGui.InvisibleButton(id + "_ibox", new Vector2(fixedWidth, ImGui.GetFrameHeight()));
-                ImGui.SetCursorPos(new Vector2(start.x + ImGui.GetStyle().FramePadding.x, start.y));
-                ImGui.TextUnformatted(preview);
+                var frameH = ImGui.GetFrameHeight();
+                var curPos = ImGui.GetCursorPos();
+
+                ImGui.InvisibleButton(id, new Vector2(boxW, frameH));
+
+                var hovered = ImGui.IsItemHovered();
+                var active  = ImGui.IsItemActive();
                 var clicked = ImGui.IsItemClicked(ImGuiMouseButton.Left);
-                ImGui.EndGroup();
+                var btnMin = ImGui.GetItemRectMin();
+                
+                var rectMin = ImGui.GetItemRectMin();
+                var rectMax = new Vector2(btnMin.x + boxW, btnMin.y + frameH);
+                
+                var bg = new Vector4(0, 0, 0, 0);
+                
+                if (hovered)
+                    bg = new Vector4(1, 1, 1, 0.08f);
+                
+                if (active)
+                    bg = new Vector4(1, 1, 1, 0.12f);
+                
+                var dl = ImGui.GetWindowDrawList();
+                dl.AddRectFilled(rectMin, rectMax, ImGui.ColorConvertFloat4ToU32(bg), 0f);
 
-                if (clicked) ImGui.OpenPopup(id);
+                ImGui.SetCursorPos(new Vector2(curPos.x + ImGui.GetStyle().FramePadding.x, curPos.y));
+                ImGui.TextUnformatted(preview);
 
-                var screenPos = ImGui.GetItemRectMin();
-                ImGui.SetNextWindowPos(new Vector2(screenPos.x, screenPos.y + ImGui.GetFrameHeight()));
+                if (clicked)
+                    ImGui.OpenPopup(id);
+
+                ImGui.SetNextWindowPos(new Vector2(btnMin.x, btnMin.y + frameH));
                 ImGui.SetNextWindowSizeConstraints(new Vector2(140f, 0f), new Vector2(popupMaxW, popupMaxH));
 
                 var opened = false;
                 if (ImGui.BeginPopup(id, ImGuiWindowFlags.NoMove | ImGuiWindowFlags.NoSavedSettings))
                 {
                     opened = true;
-                    DrawNodes(items);
+                    DrawNodes(items, state);
                     ImGui.EndPopup();
                 }
 
@@ -114,16 +166,32 @@ namespace UpperBar.Runtime
                 return opened;
             }
             
-            private static void DrawNodes(ToolbarSharedState.MenuNode[] nodes)
+            private static void DrawNodes(ToolbarSharedState.MenuNode[] nodes, ToolbarSharedState state)
             {
-                if (nodes == null) return;
+                if (nodes == null || state == null) return;
+                
+                ImGui.PushStyleColor(ImGuiCol.Header, new Vector4(0,0,0,0));
+                ImGui.PushStyleColor(ImGuiCol.HeaderHovered, new Vector4(1,1,1,0.08f));
+                ImGui.PushStyleColor(ImGuiCol.HeaderActive, new Vector4(1,1,1,0.12f));
+                
                 foreach (var n in nodes)
                 {
                     if (n == null) continue;
 
-                    if (n.m_separator) { ImGui.Separator(); continue; }
-                    if (ImGui.Selectable(n.m_label ?? "…"))
-                        n.m_onClick?.Invoke();
+                    if (n.m_separator)
+                    {
+                        ImGui.Separator();
+                        continue;
+                    }
+
+                    if (!ImGui.Selectable(n.m_label ?? "...", false, ImGuiSelectableFlags.SpanAllColumns))
+                        continue;
+                    
+                    n.m_onClick?.Invoke();
+
+                    if (string.IsNullOrEmpty(n.m_commandId)) continue;
+                    state.m_menuCommandPending = true;
+                    state.m_menuCommandId = n.m_commandId;
                 }
             }
             
