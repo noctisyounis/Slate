@@ -6,11 +6,12 @@ Shader "Grid_Slate"
 	{
 		[HideInInspector] _AlphaCutoff("Alpha Cutoff ", Range(0, 1)) = 0.5
 		[HideInInspector] _EmissionColor("Emission Color", Color) = (1,1,1,1)
-		[Header(Lines Settings (in cm))][Space(5)]_PrimaryGridSpacing("Primary Grid Spacing", Range( 0 , 500)) = 0
-		_PrimaryGridWidth("Primary Grid Width", Range( 1 , 50)) = 0
-		[Space(10)][Toggle]_DrawSecondaryGrid("Draw Secondary Grid ?", Float) = 0
+		[Header(Lines Settings (in cm))][Space(5)]_GridSpacingMinMax("Grid Spacing Min Max", Vector) = (110,240,0,0)
+		_GridWidthMinMax("Grid Width Min Max", Vector) = (3.3,8.5,0,0)
+		_MaxDrawDistance("Max Draw Distance", Range( 0 , 250)) = 0
+		[Header(Secondary Grid)][Space(5)][Toggle]_DrawSecondaryGrid("Draw Secondary Grid ?", Float) = 1
 		_SecondaryGridColourAttenuation("Secondary Grid Colour Attenuation", Range( 0 , 1)) = 0
-		_SecondaryGridWidthandSpacingRatio("Secondary Grid Width and Spacing Ratio", Range( 0 , 1)) = 0
+		_SecondaryGridAmount("Secondary Grid Amount", Range( 1 , 10)) = 0
 		[Header(Colours)][Space(5)]_GridColor("Grid Color", Color) = (0,0,0,0)
 		_BackgroundColor("Background Color", Color) = (0.1333333,0.1254902,0.1294118,1)
 
@@ -247,11 +248,12 @@ Shader "Grid_Slate"
 			CBUFFER_START(UnityPerMaterial)
 			float4 _BackgroundColor;
 			float4 _GridColor;
+			float2 _GridSpacingMinMax;
+			float2 _GridWidthMinMax;
+			float _MaxDrawDistance;
 			float _DrawSecondaryGrid;
-			float _PrimaryGridSpacing;
-			float _PrimaryGridWidth;
 			float _SecondaryGridColourAttenuation;
-			float _SecondaryGridWidthandSpacingRatio;
+			float _SecondaryGridAmount;
 			#ifdef ASE_TESSELLATION
 				float _TessPhongStrength;
 				float _TessValue;
@@ -262,7 +264,8 @@ Shader "Grid_Slate"
 			#endif
 			CBUFFER_END
 
-			
+			float ZoomNormalised;
+
 
 			
 			PackedVaryings VertexFunction( Attributes input  )
@@ -414,20 +417,24 @@ Shader "Grid_Slate"
 					#endif
 				#endif
 
-				float3 break34_g10 = float3( 0,0,0 );
-				float temp_output_1_0_g10 = _PrimaryGridSpacing;
-				float temp_output_2_0_g10 = ( temp_output_1_0_g10 * 0.01 );
-				float temp_output_8_0_g10 = ( ( 0.01 * min( ( temp_output_1_0_g10 * 0.25 ) , _PrimaryGridWidth ) ) / temp_output_2_0_g10 );
-				float3 lerpResult110 = lerp( _BackgroundColor.rgb , _GridColor.rgb , max( max( step( frac( ( ( WorldPosition.x + break34_g10.x ) / temp_output_2_0_g10 ) ) , temp_output_8_0_g10 ) , step( frac( ( ( WorldPosition.y + break34_g10.y ) / temp_output_2_0_g10 ) ) , temp_output_8_0_g10 ) ) , step( frac( ( ( WorldPosition.z + break34_g10.z ) / temp_output_2_0_g10 ) ) , temp_output_8_0_g10 ) ));
-				float3 break34_g9 = float3( 0,0,0 );
-				float temp_output_1_0_g9 = ( _PrimaryGridSpacing * _SecondaryGridWidthandSpacingRatio );
-				float temp_output_2_0_g9 = ( temp_output_1_0_g9 * 0.01 );
-				float temp_output_8_0_g9 = ( ( 0.01 * min( ( temp_output_1_0_g9 * 0.25 ) , ( _PrimaryGridWidth * _SecondaryGridWidthandSpacingRatio ) ) ) / temp_output_2_0_g9 );
-				float3 lerpResult111 = lerp( lerpResult110 , ( _GridColor.rgb * _SecondaryGridColourAttenuation ) , max( max( step( frac( ( ( WorldPosition.x + break34_g9.x ) / temp_output_2_0_g9 ) ) , temp_output_8_0_g9 ) , step( frac( ( ( WorldPosition.y + break34_g9.y ) / temp_output_2_0_g9 ) ) , temp_output_8_0_g9 ) ) , step( frac( ( ( WorldPosition.z + break34_g9.z ) / temp_output_2_0_g9 ) ) , temp_output_8_0_g9 ) ));
+				float3 break34_g12 = float3( 0,0,0 );
+				float temp_output_140_0 = saturate( ZoomNormalised );
+				float lerpResult141 = lerp( _GridSpacingMinMax.x , _GridSpacingMinMax.y , temp_output_140_0);
+				float temp_output_1_0_g12 = lerpResult141;
+				float temp_output_2_0_g12 = ( temp_output_1_0_g12 * 0.01 );
+				float lerpResult149 = lerp( _GridWidthMinMax.x , _GridWidthMinMax.y , temp_output_140_0);
+				float temp_output_8_0_g12 = ( ( 0.01 * min( ( temp_output_1_0_g12 * 0.25 ) , lerpResult149 ) ) / temp_output_2_0_g12 );
+				float3 lerpResult110 = lerp( _BackgroundColor.rgb , _GridColor.rgb , max( max( step( frac( ( ( WorldPosition.x + break34_g12.x ) / temp_output_2_0_g12 ) ) , temp_output_8_0_g12 ) , step( frac( ( ( WorldPosition.y + break34_g12.y ) / temp_output_2_0_g12 ) ) , temp_output_8_0_g12 ) ) , step( frac( ( ( WorldPosition.z + break34_g12.z ) / temp_output_2_0_g12 ) ) , temp_output_8_0_g12 ) ));
+				float3 break34_g11 = float3( 0,0,0 );
+				float temp_output_198_0 = ( 1.0 / _SecondaryGridAmount );
+				float temp_output_1_0_g11 = ( lerpResult141 * temp_output_198_0 );
+				float temp_output_2_0_g11 = ( temp_output_1_0_g11 * 0.01 );
+				float temp_output_8_0_g11 = ( ( 0.01 * min( ( temp_output_1_0_g11 * 0.25 ) , ( lerpResult149 * temp_output_198_0 ) ) ) / temp_output_2_0_g11 );
+				float3 lerpResult111 = lerp( lerpResult110 , ( _GridColor.rgb * _SecondaryGridColourAttenuation ) , max( max( step( frac( ( ( WorldPosition.x + break34_g11.x ) / temp_output_2_0_g11 ) ) , temp_output_8_0_g11 ) , step( frac( ( ( WorldPosition.y + break34_g11.y ) / temp_output_2_0_g11 ) ) , temp_output_8_0_g11 ) ) , step( frac( ( ( WorldPosition.z + break34_g11.z ) / temp_output_2_0_g11 ) ) , temp_output_8_0_g11 ) ));
 				
 				float3 BakedAlbedo = 0;
 				float3 BakedEmission = 0;
-				float3 Color = (( _DrawSecondaryGrid )?( lerpResult111 ):( lerpResult110 ));
+				float3 Color = ( step( distance( _WorldSpaceCameraPos , WorldPosition ) , _MaxDrawDistance ) * (( _DrawSecondaryGrid )?( lerpResult111 ):( lerpResult110 )) );
 				float Alpha = 1;
 				float AlphaClipThreshold = 0.5;
 				float AlphaClipThresholdShadow = 0.5;
@@ -517,11 +524,12 @@ Shader "Grid_Slate"
 			CBUFFER_START(UnityPerMaterial)
 			float4 _BackgroundColor;
 			float4 _GridColor;
+			float2 _GridSpacingMinMax;
+			float2 _GridWidthMinMax;
+			float _MaxDrawDistance;
 			float _DrawSecondaryGrid;
-			float _PrimaryGridSpacing;
-			float _PrimaryGridWidth;
 			float _SecondaryGridColourAttenuation;
-			float _SecondaryGridWidthandSpacingRatio;
+			float _SecondaryGridAmount;
 			#ifdef ASE_TESSELLATION
 				float _TessPhongStrength;
 				float _TessValue;
@@ -749,11 +757,12 @@ Shader "Grid_Slate"
 			CBUFFER_START(UnityPerMaterial)
 			float4 _BackgroundColor;
 			float4 _GridColor;
+			float2 _GridSpacingMinMax;
+			float2 _GridWidthMinMax;
+			float _MaxDrawDistance;
 			float _DrawSecondaryGrid;
-			float _PrimaryGridSpacing;
-			float _PrimaryGridWidth;
 			float _SecondaryGridColourAttenuation;
-			float _SecondaryGridWidthandSpacingRatio;
+			float _SecondaryGridAmount;
 			#ifdef ASE_TESSELLATION
 				float _TessPhongStrength;
 				float _TessValue;
@@ -972,11 +981,12 @@ Shader "Grid_Slate"
 			CBUFFER_START(UnityPerMaterial)
 			float4 _BackgroundColor;
 			float4 _GridColor;
+			float2 _GridSpacingMinMax;
+			float2 _GridWidthMinMax;
+			float _MaxDrawDistance;
 			float _DrawSecondaryGrid;
-			float _PrimaryGridSpacing;
-			float _PrimaryGridWidth;
 			float _SecondaryGridColourAttenuation;
-			float _SecondaryGridWidthandSpacingRatio;
+			float _SecondaryGridAmount;
 			#ifdef ASE_TESSELLATION
 				float _TessPhongStrength;
 				float _TessValue;
@@ -1202,11 +1212,12 @@ Shader "Grid_Slate"
 			CBUFFER_START(UnityPerMaterial)
 			float4 _BackgroundColor;
 			float4 _GridColor;
+			float2 _GridSpacingMinMax;
+			float2 _GridWidthMinMax;
+			float _MaxDrawDistance;
 			float _DrawSecondaryGrid;
-			float _PrimaryGridSpacing;
-			float _PrimaryGridWidth;
 			float _SecondaryGridColourAttenuation;
-			float _SecondaryGridWidthandSpacingRatio;
+			float _SecondaryGridAmount;
 			#ifdef ASE_TESSELLATION
 				float _TessPhongStrength;
 				float _TessValue;
@@ -1393,27 +1404,34 @@ Shader "Grid_Slate"
 }
 /*ASEBEGIN
 Version=19801
+Node;AmplifyShaderEditor.CommentaryNode;166;-1184,-800;Inherit;False;596;378.8;;4;104;105;103;107;Distance Mask;0.3056603,0.3056603,0.3056603,1;0;0
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;86;-2224,96;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;80;-2224,-80;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;43;-1376,-176;Inherit;False;2;2;0;FLOAT3;0,0,0;False;1;FLOAT;0;False;1;FLOAT3;0
 Node;AmplifyShaderEditor.LerpOp;110;-1376,-400;Inherit;False;3;0;FLOAT3;0,0,0;False;1;FLOAT3;0,0,0;False;2;FLOAT;0;False;1;FLOAT3;0
 Node;AmplifyShaderEditor.LerpOp;111;-1008,-64;Inherit;False;3;0;FLOAT3;0,0,0;False;1;FLOAT3;0,0,0;False;2;FLOAT;0;False;1;FLOAT3;0
-Node;AmplifyShaderEditor.ToggleSwitchNode;108;-752,-272;Inherit;False;Property;_DrawSecondaryGrid;Draw Secondary Grid ?;3;0;Create;True;0;0;0;False;1;Space(10);False;0;True;2;0;FLOAT3;0,0,0;False;1;FLOAT3;0,0,0;False;1;FLOAT3;0
-Node;AmplifyShaderEditor.ColorNode;12;-1696,-608;Inherit;False;Property;_BackgroundColor;Background Color;7;0;Create;True;0;0;0;False;0;False;0.1333333,0.1254902,0.1294118,1;0.1058823,0.1098039,0.1215686,1;True;True;0;6;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4;FLOAT3;5
-Node;AmplifyShaderEditor.ColorNode;40;-1664,-288;Inherit;False;Property;_GridColor;Grid Color;6;0;Create;True;0;0;0;False;2;Header(Colours);Space(5);False;0,0,0,0;0.05660377,0.05660377,0.05660377,0;True;True;0;6;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4;FLOAT3;5
-Node;AmplifyShaderEditor.FunctionNode;126;-1984,0;Inherit;False;CustomWorldspaceGrid;-1;;9;422b7a0a45385204fa90e8fcbf8d8213;0;3;1;FLOAT;50;False;7;FLOAT;5;False;31;FLOAT3;0,0,0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.ColorNode;40;-1664,-288;Inherit;False;Property;_GridColor;Grid Color;6;0;Create;True;0;0;0;False;2;Header(Colours);Space(5);False;0,0,0,0;0.05660374,0.05660374,0.05660374,0;True;True;0;6;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4;FLOAT3;5
 Node;AmplifyShaderEditor.RangedFloatNode;42;-1712,-48;Inherit;False;Property;_SecondaryGridColourAttenuation;Secondary Grid Colour Attenuation;4;0;Create;True;0;0;0;False;0;False;0;0.5;0;1;0;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;81;-2672,-16;Inherit;False;Property;_SecondaryGridWidthandSpacingRatio;Secondary Grid Width and Spacing Ratio;5;0;Create;True;0;0;0;False;0;False;0;0.2;0;1;0;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;47;-2720,-288;Inherit;False;Property;_PrimaryGridWidth;Primary Grid Width;1;0;Create;True;0;0;0;False;0;False;0;2;1;50;0;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;46;-2720,-400;Inherit;False;Property;_PrimaryGridSpacing;Primary Grid Spacing;0;0;Create;True;0;0;0;False;2;Header(Lines Settings (in cm));Space(5);False;0;50;0;500;0;1;FLOAT;0
-Node;AmplifyShaderEditor.StepOpNode;106;-432,224;Inherit;False;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleMultiplyOpNode;128;-272,-272;Inherit;False;2;2;0;FLOAT3;0,0,0;False;1;FLOAT;0;False;1;FLOAT3;0
-Node;AmplifyShaderEditor.WorldSpaceCameraPos;104;-976,112;Inherit;False;0;4;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3
-Node;AmplifyShaderEditor.WorldPosInputsNode;105;-912,256;Inherit;False;0;4;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3
-Node;AmplifyShaderEditor.DistanceOpNode;103;-656,176;Inherit;False;2;0;FLOAT3;0,0,0;False;1;FLOAT3;0,0,0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.RangedFloatNode;107;-736,320;Inherit;False;Property;_MaxDrawDistance;Max Draw Distance;2;0;Create;True;0;0;0;False;0;False;0;25;0;250;0;1;FLOAT;0
-Node;AmplifyShaderEditor.ColorNode;130;-368,-112;Inherit;False;Constant;_Color0;Color 0;8;0;Create;True;0;0;0;False;0;False;1,0.0132075,0.0132075,0;0,0,0,0;True;True;0;6;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4;FLOAT3;5
-Node;AmplifyShaderEditor.FunctionNode;127;-2048,-352;Inherit;False;CustomWorldspaceGrid;-1;;10;422b7a0a45385204fa90e8fcbf8d8213;0;3;1;FLOAT;50;False;7;FLOAT;5;False;31;FLOAT3;0,0,0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.ColorNode;12;-1696,-512;Inherit;False;Property;_BackgroundColor;Background Color;7;0;Create;True;0;0;0;False;0;False;0.1333333,0.1254902,0.1294118,1;0.1058823,0.1098039,0.1215686,1;True;True;0;6;COLOR;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4;FLOAT3;5
+Node;AmplifyShaderEditor.LerpOp;149;-2464,-272;Inherit;False;3;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.LerpOp;141;-2448,-448;Inherit;False;3;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SaturateNode;140;-2704,-336;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;139;-2944,-336;Inherit;False;Global;ZoomNormalised;ZoomNormalised;8;0;Create;True;0;0;0;False;0;False;0;1;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleMultiplyOpNode;128;-336,-272;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT3;0,0,0;False;1;FLOAT3;0
+Node;AmplifyShaderEditor.ToggleSwitchNode;108;-736,-272;Inherit;False;Property;_DrawSecondaryGrid;Draw Secondary Grid ?;3;0;Create;True;0;0;0;False;2;Header(Secondary Grid);Space(5);False;1;True;2;0;FLOAT3;0,0,0;False;1;FLOAT3;0,0,0;False;1;FLOAT3;0
+Node;AmplifyShaderEditor.StepOpNode;106;-496,-560;Inherit;False;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.WorldSpaceCameraPos;104;-1120,-736;Inherit;False;0;4;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3
+Node;AmplifyShaderEditor.WorldPosInputsNode;105;-1056,-608;Inherit;False;0;4;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3
+Node;AmplifyShaderEditor.DistanceOpNode;103;-800,-672;Inherit;False;2;0;FLOAT3;0,0,0;False;1;FLOAT3;0,0,0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;107;-864,-544;Inherit;False;Property;_MaxDrawDistance;Max Draw Distance;2;0;Create;True;0;0;0;False;0;False;0;25;0;250;0;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;167;-2320,-544;Inherit;False;Property;_Float0;Float 0;8;0;Create;True;0;0;0;False;0;False;0;57;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.FunctionNode;194;-1984,0;Inherit;False;CustomWorldspaceGrid;-1;;11;422b7a0a45385204fa90e8fcbf8d8213;0;3;1;FLOAT;50;False;7;FLOAT;5;False;31;FLOAT3;0,0,0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.FunctionNode;195;-2144,-352;Inherit;False;CustomWorldspaceGrid;-1;;12;422b7a0a45385204fa90e8fcbf8d8213;0;3;1;FLOAT;50;False;7;FLOAT;5;False;31;FLOAT3;0,0,0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;197;-2688,-80;Inherit;False;Constant;_Float1;Float 1;9;0;Create;True;0;0;0;False;0;False;1;0;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleDivideOpNode;198;-2496,-32;Inherit;False;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;81;-2800,32;Inherit;False;Property;_SecondaryGridAmount;Secondary Grid Amount;5;0;Create;True;0;0;0;False;0;False;0;5;1;10;0;1;FLOAT;0
+Node;AmplifyShaderEditor.Vector2Node;144;-2752,-480;Inherit;False;Property;_GridSpacingMinMax;Grid Spacing Min Max;0;0;Create;True;0;0;0;False;2;Header(Lines Settings (in cm));Space(5);False;110,240;80,57;0;3;FLOAT2;0;FLOAT;1;FLOAT;2
+Node;AmplifyShaderEditor.Vector2Node;148;-2784,-256;Inherit;False;Property;_GridWidthMinMax;Grid Width Min Max;1;0;Create;True;0;0;0;False;0;False;3.3,8.5;3,1.9;0;3;FLOAT2;0;FLOAT;1;FLOAT;2
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;1;0,0;Float;False;False;-1;3;UnityEditor.ShaderGraphUnlitGUI;0;13;New Amplify Shader;2992e84f91cbeb14eab234972e07ea9d;True;ExtraPrePass;0;0;ExtraPrePass;5;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;False;False;False;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Unlit;True;5;True;12;all;0;False;True;1;1;False;;0;False;;0;1;False;;0;False;;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;True;True;True;True;0;False;;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;0;False;False;0;;0;0;Standard;0;False;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;3;0,0;Float;False;False;-1;3;UnityEditor.ShaderGraphUnlitGUI;0;13;New Amplify Shader;2992e84f91cbeb14eab234972e07ea9d;True;ShadowCaster;0;2;ShadowCaster;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;False;False;False;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Unlit;True;5;True;12;all;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;False;False;True;False;False;False;False;0;False;;False;False;False;False;False;False;False;False;False;True;1;False;;True;3;False;;False;True;1;LightMode=ShadowCaster;False;False;0;;0;0;Standard;0;False;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;4;0,0;Float;False;False;-1;3;UnityEditor.ShaderGraphUnlitGUI;0;13;New Amplify Shader;2992e84f91cbeb14eab234972e07ea9d;True;DepthOnly;0;3;DepthOnly;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;False;False;False;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Unlit;True;5;True;12;all;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;False;False;True;False;False;False;False;0;False;;False;False;False;False;False;False;False;False;False;True;1;False;;False;False;True;1;LightMode=DepthOnly;False;False;0;;0;0;Standard;0;False;0
@@ -1425,30 +1443,39 @@ Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;9;0,0;Float;False;False;-1;
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;10;0,0;Float;False;False;-1;3;UnityEditor.ShaderGraphUnlitGUI;0;13;New Amplify Shader;2992e84f91cbeb14eab234972e07ea9d;True;DepthNormalsOnly;0;9;DepthNormalsOnly;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;False;False;False;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Unlit;True;5;True;12;all;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;1;False;;True;3;False;;False;True;1;LightMode=DepthNormalsOnly;False;True;9;d3d11;metal;vulkan;xboxone;xboxseries;playstation;ps4;ps5;switch;0;;0;0;Standard;0;False;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;11;0,0;Float;False;False;-1;3;UnityEditor.ShaderGraphUnlitGUI;0;13;New Amplify Shader;2992e84f91cbeb14eab234972e07ea9d;True;MotionVectors;0;10;MotionVectors;0;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;False;False;False;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Unlit;True;5;True;12;all;0;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;True;True;False;False;0;False;;False;False;False;False;False;False;False;False;False;False;False;False;True;1;LightMode=MotionVectors;False;False;0;;0;0;Standard;0;False;0
 Node;AmplifyShaderEditor.TemplateMultiPassMasterNode;2;-48,-272;Float;False;True;-1;3;UnityEditor.ShaderGraphUnlitGUI;0;13;Grid_Slate;2992e84f91cbeb14eab234972e07ea9d;True;Forward;0;1;Forward;8;False;False;False;False;False;False;False;False;False;False;False;False;True;0;False;;False;True;0;False;;False;False;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;False;False;False;True;4;RenderPipeline=UniversalPipeline;RenderType=Opaque=RenderType;Queue=Geometry=Queue=0;UniversalMaterialType=Unlit;True;5;True;12;all;0;False;True;1;1;False;;0;False;;1;1;False;;0;False;;False;False;False;False;False;False;False;False;False;False;False;False;False;False;True;True;True;True;True;0;False;;False;False;False;False;False;False;False;True;False;0;False;;255;False;;255;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;0;False;;False;True;1;False;;True;3;False;;True;True;0;False;;0;False;;True;1;LightMode=UniversalForwardOnly;False;False;0;;0;0;Standard;24;Surface;0;0;  Blend;0;0;Two Sided;1;0;Forward Only;0;0;Cast Shadows;0;638987192061154871;  Use Shadow Threshold;0;0;Receive Shadows;0;638987192073162487;Motion Vectors;0;638987192129785991;  Add Precomputed Velocity;0;0;GPU Instancing;1;0;LOD CrossFade;0;638987192099938841;Built-in Fog;0;638987192119377903;Meta Pass;0;0;Extra Pre Pass;0;0;Tessellation;0;0;  Phong;0;0;  Strength;0.5,False,;0;  Type;0;0;  Tess;16,False,;0;  Min;10,False,;0;  Max;25,False,;0;  Edge Length;16,False,;0;  Max Displacement;25,False,;0;Vertex Position,InvertActionOnDeselection;1;0;0;11;False;True;False;True;False;False;True;True;True;False;False;False;;False;0
-WireConnection;86;0;47;0
-WireConnection;86;1;81;0
-WireConnection;80;0;46;0
-WireConnection;80;1;81;0
+WireConnection;86;0;149;0
+WireConnection;86;1;198;0
+WireConnection;80;0;141;0
+WireConnection;80;1;198;0
 WireConnection;43;0;40;5
 WireConnection;43;1;42;0
 WireConnection;110;0;12;5
 WireConnection;110;1;40;5
-WireConnection;110;2;127;0
+WireConnection;110;2;195;0
 WireConnection;111;0;110;0
 WireConnection;111;1;43;0
-WireConnection;111;2;126;0
+WireConnection;111;2;194;0
+WireConnection;149;0;148;1
+WireConnection;149;1;148;2
+WireConnection;149;2;140;0
+WireConnection;141;0;144;1
+WireConnection;141;1;144;2
+WireConnection;141;2;140;0
+WireConnection;140;0;139;0
+WireConnection;128;0;106;0
+WireConnection;128;1;108;0
 WireConnection;108;0;110;0
 WireConnection;108;1;111;0
-WireConnection;126;1;80;0
-WireConnection;126;7;86;0
 WireConnection;106;0;103;0
 WireConnection;106;1;107;0
-WireConnection;128;0;108;0
-WireConnection;128;1;106;0
 WireConnection;103;0;104;0
 WireConnection;103;1;105;0
-WireConnection;127;1;46;0
-WireConnection;127;7;47;0
-WireConnection;2;2;108;0
+WireConnection;194;1;80;0
+WireConnection;194;7;86;0
+WireConnection;195;1;141;0
+WireConnection;195;7;149;0
+WireConnection;198;0;197;0
+WireConnection;198;1;81;0
+WireConnection;2;2;128;0
 ASEEND*/
-//CHKSM=33198C6DF35BABD3914B49CDCD0F898398F4E593
+//CHKSM=6391D7756248109C09A88E4CE27085A89FA549B5
