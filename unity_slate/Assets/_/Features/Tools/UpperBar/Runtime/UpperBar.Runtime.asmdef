@@ -6,11 +6,12 @@
         "UImGui",
         "WindowUtilWindows.Runtime",
         "WindowUtilMac.Runtime",
-        "SharedData.Runtime"
+        "SharedData.Runtime",
+        "Style.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": false,
+    "allowUnsafeCode": true,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
