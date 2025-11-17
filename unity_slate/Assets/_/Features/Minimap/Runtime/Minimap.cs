@@ -64,12 +64,12 @@ namespace Minimap.Runtime
 
             if (targetCamera.orthographic)
             {
-                zoomNormalized = Mathf.InverseLerp(zoomMax, zoomMin, targetCamera.orthographicSize);
+                zoomNormalized = Mathf.InverseLerp(zoomMin, zoomMax, targetCamera.orthographicSize);
             }
             else
             {
                 float camZ = Mathf.Abs(targetCamera.transform.position.z);
-                zoomNormalized = Mathf.InverseLerp(zoomMax, zoomMin, camZ);
+                zoomNormalized = Mathf.InverseLerp(zoomMin, zoomMax, camZ);
             }
 
             float minView = 0.05f;
