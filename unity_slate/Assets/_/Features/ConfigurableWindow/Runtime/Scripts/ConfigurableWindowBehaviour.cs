@@ -47,40 +47,66 @@ public class ConfigurableWindowBehaviour : WindowBaseBehaviour
 
         private void DrawWindowTabs()
         {
-            foreach (var tab in _tabs)
-            {
-                WindowPosManager.RegisterWindow(tab);
-                WindowPosManager.SyncWindowPosition(tab);
-            }
-            
             if (ImGui.BeginTabBar("##tabs"))
             {
-                if (ImGui.BeginTabItem(_tabs[0]))
+                for (int i = 0; i < _tabs.Length; i++)
                 {
-                    DrawDebugCommands();
-                    ImGui.EndTabItem();
-                }
-
-                if (ImGui.BeginTabItem(_tabs[1]))
-                {
-                    DrawColorPicker();
-                    ImGui.EndTabItem();
-                }
-
-                if (ImGui.BeginTabItem(_tabs[2]))
-                {
-                    jsonLoader.DrawUI();
-                    ImGui.EndTabItem();
-                }
-
-                if (ImGui.BeginTabItem(_tabs[3]))
-                {
-                    _localisation.DrawUI();
-                    ImGui.EndTabItem();
-                }
-
+                    // WindowPosManager.RegisterWindow(tab);
+                    // WindowPosManager.SyncWindowPosition(tab);
+                    if (ImGui.BeginTabItem(_tabs[i]))
+                    {
+                        switch (i)
+                        {
+                            case 0:
+                                DrawDebugCommands();
+                                break;
+                            case 1:
+                                DrawColorPicker();
+                                break;
+                            case 2:
+                                jsonLoader.DrawUI();
+                                break;
+                            case 3:
+                                _localisation.DrawUI();
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+                        ImGui.EndTabItem();
+                    }
+                } 
                 ImGui.EndTabBar();
             }
+            
+            
+            // if (ImGui.BeginTabBar("##tabs"))
+            // {
+            //     if (ImGui.BeginTabItem(_tabs[0]))
+            //     {
+            //         DrawDebugCommands();
+            //         ImGui.EndTabItem();
+            //     }
+            //
+            //     if (ImGui.BeginTabItem(_tabs[1]))
+            //     {
+            //         DrawColorPicker();
+            //         ImGui.EndTabItem();
+            //     }
+            //
+            //     if (ImGui.BeginTabItem(_tabs[2]))
+            //     {
+            //         jsonLoader.DrawUI();
+            //         ImGui.EndTabItem();
+            //     }
+            //
+            //     if (ImGui.BeginTabItem(_tabs[3]))
+            //     {
+            //         _localisation.DrawUI();
+            //         ImGui.EndTabItem();
+            //     }
+            //
+            //     ImGui.EndTabBar();
+            // }
         }
         private void DrawDebugCommands()
         {
