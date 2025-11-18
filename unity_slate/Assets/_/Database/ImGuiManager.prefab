@@ -70,8 +70,20 @@ MonoBehaviour:
     ConfigDockingTransparentPayload: 0
   _fontCustomInitializer:
     m_PersistentCalls:
-      m_Calls: []
-  _fontAtlasConfiguration: {fileID: 11400000, guid: 11059524f3ab845babf6a68aa2b2f06b, type: 2}
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: Style.Runtime.FontInitializer, Style.Runtime
+        m_MethodName: AddToolbarFont
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  _fontAtlasConfiguration: {fileID: 0}
   _shaders: {fileID: 11400000, guid: 0796def425e894752add80478913fffa, type: 2}
   _style: {fileID: 11400000, guid: 4ce70a66679a34e6895c45e822e23048, type: 2}
   _cursorShapes: {fileID: 11400000, guid: 5d3ad54851b8840fdb60bb0691c45276, type: 2}
