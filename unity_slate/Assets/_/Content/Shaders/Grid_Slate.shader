@@ -1433,7 +1433,7 @@ Node;AmplifyShaderEditor.SaturateNode;140;-3440,-448;Inherit;False;1;0;FLOAT;0;F
 Node;AmplifyShaderEditor.RegisterLocalVarNode;207;-3264,-448;Inherit;False;ZoomNormalised;-1;True;1;0;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.RangedFloatNode;139;-3680,-448;Inherit;False;Global;ZoomNormalised;ZoomNormalised;8;0;Create;True;0;0;0;False;0;False;0;0;0;0;0;1;FLOAT;0
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;86;-2624,64;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.Vector2Node;148;-3312,-352;Inherit;False;Property;_GridWidthMinMax;Grid Width Min Max;1;0;Create;True;0;0;0;False;0;False;3.3,8.5;5,1.9;0;3;FLOAT2;0;FLOAT;1;FLOAT;2
+Node;AmplifyShaderEditor.Vector2Node;148;-3312,-352;Inherit;False;Property;_GridWidthMinMax;Grid Width Min Max;1;0;Create;True;0;0;0;False;0;False;3.3,8.5;3,1.9;0;3;FLOAT2;0;FLOAT;1;FLOAT;2
 Node;AmplifyShaderEditor.TFHCRemapNode;214;-2816,240;Inherit;False;5;0;FLOAT;0;False;1;FLOAT;0.7;False;2;FLOAT;1;False;3;FLOAT;0;False;4;FLOAT;1;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SaturateNode;210;-2624,240;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.RangedFloatNode;216;-3120,320;Inherit;False;Constant;_2ndGridOpacityThreshold;2ndGridOpacityThreshold;8;0;Create;True;0;0;0;False;0;False;0.7;0;0;0;0;1;FLOAT;0
@@ -1489,4 +1489,4 @@ WireConnection;214;1;216;0
 WireConnection;210;0;214;0
 WireConnection;2;2;128;0
 ASEEND*/
-//CHKSM=4A15F64B753CECCB1BB5D3058218A2EBC3157C8C
+//CHKSM=6F53CD07F346796DB1CBBF9F8FF5E2E65AB8044C
