@@ -6,7 +6,6 @@ namespace Style.Runtime
 {
     public class FontSettingsPanel
     {
-
         #region GUI
 
             public void Draw()
@@ -30,13 +29,18 @@ namespace Style.Runtime
                 }
 
                 ImGui.Spacing();
-                ImGui.Text("Size");
+                var scale = _previewScale;
+                if (ImGui.SliderFloat("##FontScale",
+                        ref scale,
+                        MinScale,
+                        MaxScale,
+                        $"x{scale:0.00}",
+                        ImGuiSliderFlags.AlwaysClamp))
+                {
+                    _previewScale = scale;
+                }
                 ImGui.SameLine();
-                ImGui.SliderFloat("##FontScale",
-                    ref _previewScale,
-                    MinScale,
-                    MaxScale,
-                    $"x{_previewScale:0.00}");
+                ImGui.Text("FontScale");
 
                 ImGui.Separator();
                 ImGui.Text("Preview :");
@@ -54,13 +58,12 @@ namespace Style.Runtime
                 ImGui.Spacing();
                 ImGui.Separator();
 
-                ImGui.Text($"Current : {FontRegistry.m_currentFont})");
+                ImGui.Text($"Current : {FontRegistry.m_currentFont}  {FontRegistry.m_fontScale:0.00}");
 
                 if (!ImGui.Button("Apply##Font")) return;
                 FontRegistry.m_currentFont = _previewFont;
                 FontRegistry.m_fontScale = Mathf.Clamp(_previewScale, MinScale, MaxScale);
                 FontRegistry.SavePrefs();
-                Debug.Log($"[Settings.Font] Apply font={FontRegistry.m_currentFont}, scale={_previewScale:0.00}");
             }
 
             private void InitOnce()
@@ -90,8 +93,8 @@ namespace Style.Runtime
             private FontKind _previewFont;
             private float _previewScale;
 
-            private const float MinScale = 0.5f;
-            private const float MaxScale = 10.0f;
+            private const float MinScale = 0.75f;
+            private const float MaxScale = 2.0f;
 
         #endregion
     }
