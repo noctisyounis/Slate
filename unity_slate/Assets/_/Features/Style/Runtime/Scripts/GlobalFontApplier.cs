@@ -18,6 +18,8 @@ namespace Style.Runtime
             private void OnLayout(UImGui.UImGui ui)
             {
                 FontRegistry.ApplyAsDefault();
+                StyleRegistry.ApplyToImGui(); 
+                ColorRegistry.ApplyOnce();
             }
 
         #endregion

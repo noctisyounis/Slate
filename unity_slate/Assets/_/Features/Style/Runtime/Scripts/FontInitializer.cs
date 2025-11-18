@@ -11,11 +11,12 @@ namespace Style.Runtime
         
             [Header("Font settings")]
             [Tooltip("Chemin Unity vers la font (relative au projet)")]
+            public string m_defaultRelativePath = "_/Content/Fonts/droid-sans.regular.ttf";
             public string m_notoRelativePath = "_/Content/Fonts/NotoSansSymbols2-Regular.ttf";
             public string m_dysRelativePath  = "_/Content/Fonts/OpenDyslexic3-Regular.ttf";
 
             [Tooltip("Taille de la font ImGui")]
-            public float m_fontSize = 16f;
+            public float m_fontSize = 22f;
 
         #endregion
 
@@ -23,17 +24,12 @@ namespace Style.Runtime
         
             public void AddToolbarFont(ImGuiIOPtr io)
             {
+                var defaultFont = Path.Combine(Application.dataPath, m_defaultRelativePath);
                 var notoPath = Path.Combine(Application.dataPath, m_notoRelativePath);
-                var dysPath  = Path.Combine(Application.dataPath, m_dysRelativePath);
+                var dysPath = Path.Combine(Application.dataPath, m_dysRelativePath);
 
                 unsafe
                 {
-                    if ((IntPtr)FontRegistry.m_defaultFont.NativePtr == IntPtr.Zero &&
-                        io.Fonts.Fonts.Size > 0)
-                    {
-                        FontRegistry.m_defaultFont = io.Fonts.Fonts[0];
-                    }
-                    
                     var ranges = new ushort[]
                     {
                         0x0020, 0x00FF,
@@ -44,13 +40,25 @@ namespace Style.Runtime
 
                     fixed (ushort* pRanges = ranges)
                     {
+                        if (File.Exists(defaultFont))
+                        {
+                            var fDefault = io.Fonts.AddFontFromFileTTF(
+                                defaultFont,
+                                m_fontSize * 1.5f,
+                                null,
+                                (IntPtr)pRanges
+                            );
+                            
+                            FontRegistry.m_defaultFont = fDefault;
+                        }
+                        
                         if (File.Exists(notoPath))
                         {
                             var fNoto = io.Fonts.AddFontFromFileTTF(
                                 notoPath,
-                                m_fontSize,
+                                m_fontSize * 1.5f,
                                 null,
-                                (System.IntPtr)pRanges
+                                (IntPtr)pRanges
                             );
                             
                             FontRegistry.m_notoFont = fNoto;
@@ -60,9 +68,9 @@ namespace Style.Runtime
                         {
                             var fDys = io.Fonts.AddFontFromFileTTF(
                                 dysPath,
-                                m_fontSize,
+                                m_fontSize * 1.5f,
                                 null,
-                                (System.IntPtr)pRanges
+                                (IntPtr)pRanges
                             );
                             
                             FontRegistry.m_openDysFont = fDys;

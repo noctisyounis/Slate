@@ -44,15 +44,27 @@ namespace Style.Runtime
 
                 if (ImGui.BeginTabBar("SettingsTabs"))
                 {
-                    if (ImGui.BeginTabItem("Font"))
+                    if (ImGui.BeginTabItem("Fonts"))
                     {
                         _fontPanel.Draw();
                         ImGui.EndTabItem();
                     }
 
-                    if (ImGui.BeginTabItem("Style"))
+                    if (ImGui.BeginTabItem("Styles"))
                     {
                         _stylePanel.Draw();
+                        ImGui.EndTabItem();
+                    }
+                    
+                    if (ImGui.BeginTabItem("Colors"))
+                    {
+                        _colorPanel.Draw();
+                        ImGui.EndTabItem();
+                    }
+                    
+                    if (ImGui.BeginTabItem("Preset Manager"))
+                    {
+                        _pmPanel.Draw();
                         ImGui.EndTabItem();
                     }
 
@@ -68,6 +80,8 @@ namespace Style.Runtime
 
             private readonly FontSettingsPanel  _fontPanel  = new FontSettingsPanel();
             private readonly StyleSettingsPanel _stylePanel = new StyleSettingsPanel();
+            private readonly ColorSettingsPanel _colorPanel = new ColorSettingsPanel();
+            private readonly PresetManagerPanel _pmPanel = new PresetManagerPanel();
 
         #endregion
     }
