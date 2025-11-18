@@ -1,25 +1,41 @@
 using System.Collections.Generic;
 using ImGuiNET;
+using Slate.Runtime;
 using UnityEngine;
 
-public class DrawGraph : MonoBehaviour
+public class DrawGraph : WindowBaseBehaviour
 {
-    private void OnEnable() =>
-        UImGui.UImGuiUtility.Layout += OnImGuiLayout;
-
-    private void OnDisable() =>
-        UImGui.UImGuiUtility.Layout -= OnImGuiLayout;
-
-    private void OnImGuiLayout(UImGui.UImGui uImGui)
+    protected override void WindowLayout()
     {
-        ImGui.Begin("DrawGraph");
-
         var drawList = ImGui.GetWindowDrawList();
 
         Vector2 winContentPos = ImGui.GetCursorScreenPos(); 
         Vector2 mouse = ImGui.GetIO().MousePos;
         Vector2 mouseLocal = mouse - winContentPos;
 
+        if (ImGui.Button("None"))
+        {
+            action = DrawAction.None;
+        }
+        ImGui.SameLine();
+        
+        if (ImGui.Button("Draw Rectangle"))
+        {
+            action = DrawAction.Rectangle;
+        }
+        ImGui.SameLine();
+        
+        if (ImGui.Button("Draw Line"))
+        {
+            action = DrawAction.Line;
+        }
+        ImGui.SameLine();
+        if (ImGui.Button("Erase"))
+        {
+            lines.Clear();
+            rects.Clear();
+        }
+        
         // Reset drag if action switched
         if (action != lastAction)
         {
@@ -65,9 +81,8 @@ public class DrawGraph : MonoBehaviour
         }
 
         ImGui.Dummy(new Vector2(800, 600));
-        ImGui.End();
     }
-
+    
     // DRAW LINE
     private void DrawLine(Vector2 mouseLocal, Vector2 origin, ImDrawListPtr drawList)
     {
@@ -158,7 +173,15 @@ public class DrawGraph : MonoBehaviour
 
     private class RectData
     {
-        public Vector2 pos, size;
+        public Vector2 pos;       // top-left
+        public Vector2 size;      // width/height
+        public bool selected = false;
+
+        public Vector2 Center => pos + size * 0.5f;
+
+        public bool Contains(Vector2 point) =>
+            point.x >= pos.x && point.x <= pos.x + size.x &&
+            point.y >= pos.y && point.y <= pos.y + size.y;
     }
 
     private List<LineData> lines = new();
