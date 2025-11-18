@@ -3,7 +3,8 @@
     "rootNamespace": "Localisation.Runtime",
     "references": [
         "Foundation.Runtime",
-        "Manager.Runtime"
+        "Manager.Runtime",
+        "Slate.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
