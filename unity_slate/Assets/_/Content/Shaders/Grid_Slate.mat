@@ -42,9 +42,10 @@ Material:
     m_Floats:
     - _AddPrecomputedVelocity: 1
     - _AlphaCutoff: 0.5
+    - _DefaultOpacity: 1
     - _DrawDistance: 25
     - _DrawSecondaryGrid: 1
-    - _Float0: 57
+    - _Float0: 1
     - _Float1: 5
     - _Float11: 1
     - _GridCount: 1.01
@@ -62,16 +63,17 @@ Material:
     - _SecondaryGridColourAttenuation: 0.5
     - _SecondaryGridPercentage: 20
     - _SecondaryGridRatio: 0.2
+    - _SecondaryGridSubdivisions: 5
     - _SecondaryGridWidthandSpacingRatio: 0.2
     - _SecondaryLinesAttenuation: 0.5
     - _SmallLinesAttenuation: 0
     - __dirty: 0
     - _test: 10
     m_Colors:
-    - _BackgroundColor: {r: 0.105882294, g: 0.10980386, b: 0.12156855, a: 1}
+    - _BackgroundColor: {r: 0.105882235, g: 0.10980379, b: 0.12156849, a: 1}
     - _Color0: {r: 1, g: 0, b: 0, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
-    - _GridColor: {r: 0.056603737, g: 0.056603737, b: 0.056603737, a: 0}
+    - _GridColor: {r: 0.056603692, g: 0.056603692, b: 0.056603692, a: 0}
     - _GridSpacingMinMax: {r: 80, g: 57, b: 0, a: 0}
     - _GridWidthMinMax: {r: 3, g: 1.9, b: 0, a: 0}
     - _LinesColor: {r: 0.05660379, g: 0.05660379, b: 0.05660379, a: 0}
