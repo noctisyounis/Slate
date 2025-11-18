@@ -3,6 +3,7 @@ using ImGuiNET;
 using Foundation.Runtime;
 using UImGui;
 using SharedData.Runtime;
+using Style.Runtime;
 
 namespace UpperBar.Runtime
 {
@@ -40,6 +41,9 @@ namespace UpperBar.Runtime
             private void OnLayout(UImGui.UImGui ui)
             {
                 if (m_state == null) return;
+                
+                var font = FontRegistry.GetCurrentFont();
+                ImGui.PushFont(font);
 
                 var isOpen = m_state.m_isToolbarDisplayed;
                 var y = m_state.m_y;
@@ -84,6 +88,8 @@ namespace UpperBar.Runtime
 
                 ImGui.SetCursorPosY(lineY + ImGui.GetFrameHeight());
                 ImGui.End();
+                
+                ImGui.PopFont();
                 ImGui.PopStyleColor();
                 ImGui.PopStyleVar(2);
             }

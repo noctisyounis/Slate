@@ -4,6 +4,7 @@ using System;
 using Slate.Runtime;
 using SharedData.Runtime;
 using System.Runtime.InteropServices;
+using Style.Runtime;
 
 namespace UpperBar.Runtime
 {
@@ -23,6 +24,9 @@ namespace UpperBar.Runtime
 
             [Header("State (SO)")]
             public ToolbarSharedState m_state;
+            
+            [Header("Windows")]
+            [SerializeField] private SettingsWindow m_SettingsWindow;
 
             [Header("Boot Guard")]
             [SerializeField] public float m_bootGuardSeconds = 0.35f;
@@ -71,8 +75,8 @@ namespace UpperBar.Runtime
                 m_prevMode = Screen.fullScreenMode;
 
                 m_hiddenY = -Mathf.Max(1f, m_barHeight);
-                m_y       = m_hiddenY;
-                m_isOpen  = false;
+                m_y = m_hiddenY;
+                m_isOpen = false;
 
                 m_bootArmed = false;
                 m_bootStartTime = Time.unscaledTime;
@@ -151,22 +155,6 @@ namespace UpperBar.Runtime
                 else { m_vy = 0f; m_y = m_hiddenY; }
 
                 m_state.m_isPointerInToolbar = (mouseY <= Mathf.Max(m_topRevealZone, m_barHeight));
-
-                if (m_prevMode != Screen.fullScreenMode)
-                {
-                    m_prevMode = Screen.fullScreenMode;
-                    if (Screen.fullScreenMode == FullScreenMode.Windowed)
-                    { m_reapplyScheduled = true; m_reapplyAt = Time.unscaledTime + 0.35f; }
-                }
-                if (m_reapplyScheduled && Time.unscaledTime >= m_reapplyAt)
-                {
-                    m_reapplyScheduled = false;
-#if UNITY_STANDALONE_WIN && !UNITY_EDITOR
-                    StartCoroutine(ReapplyNoBorderWinNextFrame());
-#elif UNITY_STANDALONE_OSX && !UNITY_EDITOR
-                    StartCoroutine(ReapplyBorderlessMacNextFrame());
-#endif
-                }
                 
                 if (m_state.m_requestMinimize)
                 {
@@ -186,11 +174,31 @@ namespace UpperBar.Runtime
 
                 m_state.m_isToolbarDisplayed = m_isOpen;
                 m_state.m_y = m_y;
+                
+                HandleMenuCommands();
             }
 
         #endregion
 
         #region API
+        
+            private void HandleMenuCommands()
+            {
+                if (m_state == null) return;
+                if (!m_state.m_menuCommandPending) return;
+
+                var cmd = m_state.m_menuCommandId;
+                m_state.m_menuCommandPending = false;
+                m_state.m_menuCommandId = null;
+
+                switch (cmd)
+                {
+                    case "settings":
+                        if (m_SettingsWindow != null)
+                            m_SettingsWindow.ToggleVisible();
+                        break;
+                }
+        }
 
             public void MinimizeWindow()
             {
@@ -214,9 +222,12 @@ namespace UpperBar.Runtime
                     var w = m_savedWindowedRes ? m_windowedW : 1280;
                     var h = m_savedWindowedRes ? m_windowedH : 720;
                     Screen.SetResolution(w, h, FullScreenMode.Windowed);
-
-                    m_reapplyScheduled = true;
-                    m_reapplyAt = Time.unscaledTime + 0.35f;
+                    
+#if UNITY_STANDALONE_WIN && !UNITY_EDITOR
+                    StartCoroutine(ReapplyNoBorderWinNextFrame());
+#elif UNITY_STANDALONE_OSX && !UNITY_EDITOR
+                    StartCoroutine(ReapplyBorderlessMacNextFrame());
+#endif
                 }
                 else
                 {
@@ -242,20 +253,30 @@ namespace UpperBar.Runtime
 #if UNITY_STANDALONE_WIN && !UNITY_EDITOR
             private System.Collections.IEnumerator ReapplyNoBorderWinNextFrame()
             {
-                yield return null; yield return null;
-            var go = GameObject.Find("BorderRemover") ?? new GameObject("BorderRemover");
-            var nb = go.GetComponent<NoBorderWin>(); if (nb == null) nb = go.AddComponent<NoBorderWin>();
-            var mi = typeof(NoBorderWin).GetMethod("Apply",
-                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
-            if (mi != null) { try { mi.Invoke(nb, null); } catch {} }
+                yield return null;
+                yield return null;
+
+                var go = GameObject.Find("BorderRemover");
+                if (go == null)
+                    go = new GameObject("BorderRemover");
+
+                var old = go.GetComponent<NoBorderWin>();
+                if (old != null)
+                {
+                    UnityEngine.Object.Destroy(old);
+                    yield return null;
+                }
+
+                go.AddComponent<NoBorderWin>();
             }
 #endif
 
 #if UNITY_STANDALONE_OSX && !UNITY_EDITOR
             private System.Collections.IEnumerator ReapplyBorderlessMacNextFrame()
             {
-                yield return null; yield return null;
-            try { MakeWindowBorderless(); MakeWindowNotMovable(); } catch {}
+                yield return null;
+                yield return null;
+                try { MakeWindowBorderless(); MakeWindowNotMovable(); } catch {}
             }
 #endif
 

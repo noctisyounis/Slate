@@ -109,7 +109,7 @@ namespace UpperBar.Runtime
             {
                 if (state == null) return false;
                 var id = "##menu_" + label;
-                var preview = EllipseToFit(label + "...", fixedWidth);
+                var preview = EllipseToFit(label + "…", fixedWidth);
                 
                 var style = ImGui.GetStyle();
                 var textW = ImGui.CalcTextSize(preview).x;
@@ -184,7 +184,7 @@ namespace UpperBar.Runtime
                         continue;
                     }
 
-                    if (!ImGui.Selectable(n.m_label ?? "...", false, ImGuiSelectableFlags.SpanAllColumns))
+                    if (!ImGui.Selectable(n.m_label ?? "…", false, ImGuiSelectableFlags.SpanAllColumns))
                         continue;
                     
                     n.m_onClick?.Invoke();
