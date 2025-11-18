@@ -1,0 +1,17 @@
+{
+    "name": "Style.Runtime",
+    "rootNamespace": "Style.Runtime",
+    "references": [
+        "GUID:56a25bc3d96654d6696bd2bf7846171f",
+        "GUID:0c859d0963fcc454baed7e047bb40422"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

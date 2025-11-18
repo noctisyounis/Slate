@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9bfaacc4cfb2443eb6971ada3e70e25c, type: 3}
   m_Name: ToolbarSharedState
   m_EditorClassIdentifier: 
-  m_isToolbarDisplayed: 0
-  m_y: -32
+  m_isToolbarDisplayed: 1
+  m_y: 0
   m_isAnyMenuOpen: 0
-  m_isPointerInToolbar: 0
+  m_isPointerInToolbar: 1
   m_menusTotalWidth: 230
   m_popupMaxHeight: 280
   m_menuOneLabel: File
