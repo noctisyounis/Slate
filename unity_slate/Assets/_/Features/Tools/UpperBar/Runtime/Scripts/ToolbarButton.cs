@@ -4,6 +4,7 @@ using System;
 using Foundation.Runtime;
 using SharedData.Runtime;
 using System.Runtime.InteropServices;
+using Style.Runtime;
 
 namespace UpperBar.Runtime
 {
@@ -12,8 +13,8 @@ namespace UpperBar.Runtime
     {
         #region Header
 
-        [Header("State (SO)")]
-        public ToolbarSharedState m_state;
+            [Header("State (SO)")]
+            public ToolbarSharedState m_state;
 
         #endregion
         
@@ -22,6 +23,8 @@ namespace UpperBar.Runtime
             public void DrawRightAligned()
             {
                 if (m_state == null) return;
+                
+                ImGui.PushFont(FontRegistry.m_notoFont);
 
                 var rightGroupWidth =
                     GhostButtonWidth(m_state.m_btnMinLabel)
@@ -40,6 +43,8 @@ namespace UpperBar.Runtime
                 DrawGhostButton(m_state.m_btnBorderlessLabel, () => m_state.m_requestToggleBorderless  = true);
                 ImGui.SameLine(0f, 10f);
                 DrawGhostButton(m_state.m_btnQuitLabel, () => m_state.m_requestQuit = true);
+                
+                ImGui.PopFont();
             }
             
         #endregion
@@ -55,10 +60,12 @@ namespace UpperBar.Runtime
 
             public static void DrawGhostButton(string label, Action onClick)
             {
-                ImGui.PushStyleColor(ImGuiCol.Button, new Vector4(0, 0, 0, 0));
-                ImGui.PushStyleColor(ImGuiCol.ButtonHovered, new Vector4(1, 1, 1, 0.08f));
-                ImGui.PushStyleColor(ImGuiCol.ButtonActive, new Vector4(1, 1, 1, 0.12f));
+                ImGui.PushStyleColor(ImGuiCol.Button, ThemeRegistry.GhostButtonColor);
+                ImGui.PushStyleColor(ImGuiCol.ButtonHovered, ThemeRegistry.GhostButtonHoverColor);
+                ImGui.PushStyleColor(ImGuiCol.ButtonActive, ThemeRegistry.GhostButtonActiveColor);
+                
                 if (ImGui.Button(label)) onClick?.Invoke();
+                
                 ImGui.PopStyleColor(3);
             }
             

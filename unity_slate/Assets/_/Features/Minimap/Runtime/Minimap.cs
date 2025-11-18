@@ -12,7 +12,7 @@ namespace Minimap.Runtime
         [SerializeField] float referenceHeight = 1080f;
 
         [Header("Zoom Settings")]
-        [SerializeField] Camera targetCamera;
+        private Camera targetCamera;
         [SerializeField] float zoomMin = 5f;
         [SerializeField] float zoomMax = 50f;
 
@@ -42,6 +42,8 @@ namespace Minimap.Runtime
 
         void Start()
         {
+            targetCamera = Camera.main;
+
             if (m_camera_position)
                 lastPlayerPos = m_camera_position.position;
         }

@@ -1,0 +1,18 @@
+{
+    "name": "Nodes.Runtime",
+    "rootNamespace": "Nodes.Runtime",
+    "references": [
+        "GUID:56a25bc3d96654d6696bd2bf7846171f",
+        "GUID:233d6b86d1f554e43857db197af0595d",
+        "GUID:70ee7783ecf9646f99ae250415f2a80b"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

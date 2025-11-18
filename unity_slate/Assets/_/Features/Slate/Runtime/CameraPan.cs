@@ -58,6 +58,8 @@ namespace Slate.Runtime
             
             _keyboardPanDelta = Vector3.zero;
             _mousePanDelta = Vector3.zero;
+
+//            Debug.Log("Midi input: " + _midiInput);
         }
 
 

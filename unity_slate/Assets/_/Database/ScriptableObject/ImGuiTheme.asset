@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b158b6d2b57c459cab945d5c49d9dff6, type: 3}
+  m_Name: ImGuiTheme
+  m_EditorClassIdentifier: 
+  alpha: 1
+  windowPadding: {x: 8, y: 8}
+  windowRounding: 0
+  windowBorderSize: 1
+  windowMinSize: {x: 32, y: 32}
+  windowTitleAlign: {x: 0, y: 0.5}
+  childRounding: 0
+  childBorderSize: 0
+  popupRounding: 0
+  popupBorderSize: 0
+  framePadding: {x: 4, y: 3}
+  frameRounding: 0
+  frameBorderSize: 0
+  itemSpacing: {x: 8, y: 4}
+  itemInnerSpacing: {x: 4, y: 4}
+  cellPadding: {x: 0, y: 0}
+  indentSpacing: 21
+  scrollbarSize: 14
+  scrollbarRounding: 9
+  grabMinSize: 10
+  grabRounding: 0
+  tabRounding: 4
+  tabBorderSize: 0
+  buttonTextAlign: {x: 0.5, y: 0.5}
+  selectableTextAlign: {x: 0, y: 0}
+  displayWindowPadding: {x: 19, y: 19}
+  displaySafeAreaPadding: {x: 3, y: 3}
+  mouseCursorScale: 1
+  curveTessellationTol: 2
+  circleTessellationMaxError: 2
+  text: {r: 1, g: 1, b: 1, a: 1}
+  textDisabled: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+  windowBg: {r: 0.06, g: 0.06, b: 0.06, a: 1}
+  childBg: {r: 0, g: 0, b: 0, a: 0}
+  popupBg: {r: 0.08, g: 0.08, b: 0.08, a: 0.94}
+  border: {r: 0.43, g: 0.43, b: 0.5, a: 0.5}
+  borderShadow: {r: 0, g: 0, b: 0, a: 0}
+  frameBg: {r: 0.2, g: 0.25, b: 0.3, a: 1}
+  frameBgHovered: {r: 0.26, g: 0.59, b: 0.98, a: 1}
+  frameBgActive: {r: 0.26, g: 0.59, b: 0.98, a: 1}
+  button: {r: 0.26, g: 0.59, b: 0.98, a: 0.4}
+  buttonHovered: {r: 0.26, g: 0.59, b: 0.98, a: 1}
+  buttonActive: {r: 0.06, g: 0.53, b: 0.98, a: 1}
+  header: {r: 0.26, g: 0.59, b: 0.98, a: 0.31}
+  headerHovered: {r: 0.26, g: 0.59, b: 0.98, a: 0.8}
+  headerActive: {r: 0.26, g: 0.59, b: 0.98, a: 1}
+  menuBarBg: {r: 0.14, g: 0.14, b: 0.14, a: 1}
+  titleBg: {r: 0.04, g: 0.04, b: 0.04, a: 1}
+  titleBgActive: {r: 0.16, g: 0.29, b: 0.48, a: 1}
+  titleBgCollapsed: {r: 0, g: 0, b: 0, a: 0.51}
+  ghostButton: {r: 0, g: 0, b: 0, a: 0}
+  ghostHover: {r: 1, g: 1, b: 1, a: 0.08}
+  ghostActive: {r: 1, g: 1, b: 1, a: 0.12}
