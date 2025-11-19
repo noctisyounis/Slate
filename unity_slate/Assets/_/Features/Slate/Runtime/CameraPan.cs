@@ -161,6 +161,14 @@ namespace Slate.Runtime
         {
             _zoomNormalized = Remap(_camera.orthographicSize, 8, 2, 0, 1);
             _settings.m_zoomNormalized = _zoomNormalized;
+            
+            var isMinOrMaxZoom = Mathf.Approximately(_zoomNormalized, 0) || Mathf.Approximately(_zoomNormalized, 1); 
+            var signedNormalizedZoom = Mathf.Sign(_zoomDelta) * _zoomNormalized;
+            var scaleFactor = 1f + _zoomNormalized;
+            if (!isMinOrMaxZoom) 
+                WindowPosManager.ResizeWindows(scaleFactor);
+
+            // WindowPosManager.ResizeWindows(_zoomNormalized);
 
             Shader.SetGlobalFloat("ZoomNormalised", _zoomNormalized); // update shader global value
         }
