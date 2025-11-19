@@ -1,19 +1,24 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Minimap.Runtime
 {
     public static class ImguiWindowsTracker
     {
-        public static readonly List<Rect> OpenWindows = new List<Rect>();
-
-        public static void RegisterWindow(Rect rect)
+        public class WindowInfo
         {
-            OpenWindows.Add(rect);
+            public string name;
+            public Rect rect;
         }
 
-        public static void Clear()
+        public static Dictionary<string, WindowInfo> Windows = new();
+
+        public static void UpdateWindow(string name, Rect rect)
         {
-            OpenWindows.Clear();
+            if (!Windows.ContainsKey(name))
+                Windows[name] = new WindowInfo { name = name };
+
+            Windows[name].rect = rect;
         }
     }
 }
