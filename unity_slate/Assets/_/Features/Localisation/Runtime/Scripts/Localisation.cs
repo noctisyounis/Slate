@@ -14,70 +14,42 @@ namespace Localisation.Runtime
     {
         #region Main Methods
 
-        public void DrawDebug()
-        {
-            ImGui.Begin("Debug");
-            ImGui.Text($"Current directory : {dir}");
-            ImGui.Text($"File directory : {fileDir}");
-            ImGui.Text($"File Name : {fileName}");
-            ImGui.Text($"Json Localisations : {json}");
-            ImGui.End();
-        }
+            public void DrawDebug()
+            {
+                if (!_loaded) return;
+                ImGui.Begin("Localisation Debug");
+                ImGui.Text($"Current directory : {dir}");
+                ImGui.Text($"Parent directory : {parentDir}");
+                ImGui.Text($"Parent directory + : {parentDirPlus}");
+                ImGui.Text($"File directory : {fileDir}");
+                ImGui.Text($"File Name : {fileName}");
+                //ImGui.Text($"Selected Language : {_languages[_selectedLanguage]}");
+                ImGui.Text($"Json Localisations : {json}");
+                ImGui.End();
+            }
             public void DrawUI()
             {
                 if (!_loaded)
                 {
                     _loaded = true;
-                    InitializeDefault();
                     LoadLocalizationData();
                     InitializeGroups();
                 }
                 
                 WindowPosManager.RegisterWindow("Localisation");
                 
-                if (ImGui.Begin("Localisation", ImGuiWindowFlags.NoCollapse | ImGuiWindowFlags.DockNodeHost))
-                {
-                    WindowPosManager.SyncWindowPosition("Localization Window###LocalizationUniqueId");
-
-                    ImGui.BeginChild("LeftPanel", new Vector2(leftWidth, 0));
-                    DrawHierarchyPanel();
-                    ImGui.EndChild();
-
-                    ImGui.SameLine();
-                    
-                    Vector2 splitterMin = ImGui.GetCursorScreenPos();
-                    Vector2 splitterMax = new Vector2(splitterMin.x + splitterWidth, splitterMin.y + ImGui.GetContentRegionAvail().y);
-
-                    ImGui.InvisibleButton("Splitter", new Vector2(splitterWidth, -1));
-                    if (ImGui.IsItemActive())
-                    {
-                        leftWidth += ImGui.GetIO().MouseDelta.x;
-                        leftWidth = Math.Clamp(leftWidth, minLeftWidth, maxLeftWidth);
-                    }
-
-                    var drawList = ImGui.GetWindowDrawList();
-                    uint color = ImGui.GetColorU32(new Vector4(1, 1, 1, 0.3f));
-
-                    drawList.AddLine(
-                        new Vector2(splitterMin.x + splitterWidth * 0.5f, splitterMin.y),
-                        new Vector2(splitterMin.x + splitterWidth * 0.5f, splitterMax.y),
-                        color,
-                        1.0f 
-                    );
-
-                    
-                    ImGui.SameLine();
-
-                    ImGui.BeginChild("RightPanel", new Vector2(0, 0));
-                    DrawContentPanel();
-                    ImGui.EndChild();
-
-                    ImGui.Separator();
-
-                }
-
+                DrawLocalisationWindow();
                 
-                ImGui.End();    
+                if (_showAddLanguage)
+                { 
+                    CenterPopup();
+                    DrawShowAddLanguagePopup();
+                }
+                if (_showConfirmDeleteGroup)
+                {
+                    CenterPopup();
+                    DrawDeleteGroupButton();
+                }
             }
         #endregion
 
@@ -85,6 +57,54 @@ namespace Localisation.Runtime
 
             private bool shouldStopEditing = false;
 
+            private void DrawLocalisationWindow()
+            {
+                ImGui.Begin("Localisation", ImGuiWindowFlags.NoDocking);
+                
+                WindowPosManager.SyncWindowPosition("Localisation");
+
+                //Left pannel
+                ImGui.BeginChild("LeftPanel", new Vector2(leftWidth, 0));
+                DrawHierarchyPanel();
+                ImGui.EndChild();
+                ImGui.SameLine();
+                
+                //Splitter
+                DrawSplitter();
+                ImGui.SameLine();
+                
+                //Right pannel
+                ImGui.BeginChild("RightPanel", new Vector2(0, 0));
+                DrawContentPanel();
+                ImGui.EndChild();
+                
+                ImGui.End();  
+                
+            }
+
+            private void DrawSplitter()
+            {
+                Vector2 splitterMin = ImGui.GetCursorScreenPos();
+                Vector2 splitterMax = new Vector2(splitterMin.x + splitterWidth, splitterMin.y + ImGui.GetContentRegionAvail().y);
+
+                ImGui.InvisibleButton("Splitter", new Vector2(splitterWidth, -1));
+                if (ImGui.IsItemActive())
+                {
+                    leftWidth += ImGui.GetIO().MouseDelta.x;
+                    leftWidth = Math.Clamp(leftWidth, minLeftWidth, maxLeftWidth);
+                }
+
+                var drawList = ImGui.GetWindowDrawList();
+                uint color = ImGui.GetColorU32(new Vector4(1, 1, 1, 0.3f));
+
+                drawList.AddLine(
+                    new Vector2(splitterMin.x + splitterWidth * 0.5f, splitterMin.y),
+                    new Vector2(splitterMin.x + splitterWidth * 0.5f, splitterMax.y),
+                    color,
+                    1.0f 
+                );
+            }
+            
             private void DrawHierarchyPanel()
             {
                 ImGui.BeginChild("HierarchyPanel", new Vector2(leftWidth, 0));
@@ -95,31 +115,30 @@ namespace Localisation.Runtime
                 {
                     ImGui.PushID(i);
                     _index = i;
-                    // MODE RENAMING
+                    
                     if (editingIndex == i)
                     {
-                        ImGui.SetNextItemWidth(leftWidth - 20);
+                        float deleteWidth = CalcButtonSize("Delete");
+                        ImGui.SetNextItemWidth(leftWidth - deleteWidth - 20);
 
-                        bool validated = ImGui.InputText("##Rename", ref renameBuffer, 256,
+                        ImGui.InputText("##Rename", ref renameBuffer, 256,
                             ImGuiInputTextFlags.EnterReturnsTrue);
 
-                        // Enter → valider
-                        if (validated)
+                        if (ImGui.IsItemDeactivatedAfterEdit())
                         {
                             ValidateRename(_index);
                         }
 
-                        // Si clic à l'extérieur → valider
-                        if (ImGui.IsMouseClicked(0) && !ImGui.IsItemHovered())
+                        ImGui.SameLine();
+                        if(ImGui.Button("Delete", new Vector2(deleteWidth,0)))
                         {
-                            ValidateRename(_index);
+                            _showConfirmDeleteGroup = true;
                         }
-
+                        
                         ImGui.PopID();
                         continue;
                     }
-
-                    // MODE NORMAL : SELECTABLE
+                    
                     bool selected = (_selectedGroup == i);
                     if (ImGui.Selectable(_groups[i], selected))
                     {
@@ -137,7 +156,31 @@ namespace Localisation.Runtime
                 }
 
                 ImGui.Separator();
+                DrawNewGroupButton();
+                ImGui.EndChild();
+            }
 
+            private void CenterPopup()
+            {
+                var io = ImGui.GetIO();
+                var center = io.DisplaySize * 0.5f;
+
+                ImGui.SetNextWindowPos(center, ImGuiCond.Appearing, new Vector2(0.5f, 0.5f));
+            }
+
+            private float CalcButtonSize(string label)
+            {
+                float textWidth = ImGui.CalcTextSize(label).x;
+
+                float padding = ImGui.GetStyle().FramePadding.x;
+
+                float buttonWidth = textWidth + padding * 2f;
+                
+                return buttonWidth;
+            }
+            
+            private void DrawNewGroupButton()
+            {
                 if (ImGui.Button("New group"))
                 {
                     string newGroupName = $"New group {_groups.Count}";
@@ -152,59 +195,51 @@ namespace Localisation.Runtime
                             _localisationByLanguage[lang][newGroupName] = new List<LocalisationData>();
                     }
                 }
-
-                if (_showConfirmDeleteGroup)
-                {
-                    string oldName = _groups[_index];
-                    
-                    ImGui.Begin("Delete group ?");
-
-                    if (ImGui.Button("Delete"))
-                    {
-                        
-                        _groups.RemoveAt(_selectedGroup);
-                        _selectedGroup = _groups.Count - 1;
-                        foreach (var lang in _languages)
-                        {
-                            if (_localisationByLanguage.ContainsKey(lang) &&
-                                _localisationByLanguage[lang].ContainsKey(oldName))
-                            {
-                                Debug.Log("WHAT IS IT ?" + _localisationByLanguage[lang][oldName]);
-                                _localisationByLanguage[lang].Remove(oldName);
-                            }
-                        }
-                        
-                        _showConfirmDeleteGroup = false;
-                        SaveLocalizationData();
-                        ImGui.CloseCurrentPopup();
-                    }
-
-                    if (ImGui.Button("Keep group"))
-                    {
-                        _showConfirmDeleteGroup = false;
-                        ImGui.CloseCurrentPopup();
-                    }
-                    
-                    ImGui.End();
-                }
-                ImGui.EndChild();
             }
 
-            
+            private void DrawDeleteGroupButton()
+            {
+                string oldName = _groups[_index];
+                    
+                ImGui.Begin("Delete group");
+
+                if (ImGui.Button("Delete"))
+                {
+                    _groups.RemoveAt(_selectedGroup);
+                    _selectedGroup = _groups.Count - 1;
+                    foreach (var lang in _languages)
+                    {
+                        if (_localisationByLanguage.ContainsKey(lang) &&
+                            _localisationByLanguage[lang].ContainsKey(oldName))
+                        {
+                            Debug.Log("WHAT IS IT ?" + _localisationByLanguage[lang][oldName]);
+                            _localisationByLanguage[lang].Remove(oldName);
+                        }
+                    }
+                        
+                    _showConfirmDeleteGroup = false;
+                    SaveLocalizationData();
+                    ImGui.CloseCurrentPopup();
+                }
+                
+                if (ImGui.Button("Keep group"))
+                {
+                    _showConfirmDeleteGroup = false;
+                    ImGui.CloseCurrentPopup();
+                }
+                    
+                ImGui.End();
+            }
             private void ValidateRename(int index)
             {
-                foreach (var group in _groups)
-                {
-                 Debug.Log("GROUP" + group);
-                    
-                }
                 string oldName = _groups[index];
                 string newName = renameBuffer.Trim();
 
                 if (!string.IsNullOrEmpty(newName) && newName != oldName)
                 {
-                    _groups[index] = newName;
+                    if (_groups.Contains(newName)) return;
                     
+                    _groups[index] = newName;
                     foreach (var lang in _languages)
                     {
                         if (_localisationByLanguage.ContainsKey(lang) &&
@@ -218,16 +253,19 @@ namespace Localisation.Runtime
                     SaveLocalizationData();
                 }
                 
-                if (string.IsNullOrEmpty(newName))
-                {
-                    _showConfirmDeleteGroup = true;
-                }
-                
                 editingIndex = -1;
                 
             }
 
-
+            private string GetLongestLanguageLabel()
+            {
+                string longestLabel = "";
+                foreach (string lang in _languages)
+                {
+                    if(lang.Length > longestLabel.Length) longestLabel = lang;
+                }
+                return longestLabel;
+            }
 
             private void DrawLanguagesCombo()
             {
@@ -247,10 +285,100 @@ namespace Localisation.Runtime
                     }
                     ImGui.EndCombo();
                 }
+                ImGui.SameLine();
+                if (ImGui.Button("+"))
+                {
+                    _showAddLanguage = true;
+                    CenterPopup();
+                    DrawShowAddLanguagePopup();
+                }
             }
-            
+
+            private void DrawShowAddLanguagePopup()
+            {
+                ImGui.Begin("Add Language");
+                var windowSize = ImGui.GetWindowSize();
+                
+                ImGui.Text("Add Language");
+                ImGui.InputText("##AddLanguage", ref addLanguageBuffer, 256,
+                    ImGuiInputTextFlags.EnterReturnsTrue);
+                if (ImGui.Button("Confirm", new Vector2(windowSize.x,0)))
+                {
+                    if (_localisationByLanguage.ContainsKey(addLanguageBuffer)) return;
+
+                    string newLang = addLanguageBuffer;
+                    string referenceLang = _languages.Count > 0 ? _languages[0] : null;
+
+                    _localisationByLanguage[newLang] = new Dictionary<string, List<LocalisationData>>();
+                    _languages.Add(newLang);
+
+                    foreach (var group in _groups)
+                    {
+                        _localisationByLanguage[newLang][group] = new List<LocalisationData>();
+
+                        if (referenceLang != null && _localisationByLanguage.ContainsKey(referenceLang))
+                        {
+                            var refList = _localisationByLanguage[referenceLang][group];
+
+                            foreach (var entry in refList)
+                            {
+                                _localisationByLanguage[newLang][group].Add(new LocalisationData
+                                {
+                                    m_uuid = entry.m_uuid,
+                                    m_expression = ""      
+                                });
+                            }
+                        }
+                    }
+
+                    SaveLocalizationData();
+                    ImGui.CloseCurrentPopup();
+                    _showAddLanguage = false;
+                }
+
+                if(ImGui.Button("Cancel", new Vector2(windowSize.x,0)))
+                {
+                    ImGui.CloseCurrentPopup();
+                    _showAddLanguage = false;
+                    
+                }
+                ImGui.End();
+            }
+            private void DrawRefreshConfirmPopup()
+            {
+                if (ImGui.Begin("RefreshConfirmPopup"))
+                {
+                    ImGui.Text("Confirm Refresh ?");
+
+                    if (ImGui.Button("OK"))
+                    {
+                        _languages.Clear();
+                        _groups.Clear();
+                        _localisationByLanguage.Clear();
+                        LoadLocalizationData();
+                        ImGui.CloseCurrentPopup();
+                        _showConfirmRefresh = false;
+                    }
+
+                    ImGui.SameLine();
+
+                    if (ImGui.Button("Cancel"))
+                    {
+                        ImGui.CloseCurrentPopup();
+                        _showConfirmRefresh = false;
+                            
+                    }
+
+                    ImGui.End();
+                }
+            }
             private void DrawContentPanel()
             {
+                
+                float refreshWidth = CalcButtonSize("Refresh");
+                float saveWidth = CalcButtonSize("Save");
+                string longestLanguage = GetLongestLanguageLabel();
+                float languageWidth = CalcButtonSize(longestLanguage) + 20;
                 if (_selectedGroup == -1)
                 {
                     ImGui.Text("Select a group on the left.");
@@ -258,58 +386,44 @@ namespace Localisation.Runtime
                 }
                 
                 var winSize = ImGui.GetWindowSize();
-                var rightStartX = winSize.x;
-
-                var cur = ImGui.GetCursorPos();
                 
-                ImGui.Text($"Content for: {_groups[_selectedGroup]}");
+                ImGui.SetNextItemWidth(winSize.x - refreshWidth - languageWidth);
+                ImGui.Text($"Reading: {_groups[_selectedGroup]}");
                 ImGui.SameLine();
                 
-                cur = ImGui.GetCursorPos();
+                ImGui.SetNextItemWidth(refreshWidth);
                 
-                ImGui.SetCursorPos(new Vector2(rightStartX-cur.x, cur.y));
-                ImGui.SetNextItemWidth(100);
                 if (ImGui.Button("Refresh"))
                 {   
                     _showConfirmRefresh = true;
                 }
-
+                
+                ImGui.SameLine();
+                ImGui.SetNextItemWidth(saveWidth);
+                
+                if (ImGui.Button("Save"))
+                {
+                    SaveLocalizationData(_groups[_selectedGroup]);
+                }
                 if (_showConfirmRefresh)
                 {
-                    if (ImGui.Begin("RefreshConfirmPopup"))
-                    {
-                        ImGui.Text("Confirm Refresh ?");
-
-                        if (ImGui.Button("OK"))
-                        {
-                            LoadLocalizationData();
-                            ImGui.CloseCurrentPopup();
-                            _showConfirmRefresh = false;
-                        }
-
-                        ImGui.SameLine();
-
-                        if (ImGui.Button("Cancel"))
-                        {
-                            ImGui.CloseCurrentPopup();
-                            _showConfirmRefresh = false;
-                            
-                        }
-
-                        ImGui.End();
-                    }
-               
+                    CenterPopup();
+                    DrawRefreshConfirmPopup();
                 }
-
                 
                 ImGui.SameLine();
                 
-                ImGui.SetCursorPos(new Vector2(rightStartX-100, cur.y));
-                ImGui.SetNextItemWidth(100);
+                ImGui.SetNextItemWidth(languageWidth);
                 DrawLanguagesCombo();
                 
                 ImGui.Separator();
 
+                ImGui.SetNextItemWidth(winSize.x);
+                   
+                DrawNewDataButton("0");
+                
+                ImGui.Separator();
+                
                 if (ImGui.BeginTable("LocalizationTable", 3, ImGuiTableFlags.Borders | ImGuiTableFlags.Resizable))
                 {
                     string groupName = _groups[_selectedGroup];
@@ -328,44 +442,42 @@ namespace Localisation.Runtime
                     
                     Debug.Log($"<color='orange'>'Group count : {_localisationByGroup.Count}</color>");
                     
-                    ImGui.TableSetupColumn("#");
-                    ImGui.TableSetupColumn("ID");
-                    ImGui.TableSetupColumn("Expression");
+                    ImGui.TableSetupColumn("Index",ImGuiTableColumnFlags.WidthFixed, CalcButtonSize("#999999"));
+                    ImGui.TableSetupColumn("Key");
+                    ImGui.TableSetupColumn("Value");
                     ImGui.TableHeadersRow();
                     DrawLocalizationTable(datas);
                     ImGui.EndTable();
-                    if (ImGui.Button("New Data"))
-                    {
-                        string groupN = _groups[_selectedGroup];
-                        Debug.Log($"<color='magenta'>LocByLangCount : {_localisationByLanguage.Count}</color> ");
-
-                        foreach (var lang in _languages)
-                        {
-                            if (!_localisationByLanguage.ContainsKey(lang))
-                                _localisationByLanguage[lang] = new Dictionary<string, List<LocalisationData>>();
-
-                            if (!_localisationByLanguage[lang].ContainsKey(groupN))
-                                _localisationByLanguage[lang][groupN] = new List<LocalisationData>();
-
-                            _localisationByLanguage[lang][groupN].Add(new LocalisationData());
-                        }
-                        
-                        SaveLocalizationData(_groups[_selectedGroup]);
-                    }
-                    winSize = ImGui.GetWindowSize();
-                    rightStartX = winSize.x;
-
-                    ImGui.SetCursorPos(new Vector2(rightStartX-100, cur.y));
-                    ImGui.SameLine();
-                    ImGui.SetNextItemWidth(100);
-                    if (ImGui.Button("Save"))
-                    {
-                        SaveLocalizationData(_groups[_selectedGroup]);
-                    }
+                    ImGui.SetNextItemWidth(winSize.x);
+                   
+                    DrawNewDataButton("1");
                 }
             }
 
 
+            private void DrawNewDataButton(string uniqueId)
+            {
+                var winSize = ImGui.GetWindowSize();
+                
+                if (ImGui.Button($"New Data##{uniqueId}",new Vector2(winSize.x, 0)))
+                {
+                    string groupN = _groups[_selectedGroup];
+                    Debug.Log($"<color='magenta'>LocByLangCount : {_localisationByLanguage.Count}</color> ");
+
+                    foreach (var lang in _languages)
+                    {
+                        if (!_localisationByLanguage.ContainsKey(lang))
+                            _localisationByLanguage[lang] = new Dictionary<string, List<LocalisationData>>();
+
+                        if (!_localisationByLanguage[lang].ContainsKey(groupN))
+                            _localisationByLanguage[lang][groupN] = new List<LocalisationData>();
+
+                        _localisationByLanguage[lang][groupN].Add(new LocalisationData());
+                    }
+                        
+                    SaveLocalizationData(_groups[_selectedGroup]);
+                }
+            }
             private void DrawLocalizationTable(List<LocalisationData> datas)
             {
                 for (int i = 0; i < datas.Count; i++)
@@ -391,37 +503,43 @@ namespace Localisation.Runtime
 
         #endregion
 
-        private void InitializeDefault()
+        private void InitializeLanguages()
         {
-            if (_groups.Count == 0)
-            {
-                foreach (var group in _defaultGroups)
-                {
-                    //_groups.Add(group);
-                }
-            }
-            
 
-            foreach (var lang in _defaultLanguages)
+            var localizationFiles = Directory.GetFiles(fileDir, "LocalisationData.*.json");
+
+            foreach (var file in localizationFiles)
             {
-                if(!_languages.Contains(lang)) _languages.Add(lang);
-                if(!_localisationByLanguage.ContainsKey(lang)) _localisationByLanguage.Add(lang, new Dictionary<string, List<LocalisationData>>());
+                string fileName = Path.GetFileNameWithoutExtension(file);
+                // fileName = "LocalisationData.en"
+                string lang = fileName.Substring("LocalisationData.".Length);
+                _languages.Add(lang);
+            }
+
+            if (_languages.Count == 0)
+            {
+                foreach (var lang in _defaultLanguages)
+                {
+                    _languages.Add(lang);
+                }
             }
         }
         
-        
-
 
         private void InitializeGroups()
         {
-            foreach (var language in _localisationByLanguage)
+            if (_groups.Count == 0)
             {
-                foreach (var group in language.Value)
+                foreach (var language in _localisationByLanguage)
                 {
-                    //_groups.Add(group);
-                    Debug.Log("Added : " + group);
+                    foreach (var group in language.Value)
+                    {
+                        _groups.Add(group.Key);
+                        Debug.Log("Added : " + group);
+                    }
                 }
             }
+            
 
             Debug.Log("_localisationByLanguage Count " + _localisationByLanguage.Count);
             Debug.Log("_groups Count " + _groups.Count);
@@ -445,7 +563,9 @@ namespace Localisation.Runtime
             if(!string.IsNullOrEmpty(groupName)) SynchronizeUUIDAcrossLanguages(groupName);
             
             dir = Directory.GetCurrentDirectory();
-            var fileDir = Path.Combine(dir, "data/localisation");
+            parentDir = Directory.GetParent(dir).FullName;
+            parentDirPlus = Directory.GetParent(parentDir).FullName;
+            fileDir = Path.Combine(parentDir, "data", "localisation");
             if(!Directory.Exists(fileDir)) Directory.CreateDirectory(fileDir);
             
             foreach (var lang in _localisationByLanguage)
@@ -475,8 +595,13 @@ namespace Localisation.Runtime
 
         private void SynchronizeUUIDAcrossLanguages(string groupName)
         {
-            if (!_localisationByLanguage.ContainsKey(_languages[_selectedLanguage])) 
+
+            if (!_localisationByLanguage.ContainsKey(_languages[_selectedLanguage]))
+            {
+                Debug.Log("Selected Language: " + _languages[_selectedLanguage]);
                 return;
+                    
+            }
 
             var referenceList = _localisationByLanguage[_languages[_selectedLanguage]][groupName];
 
@@ -502,10 +627,16 @@ namespace Localisation.Runtime
         
         private void LoadLocalizationData()
         {
-            //_localisationByLanguage.Clear();
-            //_groups.Clear();
+            
             dir = Directory.GetCurrentDirectory();
-            fileDir = Path.Combine(dir,"data/localisation");
+            parentDir = Directory.GetParent(dir).FullName;
+            parentDirPlus = Directory.GetParent(parentDir).FullName;
+            
+            
+            fileDir = Path.Combine(parentDir, "data","localisation");
+            if(!Directory.Exists(fileDir)) Directory.CreateDirectory(fileDir);
+            
+            InitializeLanguages();
             
             foreach (var lang in _languages)
             {
@@ -558,6 +689,7 @@ namespace Localisation.Runtime
         
         private int editingIndex = -1;
         private string renameBuffer = "";
+        private string addLanguageBuffer = "";
         
         float leftWidth = 200f;                 
         float splitterWidth = 10f;                 
@@ -565,11 +697,15 @@ namespace Localisation.Runtime
         float maxLeftWidth = 600f;
 
         private string dir = "";
+        private string parentDir = "";
+        private string parentDirPlus = "";
         private string fileDir = "";
         private string json = "";
         private string fileName = "";
         private int _index = 0;
         
+        private bool open = true;
+        private bool _showAddLanguage = false;
         private bool _showConfirmRefresh = false;
         private bool _showConfirmDeleteGroup = false;
         private bool _loaded = false;
