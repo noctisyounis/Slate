@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Foundation.Runtime;
 using ImGuiNET;
@@ -88,6 +89,15 @@ namespace Slate.Runtime
         #region Utils
 
         protected abstract void WindowLayout();
+
+        protected void DrawWindow(bool shouldDraw)
+        {
+            if (string.IsNullOrEmpty(_windowName) || _windowName is null)
+            {
+                throw new Exception("Window name is not set!");
+            }
+            WindowPosManager.SetVisibilityOverride(_windowName, shouldDraw);
+        }
 
         protected void UpdateInitialPositionIfMouseDragging()
         {
