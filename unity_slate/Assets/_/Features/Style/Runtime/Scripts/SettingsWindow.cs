@@ -44,8 +44,8 @@ namespace Style.Runtime
 
             protected override void WindowLayout()
             {
-                // if (!_visible)
-                //     return;
+                if (!_visible)
+                    return;
                 
                 if (ImGui.BeginTabBar("SettingsTabs"))
                 {
