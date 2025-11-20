@@ -93,6 +93,7 @@ namespace Manager.Runtime
                 // }
                 
                 WindowData data = _windowDatas[currentWindow];
+                data.HasPendingDelta = true;
                 oldPosOffset = data.Offset ?? Vector2.zero;
                 
                 Vector2 newPosOffset = oldPosOffset + screenDelta;
@@ -128,7 +129,7 @@ namespace Manager.Runtime
                 // data.Size = size;
               
                 ImGui.SetWindowSize(data.WindowName, newSize, ImGuiCond.Always);
-                ImGui.SetWindowFontScale(scaleFactor);
+                //ImGui.SetWindowFontScale(scaleFactor);
                 
                 // _windowDatas[currentWindow] = data;
             }
@@ -189,7 +190,7 @@ namespace Manager.Runtime
             if (_isResizing && isMouseReleased)
             {
                 data.Size = currentSize;
-                _isResizing = false;
+                // _isResizing = false;
             }
             // _windowIsBeingDraggedCache[windowName] = draggingThisWindow;
             data.IsBeingDragged = draggingThisWindow;
@@ -200,7 +201,7 @@ namespace Manager.Runtime
             // }
             // _wasDraggedLastFrame = mouseDragging;
             // then if the window needs to move
-            if (_hasPendingDeltaThisFrame)
+            if (data.HasPendingDelta)
             {
                 // var offset = _windowOffsetCache[windowName];
                 var offset = data.Offset ?? Vector2.zero;
@@ -209,6 +210,8 @@ namespace Manager.Runtime
                 var initialPos = data.InitialPos ?? Vector2.zero;
                 var targetPos = initialPos + offset;
                 ImGui.SetWindowPos(windowName, targetPos, ImGuiCond.Always);
+                
+                data.HasPendingDelta = false;
             }
             
         }
@@ -253,7 +256,8 @@ namespace Manager.Runtime
         /// </summary>
         public static void EndOfFrame()
         {
-            _hasPendingDeltaThisFrame = false;
+            // _hasPendingDeltaThisFrame = false;
+            // _isResizing = false;
             _isProgrammaticResize = false;
         }
    
@@ -407,6 +411,7 @@ namespace Manager.Runtime
             public bool? Visible;
             public bool? IsBeingDragged;
             public bool IsSizeInitialized;
+            public bool HasPendingDelta;
         }
 
         #endregion
