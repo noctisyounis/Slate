@@ -154,6 +154,14 @@ namespace Style.Runtime
                             break;
                     }
                     
+                    var st = ImGui.GetStyle();
+                    for (var i = 0; i < (int)ImGuiCol.COUNT; i++)
+                    {
+                        var v = st.Colors[i];
+                        v.w = ColorRegistry.ClampAlpha(v.w);
+                        st.Colors[i] = v;
+                    }
+                    
                     ColorRegistry.SaveFromImGui();
                 }
             }
@@ -210,7 +218,7 @@ namespace Style.Runtime
 
             
             ImGui.TextDisabled("Hover the (?) button to see what each color controls.");
-            ImGui.TextDisabled("Click (?) to temporarily highlight it for 5 seconds.");
+            ImGui.TextDisabled("Click (?) to temporarily highlight it for short time.");
             ImGui.Spacing();
 
             ImGui.PushItemWidth(ImGui.GetWindowWidth() * 0.45f);
@@ -240,7 +248,6 @@ namespace Style.Runtime
             ImGui.Separator();
             if (ImGui.Button("Save colors##StyleColors"))
                 ColorRegistry.SaveFromImGui();
-            ImGui.SameLine();
         }
         
         private void DrawColorLine(ImGuiStylePtr style, ImGuiCol colorId)
@@ -272,12 +279,17 @@ namespace Style.Runtime
                     ImGuiColorEditFlags.DisplayRGB |
                     ImGuiColorEditFlags.InputRGB))
             {
-                // Rien à faire : style.Colors[idx] est déjà mis à jour par ref.
+                var v = style.Colors[idx];
+                v.w = ColorRegistry.ClampAlpha(v.w);
+                style.Colors[idx] = v;
             }
 
             ImGui.SameLine();
-
             ImGui.TextUnformatted(ImGui.GetStyleColorName(colorId));
+            
+            ImGui.SameLine();
+            if (ImGui.SmallButton("Reset"))
+                ColorRegistry.RevertColor(colorId);
 
             ImGui.PopID();
         }
