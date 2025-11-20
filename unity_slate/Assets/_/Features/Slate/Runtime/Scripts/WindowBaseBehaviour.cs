@@ -11,7 +11,7 @@ namespace Slate.Runtime
         #region Public
 
         public  string WindowName {get => _windowName; set => _windowName = value;}
-   
+
         #endregion
 
         #region Unity API
@@ -52,7 +52,7 @@ namespace Slate.Runtime
             
             // visibility test before Begin
             // if false, fully skip window rendering
-            if (!WindowPosManager.ShouldDraw(_windowName))
+            if (!WindowPosManager.ShouldDraw(_windowName) || !WindowPosManager.GetVisibilityOverride(_windowName))
                 return;
 
             if (ImGui.Begin(_windowName))

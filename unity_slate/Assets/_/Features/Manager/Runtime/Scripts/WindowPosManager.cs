@@ -29,7 +29,8 @@ namespace Manager.Runtime
                 Size = null,
                 Visible = true,
                 IsBeingDragged = false,
-                IsSizeInitialized = false  // Track if size has been captured
+                IsSizeInitialized = false,  // Track if size has been captured
+                VisibilityOverride = true,
 
             };
         }
@@ -50,7 +51,8 @@ namespace Manager.Runtime
                 Size = null,
                 Visible = true,
                 IsBeingDragged = false,
-                IsSizeInitialized = false  // Track if size has been captured
+                IsSizeInitialized = false,  // Track if size has been captured
+                VisibilityOverride = true,
 
             };
         }
@@ -237,7 +239,7 @@ namespace Manager.Runtime
             currentData.Offset = Vector2.zero;
             
             // Add offset if dragged position is outside of screen bounds
-            if (!ShouldDraw(windowName))
+            if (!ShouldDraw(windowName) || !currentData.VisibilityOverride)
             {
                 var size = new Vector2(ImGui.GetWindowSize().x, ImGui.GetWindowSize().y);
                 var sizeBounds = new Vector2(size.x - (size.x * .75f), size.y - (size.y * .75f));
@@ -260,7 +262,22 @@ namespace Manager.Runtime
             // _isResizing = false;
             _isProgrammaticResize = false;
         }
-   
+
+        public static void SetVisibilityOverride(string windowName, bool visible)
+        {
+            if (!CheckRegisteredWindow(windowName)) return;
+            
+            WindowData currentData = _windowDatas[windowName];
+            currentData.VisibilityOverride = visible;
+        }
+
+        public static bool GetVisibilityOverride(string windowName)
+        {
+            if (!CheckRegisteredWindow(windowName)) return false;
+            
+            WindowData currentData = _windowDatas[windowName];
+            return currentData.VisibilityOverride;
+        }
         #endregion
 
         #region Utils
@@ -408,10 +425,11 @@ namespace Manager.Runtime
             public Vector2? InitialPos;
             public Vector2? Offset;
             public Vector2? Size;
-            public bool? Visible;
+            public bool Visible;
             public bool? IsBeingDragged;
             public bool IsSizeInitialized;
             public bool HasPendingDelta;
+            public bool VisibilityOverride;
         }
 
         #endregion
