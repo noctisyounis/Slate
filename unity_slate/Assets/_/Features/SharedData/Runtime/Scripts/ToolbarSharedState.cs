@@ -25,16 +25,10 @@ namespace SharedData.Runtime
         public float m_menusTotalWidth = 0f;
         public float m_popupMaxHeight = 280f;
 
-        [Header("Menu labels")]
-        public string m_menuOneLabel = "File";
-        public string m_menuTwoLabel = "View";
-
         [Header("Menus")]
         public float m_menuPreviewWidth = 110f;
         public float m_menuItemSpacing = 10f;
         public float m_menuPopupMaxWidth = 360f;
-        public MenuNode[] m_menuOne;
-        public MenuNode[] m_menuTwo;
         
         [Header("Menu Commands")]
         [NonSerialized] public bool m_menuCommandPending = false;
@@ -49,9 +43,6 @@ namespace SharedData.Runtime
         [NonSerialized] public bool m_requestMinimize = false;
         [NonSerialized] public bool m_requestToggleBorderless = false;
         [NonSerialized] public bool m_requestQuit = false;
-
-        [Header("Debug")]
-        public bool m_debugHUD = false;
     }
     
 }

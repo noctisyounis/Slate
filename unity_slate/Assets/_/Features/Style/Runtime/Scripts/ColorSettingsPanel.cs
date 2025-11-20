@@ -137,19 +137,19 @@ namespace Style.Runtime
                 ImGui.EndCombo();
             }
 
-            if (_selectedBuiltinIndex > 0)
+            if (_selectedBuiltinIndex < 3)
             {
                 if (ImGui.Button("Apply base scheme"))
                 {
                     switch (_selectedBuiltinIndex)
                     {
-                        case 1:
+                        case 0:
                             ImGui.StyleColorsDark();
                             break;
-                        case 2:
+                        case 1:
                             ImGui.StyleColorsLight();
                             break;
-                        case 3:
+                        case 2:
                             ImGui.StyleColorsClassic();
                             break;
                     }

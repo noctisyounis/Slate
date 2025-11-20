@@ -57,6 +57,7 @@ MonoBehaviour:
   m_hideDelay: 0.15
   m_useEaseOut: 1
   m_state: {fileID: 11400000, guid: 09d6f524959f50f419448b271eef4fd7, type: 2}
+  m_SettingsWindow: {fileID: 0}
   m_bootGuardSeconds: 0.35
   m_y: 0
   m_vy: 0

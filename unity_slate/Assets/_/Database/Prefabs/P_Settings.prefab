@@ -9,8 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6642302220566417548}
-  - component: {fileID: 1082048897480397601}
   - component: {fileID: 7960950903797835224}
+  - component: {fileID: 7077385383599836743}
+  - component: {fileID: 7767769492950506581}
   m_Layer: 0
   m_Name: P_Settings
   m_TagString: Untagged
@@ -33,20 +34,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1082048897480397601
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6300659975722859519}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e76c618c0c524ab196ff1a1ebf1d406c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_windowTitle: Settings
-  m_visible: 0
 --- !u!114 &7960950903797835224
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -59,3 +46,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91c6387e9a754801a51c4f1e8dc4c749, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &7077385383599836743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6300659975722859519}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e46ff11e8774106ba446320a0613940, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_defaultRelativePath: _/Content/Fonts/droidSans.ttf
+  m_notoRelativePath: _/Content/Fonts/NotoSansSymbols2-Regular.ttf
+  m_dysRelativePath: _/Content/Fonts/OpenDyslexic3-Regular.ttf
+  m_fontSize: 22
+--- !u!114 &7767769492950506581
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6300659975722859519}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e76c618c0c524ab196ff1a1ebf1d406c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _debug: 0
+  _warning: 0
+  _error: 0
+  _windowName: Settings
