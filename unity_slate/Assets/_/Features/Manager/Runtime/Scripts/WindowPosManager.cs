@@ -22,14 +22,15 @@ namespace Manager.Runtime
             _registeredWindows.Add(windowName);
             // _windowIsBeingDraggedCache[windowName] = false;
 
-            _windowDatas[windowName] = new WindowData()
+            _windowDatas[windowName] = new WindowData(windowName)
             {
-                WindowName = windowName,
                 InitialPos = null,
                 Offset = Vector2.zero,
                 Size = null,
                 Visible = true,
-                IsBeingDragged = false
+                IsBeingDragged = false,
+                IsSizeInitialized = false  // Track if size has been captured
+
             };
         }
         public static void RegisterWindow(string windowName, Vector2 initialPos)
@@ -42,14 +43,15 @@ namespace Manager.Runtime
             _registeredWindows.Add(windowName);
             // _windowIsBeingDraggedCache[windowName] = false;
 
-            _windowDatas[windowName] = new WindowData()
+            _windowDatas[windowName] = new WindowData(windowName)
             {
-                WindowName = windowName,
                 InitialPos = initialPos,
                 Offset = Vector2.zero,
                 Size = null,
                 Visible = true,
-                IsBeingDragged = false
+                IsBeingDragged = false,
+                IsSizeInitialized = false  // Track if size has been captured
+
             };
         }
 
@@ -96,7 +98,39 @@ namespace Manager.Runtime
                 Vector2 newPosOffset = oldPosOffset + screenDelta;
                 data.Offset = newPosOffset;
                 
-                _windowDatas[currentWindow] = data;
+            }
+        }
+
+        public static void ResizeWindows(float scaleFactor)
+        {
+            
+            _isProgrammaticResize = true;
+            
+            for (int i = 0; i < _registeredWindows.Count; i++)
+            {
+                string currentWindow = _registeredWindows[i];
+                InitializeWindowCaches(currentWindow);
+                
+            
+                WindowData data = _windowDatas[currentWindow];// ONLY use the stored base size if it has been initialized
+                // If not initialized yet, skip this window
+                if (!data.IsSizeInitialized || data.Size == null)
+                {
+                    Debug.LogWarning($"[RESIZE] Window {currentWindow} size not initialized yet, skipping resize");
+                    continue;
+                }
+
+                Vector2 size = (Vector2)data.Size;
+                // data.Size = size;
+                var newSize = size * scaleFactor;
+                
+                Debug.Log($"New window size: {size}->{newSize} | ScaleFactor: {scaleFactor}");
+                // data.Size = size;
+              
+                ImGui.SetWindowSize(data.WindowName, newSize, ImGuiCond.Always);
+                ImGui.SetWindowFontScale(scaleFactor);
+                
+                // _windowDatas[currentWindow] = data;
             }
         }
 
@@ -112,6 +146,9 @@ namespace Manager.Runtime
             
             bool isWindowHovered = ImGui.IsWindowHovered(ImGuiHoveredFlags.RootAndChildWindows);
             bool mouseDragging = ImGui.IsMouseDragging(ImGuiMouseButton.Left);
+            
+            bool isMouseDown = ImGui.IsMouseDown(ImGuiMouseButton.Left);
+            bool isMouseReleased = ImGui.IsMouseReleased(ImGuiMouseButton.Left);
 
             bool draggingThisWindow = isWindowHovered && mouseDragging;
 
@@ -119,25 +156,49 @@ namespace Manager.Runtime
 
             WindowData data = _windowDatas[windowName];
             
+            // Capture the initial size ONLY ONCE on first frame (before any scaling)
+            if (!data.IsSizeInitialized)
+            {
+                var size = ImGui.GetWindowSize();
+                data.Size = size;
+                data.IsSizeInitialized = true;
+                Debug.Log($"[INIT] Captured base size for {windowName}: {data.Size}");
+            }
+            
             // bool wasDraggedLast = _windowIsBeingDraggedCache.GetValueOrDefault(windowName, false);
             bool wasDraggedLast = data.IsBeingDragged ?? false;
+            
+            Vector2 currentSize = ImGui.GetWindowSize();
+            Vector2 lastSize = (Vector2)data.Size;
+            
+            bool wasResized = isMouseDown && (currentSize != lastSize);
 
+            if (wasResized)
+            {
+                _isResizing = true;
+            }
             if (!draggingThisWindow && wasDraggedLast)
             {
                 UpdateWindowCache(windowName);
-                data = _windowDatas[windowName];
+                // data = _windowDatas[windowName];
+                //
+                // //data.Size = currentSize;
+                // _windowDatas[windowName] = data;
+            }
+
+            if (_isResizing && isMouseReleased)
+            {
+                data.Size = currentSize;
+                _isResizing = false;
             }
             // _windowIsBeingDraggedCache[windowName] = draggingThisWindow;
             data.IsBeingDragged = draggingThisWindow;
-            _windowDatas[windowName] = data;
-            
             // Use mouse release as a flag to update cache when dragging window
             // if(!mouseDragging && _wasDraggedLastFrame)
             // {
             //     UpdateWindowCache(windowName);
             // }
             // _wasDraggedLastFrame = mouseDragging;
-            
             // then if the window needs to move
             if (_hasPendingDeltaThisFrame)
             {
@@ -161,12 +222,13 @@ namespace Manager.Runtime
         /// </summary>
         public static void UpdateWindowCache(string windowName)
         {
-           if (!CheckRegisteredWindow(windowName)) return;
+            if (!CheckRegisteredWindow(windowName)) return;
            
-           WindowData currentData = _windowDatas[windowName];
+            WindowData currentData = _windowDatas[windowName];
             var pos = ImGui.GetWindowPos();
             // _windowOffsetCache[windowName] = pos;
             // _windowInitialPosCache[windowName] = pos;
+            //currentData.Size = ImGui.GetWindowSize();
             currentData.InitialPos = pos;
             // _windowOffsetCache[windowName] = Vector2.zero;
             currentData.Offset = Vector2.zero;
@@ -180,9 +242,9 @@ namespace Manager.Runtime
                 var newPosY = Mathf.Clamp(pos.y, sizeBounds.y, ImGui.GetIO().DisplaySize.y - sizeBounds.y);
                 // _windowInitialPosCache[windowName] = new Vector2(newPosX, newPosY);
                 currentData.InitialPos = new Vector2(newPosX, newPosY);
+                //currentData.Size = size;
             }
             
-            _windowDatas[windowName] = currentData;
         }
 
         /// <summary>
@@ -192,6 +254,7 @@ namespace Manager.Runtime
         public static void EndOfFrame()
         {
             _hasPendingDeltaThisFrame = false;
+            _isProgrammaticResize = false;
         }
    
         #endregion
@@ -226,9 +289,8 @@ namespace Manager.Runtime
             currentData.IsBeingDragged ??= false;
             currentData.Offset ??= Vector2.zero;
             currentData.InitialPos ??= ImGui.GetWindowSize();
-            currentData.Size ??= ImGui.GetWindowSize();
+            // currentData.Size ??= ImGui.GetWindowSize();
             
-            _windowDatas[windowName] = currentData;
             
         }
 
@@ -258,7 +320,6 @@ namespace Manager.Runtime
             // }
             
             currentData.InitialPos ??= Vector2.zero;
-            _windowDatas[windowName] = currentData;
             
             InitializeWindowCaches(windowName);
             
@@ -285,7 +346,6 @@ namespace Manager.Runtime
             // _windowVisibility[windowName] = !outside;
             
             currentData.Visible = !outside;
-            _windowDatas[windowName] = currentData;
             // return _windowVisibility[windowName];
             return (bool)currentData.Visible;
         }
@@ -323,20 +383,30 @@ namespace Manager.Runtime
         private static readonly Dictionary<string, WindowData> _windowDatas = new Dictionary<string, WindowData>();
 
         private static bool _hasPendingDeltaThisFrame;
+        private static CameraPanSettings _panSettings;
+
+        private static bool _isProgrammaticResize;
+
+        private static bool _isResizing;
         // private static bool _wasDraggedLastFrame;
 
         #endregion
 
         #region External
 
-        private struct WindowData
+        private class WindowData
         {
-            [CanBeNull] public string WindowName;
+            public WindowData(string windowName = null)
+            {
+                WindowName = windowName;
+            }
+            public string WindowName;
             public Vector2? InitialPos;
             public Vector2? Offset;
             public Vector2? Size;
             public bool? Visible;
             public bool? IsBeingDragged;
+            public bool IsSizeInitialized;
         }
 
         #endregion

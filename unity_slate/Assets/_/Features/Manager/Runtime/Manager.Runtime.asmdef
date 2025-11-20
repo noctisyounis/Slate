@@ -3,7 +3,8 @@
     "rootNamespace": "Manager.Runtime",
     "references": [
         "GUID:0c859d0963fcc454baed7e047bb40422",
-        "GUID:70ee7783ecf9646f99ae250415f2a80b"
+        "GUID:70ee7783ecf9646f99ae250415f2a80b",
+        "GUID:4965918235ae9744fa170470a48fda78"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
