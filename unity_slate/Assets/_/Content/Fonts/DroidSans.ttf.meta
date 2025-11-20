@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: d19a1dc7dfb47834fab2d5e183a43367
+guid: be34e589ed7c69145971b47bc8f78960
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -9,7 +9,7 @@ TrueTypeFontImporter:
   characterPadding: 1
   includeFontData: 1
   fontNames:
-  - Noto Sans
+  - Droid Sans
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0

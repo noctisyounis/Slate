@@ -1,0 +1,47 @@
+{
+    "state": {
+        "windowPadding": {
+            "x": 8.0,
+            "y": 8.0
+        },
+        "framePadding": {
+            "x": 4.0,
+            "y": 3.0
+        },
+        "itemSpacing": {
+            "x": 8.0,
+            "y": 4.0
+        },
+        "itemInnerSpacing": {
+            "x": 4.0,
+            "y": 4.0
+        },
+        "touchExtraPadding": {
+            "x": 0.0,
+            "y": 0.0
+        },
+        "indentSpacing": 21.0,
+        "grabMinSize": 10.0,
+        "windowBorderSize": 1.0,
+        "childBorderSize": 0.0,
+        "popupBorderSize": 0.0,
+        "frameBorderSize": 0.0,
+        "windowRounding": 0.0,
+        "childRounding": 0.0,
+        "frameRounding": 0.0,
+        "popupRounding": 0.0,
+        "grabRounding": 0.0,
+        "scrollbarSize": 14.0,
+        "scrollbarRounding": 9.0,
+        "tabBorderSize": 0.0,
+        "tabRounding": 4.0,
+        "displayWindowPadding": {
+            "x": 19.0,
+            "y": 19.0
+        },
+        "displaySafeAreaPadding": {
+            "x": 3.0,
+            "y": 3.0
+        }
+    }
+}

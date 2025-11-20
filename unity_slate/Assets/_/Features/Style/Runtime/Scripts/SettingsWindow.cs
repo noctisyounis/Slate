@@ -1,26 +1,32 @@
 ﻿using UnityEngine;
-using UImGui;
 using ImGuiNET;
+using Foundation.Runtime;
+using Slate.Runtime;
 
 namespace Style.Runtime
 {
-    [DisallowMultipleComponent]
-    public class SettingsWindow : MonoBehaviour
+    [SlateWindow(categoryName = "Tools", entry = "Settings")]
+    public class SettingsWindow : WindowBaseBehaviour
     {
-        #region Header
-        
-            [Header("Title")]
-            public string m_windowTitle = "Settings";
-
-            [Header("State")]
-            public bool m_visible = false;
-
-        #endregion
-        
         #region Unity
 
-            public void OnEnable()  => UImGuiUtility.Layout += OnLayout;
-            public void OnDisable() => UImGuiUtility.Layout -= OnLayout;
+            private void Awake()
+            {
+                _fontPanel ??= new FontSettingsPanel();
+                _stylePanel ??= new StyleSettingsPanel();
+                _colorPanel ??= new ColorSettingsPanel();
+                _presetPanel ??= new PresetManagerPanel();
+            }
+
+            protected override void OnEnable()
+            {
+                base.OnEnable();
+            }
+
+            protected override void OnDisable()
+            {
+                base.OnDisable();
+            }
             
         #endregion
 
@@ -28,20 +34,19 @@ namespace Style.Runtime
         
             public void ToggleVisible()
             {
-                m_visible = !m_visible;
+                _visible = !_visible;
             }
 
-            private void OnLayout(UImGui.UImGui ui)
+            // protected override bool ShouldDrawWindow()
+            // {
+            //     return _visible;
+            // }
+
+            protected override void WindowLayout()
             {
-                if (!m_visible)
+                if (!_visible)
                     return;
                 
-                if (!ImGui.Begin(m_windowTitle))
-                {
-                    ImGui.End();
-                    return;
-                }
-
                 if (ImGui.BeginTabBar("SettingsTabs"))
                 {
                     if (ImGui.BeginTabItem("Fonts"))
@@ -64,7 +69,7 @@ namespace Style.Runtime
                     
                     if (ImGui.BeginTabItem("Preset Manager"))
                     {
-                        _pmPanel.Draw();
+                        _presetPanel.Draw();
                         ImGui.EndTabItem();
                     }
 
@@ -78,10 +83,11 @@ namespace Style.Runtime
 
         #region Private
 
-            private readonly FontSettingsPanel  _fontPanel  = new FontSettingsPanel();
-            private readonly StyleSettingsPanel _stylePanel = new StyleSettingsPanel();
-            private readonly ColorSettingsPanel _colorPanel = new ColorSettingsPanel();
-            private readonly PresetManagerPanel _pmPanel = new PresetManagerPanel();
+            private FontSettingsPanel _fontPanel;
+            private StyleSettingsPanel _stylePanel;
+            private ColorSettingsPanel _colorPanel;
+            private PresetManagerPanel _presetPanel;
+            private bool _visible = false;
 
         #endregion
     }

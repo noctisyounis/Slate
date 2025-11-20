@@ -7,7 +7,8 @@
         "WindowUtilWindows.Runtime",
         "WindowUtilMac.Runtime",
         "SharedData.Runtime",
-        "Style.Runtime"
+        "Style.Runtime",
+        "Slate.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

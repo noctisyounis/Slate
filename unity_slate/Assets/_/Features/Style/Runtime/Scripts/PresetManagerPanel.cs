@@ -27,7 +27,6 @@ namespace Style.Runtime
         }
 
         private bool _initialized;
-        private string _rootFolder;
         private string _fontPath;
         private string _sizePath;
         private string _colorPath;
@@ -37,19 +36,6 @@ namespace Style.Runtime
             if (_initialized)
                 return;
 
-            var root = Application.persistentDataPath;
-            _rootFolder = Path.Combine(root, "imgui_presets");
-
-            try
-            {
-                Directory.CreateDirectory(_rootFolder);
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"[PresetManager] Failed to create presets folder: {ex.Message}");
-            }
-
-            _rootFolder = SettingsPath.RootFolder;
             _fontPath = SettingsPath.FontsPresetPath;
             _sizePath = SettingsPath.SizesPresetPath;
             _colorPath = SettingsPath.ColorsPresetPath;
@@ -99,7 +85,7 @@ namespace Style.Runtime
                 var dto = new FontPresetDto
                 {
                     fontKind = (int)FontRegistry.m_currentFont,
-                    scale    = FontRegistry.m_fontScale
+                    scale = FontRegistry.m_fontScale
                 };
 
                 var json = JsonUtility.ToJson(dto, true);
@@ -130,7 +116,7 @@ namespace Style.Runtime
                 }
 
                 FontRegistry.m_currentFont = (FontKind)dto.fontKind;
-                FontRegistry.m_fontScale   = dto.scale;
+                FontRegistry.m_fontScale = dto.scale;
                 FontRegistry.SavePrefs();
                 FontRegistry.ApplyAsDefault();
             }

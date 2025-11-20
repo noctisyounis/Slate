@@ -11,9 +11,9 @@ namespace Style.Runtime
         
             [Header("Font settings")]
             [Tooltip("Chemin Unity vers la font (relative au projet)")]
-            public string m_defaultRelativePath = "_/Content/Fonts/droid-sans.regular.ttf";
+            public string m_defaultRelativePath = "_/Content/Fonts/droid-sans.ttf";
             public string m_notoRelativePath = "_/Content/Fonts/NotoSansSymbols2-Regular.ttf";
-            public string m_dysRelativePath  = "_/Content/Fonts/OpenDyslexic3-Regular.ttf";
+            public string m_dysRelativePath = "_/Content/Fonts/OpenDyslexic3-Regular.ttf";
 
             [Tooltip("Taille de la font ImGui")]
             public float m_fontSize = 22f;
@@ -24,9 +24,9 @@ namespace Style.Runtime
         
             public void AddToolbarFont(ImGuiIOPtr io)
             {
-                var defaultFont = Path.Combine(Application.dataPath, m_defaultRelativePath);
-                var notoPath = Path.Combine(Application.dataPath, m_notoRelativePath);
-                var dysPath = Path.Combine(Application.dataPath, m_dysRelativePath);
+                var defaultFontPath = ResolveFontPath(m_defaultRelativePath, "Default");
+                var notoPath = ResolveFontPath(m_notoRelativePath, "NotoSymbols2");
+                var dysPath = ResolveFontPath(m_dysRelativePath, "OpenDyslexic");
 
                 unsafe
                 {
@@ -40,43 +40,78 @@ namespace Style.Runtime
 
                     fixed (ushort* pRanges = ranges)
                     {
-                        if (File.Exists(defaultFont))
+                        var pixelSize = m_fontSize;
+                        
+                        if (!string.IsNullOrEmpty(defaultFontPath) && File.Exists(defaultFontPath))
                         {
                             var fDefault = io.Fonts.AddFontFromFileTTF(
-                                defaultFont,
-                                m_fontSize * 1.5f,
+                                defaultFontPath,
+                                pixelSize,
                                 null,
                                 (IntPtr)pRanges
                             );
-                            
                             FontRegistry.m_defaultFont = fDefault;
                         }
                         
-                        if (File.Exists(notoPath))
+                        if (!string.IsNullOrEmpty(notoPath) && File.Exists(notoPath))
                         {
                             var fNoto = io.Fonts.AddFontFromFileTTF(
                                 notoPath,
-                                m_fontSize * 1.5f,
+                                pixelSize,
                                 null,
                                 (IntPtr)pRanges
                             );
-                            
                             FontRegistry.m_notoFont = fNoto;
                         }
 
-                        if (File.Exists(dysPath))
+                        if (!string.IsNullOrEmpty(dysPath) && File.Exists(dysPath))
                         {
                             var fDys = io.Fonts.AddFontFromFileTTF(
                                 dysPath,
-                                m_fontSize * 1.5f,
+                                pixelSize,
                                 null,
                                 (IntPtr)pRanges
                             );
-                            
                             FontRegistry.m_openDysFont = fDys;
                         }
                     }
                 }
+            }
+
+        #endregion
+
+        #region Helper
+
+            private static string ResolveFontPath(string relativeUnityPath, string label)
+            {
+                if (string.IsNullOrEmpty(relativeUnityPath))
+                {
+                    Debug.LogWarning($"[FontInitializer] Relative path is empty for font '{label}'.");
+                    return null;
+                }
+
+                var fileName = Path.GetFileName(relativeUnityPath);
+
+                var fromData = Path.Combine(SettingsPath.FontsFolder, fileName);
+                if (File.Exists(fromData))
+                {
+                    Debug.Log($"[FontInitializer] Using external font for '{label}' from '{fromData}'");
+                    return fromData;
+                }
+
+                var fromAssets = Path.Combine(Application.dataPath, relativeUnityPath);
+                if (File.Exists(fromAssets))
+                {
+                    Debug.Log($"[FontInitializer] Using project font for '{label}' from '{fromAssets}'");
+                    return fromAssets;
+                }
+
+                Debug.LogWarning(
+                    $"[FontInitializer] Font '{label}' not found.\n" +
+                    $"  Tried: '{fromData}'\n" +
+                    $"  Tried: '{fromAssets}'"
+                );
+                return null;
             }
 
         #endregion
