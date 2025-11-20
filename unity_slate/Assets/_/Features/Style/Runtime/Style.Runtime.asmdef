@@ -3,7 +3,9 @@
     "rootNamespace": "Style.Runtime",
     "references": [
         "GUID:56a25bc3d96654d6696bd2bf7846171f",
-        "GUID:0c859d0963fcc454baed7e047bb40422"
+        "GUID:0c859d0963fcc454baed7e047bb40422",
+        "GUID:233d6b86d1f554e43857db197af0595d",
+        "GUID:70ee7783ecf9646f99ae250415f2a80b"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

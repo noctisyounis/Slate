@@ -5,42 +5,61 @@ namespace Style.Runtime
 {
     public static class SettingsPath
     {
-        public static readonly string RootFolder;
+        public static readonly string DataFolder;
+        public static readonly string ThemesFolder;
+        public static readonly string FontsFolder;
+        
         public static readonly string FontsPresetPath;
         public static readonly string SizesPresetPath;
         public static readonly string ColorsPresetPath;
 
         static SettingsPath()
         {
-            // On veut : <projectRoot>/Build/Latest/data/themes/ en Editor
-            // et dans le build : <BuildRoot>/data/themes/
-            string root;
-
+            
 #if UNITY_EDITOR
-            // .../MyProject/Assets -> .../MyProject
-            var projectRoot = Directory.GetParent(Application.dataPath)?.FullName;
-            root = Path.Combine(projectRoot ?? Application.dataPath,
-                "Build", "Latest", "data", "themes");
-#else
-            // Dans un build standalone, Application.dataPath pointe sur
-            // "<Game>_Data". On remonte d'un cran pour avoir le dossier de build.
-            var buildRoot = Directory.GetParent(Application.dataPath)?.FullName;
-            root = Path.Combine(buildRoot ?? Application.dataPath,
-                                "data", "themes");
-#endif
+            
+            var assetsDir = Application.dataPath;
+            var unityProject = Directory.GetParent(assetsDir)?.FullName;
+            var rootFolder = Directory.GetParent(unityProject ?? assetsDir)?.FullName 
+                             ?? unityProject
+                             ?? assetsDir;
 
-            RootFolder = root;
-            FontsPresetPath = Path.Combine(RootFolder, "fonts.json");
-            SizesPresetPath = Path.Combine(RootFolder, "sizes.json");
-            ColorsPresetPath = Path.Combine(RootFolder, "colors.json");
+            var latestDir = Path.Combine(rootFolder, "latest");
+            
+#else
+            
+            var dataPath = Application.dataPath;
+            var slateDir = Directory.GetParent(dataPath)?.FullName
+                            ?? dataPath;
+            var latestDir = Directory.GetParent(slateDir)?.FullName
+                            ?? slateDir;
+            
+#endif
+            
+            DataFolder = Path.Combine(latestDir, "data");
+            ThemesFolder = Path.Combine(DataFolder, "themes");
+            FontsFolder = Path.Combine(DataFolder, "fonts");
+
+            FontsPresetPath = Path.Combine(ThemesFolder, "fonts.json");
+            SizesPresetPath = Path.Combine(ThemesFolder, "sizes.json");
+            ColorsPresetPath = Path.Combine(ThemesFolder, "colors.json");
+            
+            TryCreateDirectory(DataFolder);
+            TryCreateDirectory(ThemesFolder);
+            TryCreateDirectory(FontsFolder);
+        }
+        
+        private static void TryCreateDirectory(string path)
+        {
+            if (string.IsNullOrEmpty(path)) return;
 
             try
             {
-                Directory.CreateDirectory(RootFolder);
+                Directory.CreateDirectory(path);
             }
             catch (System.Exception ex)
             {
-                Debug.LogWarning($"[ThemePaths] Failed to create '{RootFolder}': {ex.Message}");
+                Debug.LogWarning($"[SettingsPath] Failed to create '{path}': {ex.Message}");
             }
         }
     }
