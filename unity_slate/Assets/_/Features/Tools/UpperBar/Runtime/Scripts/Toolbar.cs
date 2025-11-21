@@ -1,6 +1,7 @@
 using Foundation.Runtime;
 using UnityEngine;
 using System;
+using System.Linq;
 using Slate.Runtime;
 using SharedData.Runtime;
 using System.Runtime.InteropServices;
@@ -26,7 +27,8 @@ namespace UpperBar.Runtime
             public ToolbarSharedState m_state;
             
             [Header("Windows")]
-            [SerializeField] private SettingsWindow m_SettingsWindow;
+            public SettingsWindow m_SettingsWindow;
+            private SettingsWindow _settingsInstance;
 
             [Header("Boot Guard")]
             [SerializeField] public float m_bootGuardSeconds = 0.35f;
@@ -69,6 +71,12 @@ namespace UpperBar.Runtime
         #endregion
 
         #region Unity
+        
+            private void Awake()
+            {
+                if (m_SettingsWindow != null)
+                    WindowRegistry.RegisterPrefab(m_SettingsWindow);
+            }
 
             public void OnEnable()
             {
@@ -194,8 +202,11 @@ namespace UpperBar.Runtime
                 switch (cmd)
                 {
                     case "settings":
-                        if (m_SettingsWindow != null)
-                            m_SettingsWindow.ToggleVisible();
+                        var info = WindowRegistry.Windows
+                            .FirstOrDefault(w => w.Type == typeof(SettingsWindow));
+
+                        if (info != null)
+                            WindowRegistry.ToggleWindow(info);
                         break;
                 }
         }

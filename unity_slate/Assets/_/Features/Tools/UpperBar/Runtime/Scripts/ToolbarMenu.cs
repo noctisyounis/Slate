@@ -3,7 +3,6 @@ using UnityEngine;
 using ImGuiNET;
 using Foundation.Runtime;
 using SharedData.Runtime;
-using Slate.Runtime;
 using System.Linq;
 
 namespace UpperBar.Runtime
@@ -139,8 +138,27 @@ namespace UpperBar.Runtime
 
                     foreach (var win in windows)
                     {
-                        if (ImGui.Selectable(win.Entry, false))
-                            WindowRegistry.ToggleWindow(win);
+                        ImGui.PushID(win.Entry);
+
+                        var hasInstance = WindowRegistry.HasInstance(win);
+
+                        var marker = hasInstance ? "x" : "+";
+                        var label  = $"{win.Entry} {marker}";
+
+                        if (ImGui.Selectable(label, hasInstance))
+                        {
+                            if (!hasInstance)
+                            {
+                                WindowRegistry.SpawnInstance(win);
+                                WindowRegistry.ToggleWindow(win);
+                            }
+                            else
+                            {
+                                WindowRegistry.KillInstance(win);
+                            }
+                        }
+
+                        ImGui.PopID();
                     }
 
                     ImGui.PopTextWrapPos();
