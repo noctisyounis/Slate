@@ -5,7 +5,7 @@ namespace Style.Runtime
 {
     public class ColorSettingsPanel
     {
-        private static readonly string[] kPresetLabels =
+        private static readonly string[] kPresetDefaults =
         {
             "Current (live)",
             "Preset 1",
@@ -19,6 +19,11 @@ namespace Style.Runtime
             "ImGui Light",
             "ImGui Classic"
         };
+
+        private const string NamesKey = "imgui_color_preset_names_v1";
+
+        private string[] _presetNames = (string[])kPresetDefaults.Clone();
+        private bool _namesLoaded;
 
         private int _selectedPresetIndex = 0;
         private int _selectedBuiltinIndex = 0;
@@ -115,8 +120,65 @@ namespace Style.Runtime
             }),
         };
         
+        #region Names persistence
+
+            [System.Serializable]
+            private class NamesDto
+            {
+                public string[] names;
+            }
+
+            private void EnsureNamesLoaded()
+            {
+                if (_namesLoaded)
+                    return;
+
+                _namesLoaded = true;
+
+                if (!PlayerPrefs.HasKey(NamesKey))
+                {
+                    _presetNames = (string[])kPresetDefaults.Clone();
+                    return;
+                }
+
+                try
+                {
+                    var json = PlayerPrefs.GetString(NamesKey, "");
+                    if (string.IsNullOrEmpty(json))
+                    {
+                        _presetNames = (string[])kPresetDefaults.Clone();
+                        return;
+                    }
+
+                    var dto = JsonUtility.FromJson<NamesDto>(json);
+                    if (dto?.names == null || dto.names.Length != kPresetDefaults.Length)
+                    {
+                        _presetNames = (string[])kPresetDefaults.Clone();
+                        return;
+                    }
+
+                    _presetNames = dto.names;
+                }
+                catch
+                {
+                    _presetNames = (string[])kPresetDefaults.Clone();
+                }
+            }
+
+            private void SaveNames()
+            {
+                var dto = new NamesDto { names = _presetNames };
+                var json = JsonUtility.ToJson(dto);
+                PlayerPrefs.SetString(NamesKey, json);
+                PlayerPrefs.Save();
+            }
+
+        #endregion
+        
         public void Draw()
         {
+            EnsureNamesLoaded();
+            
             var style = ImGui.GetStyle();
             
             UpdatePreviews(style);
@@ -178,13 +240,13 @@ namespace Style.Runtime
             ImGui.Text("Color presets");
             ImGui.Spacing();
 
-            var currentLabel = kPresetLabels[_selectedPresetIndex];
+            var currentLabel = _presetNames[_selectedPresetIndex];
             if (ImGui.BeginCombo("Preset", currentLabel))
             {
-                for (var i = 0; i < kPresetLabels.Length; i++)
+                for (var i = 0; i < _presetNames.Length; i++)
                 {
                     var selected = (i == _selectedPresetIndex);
-                    if (ImGui.Selectable(kPresetLabels[i], selected))
+                    if (ImGui.Selectable(_presetNames[i], selected))
                         _selectedPresetIndex = i;
 
                     if (selected)
@@ -192,6 +254,26 @@ namespace Style.Runtime
                 }
 
                 ImGui.EndCombo();
+            }
+            
+            if (_selectedPresetIndex > 0)
+            {
+                var name = _presetNames[_selectedPresetIndex];
+                if (ImGui.InputText("Preset name", ref name, 64))
+                {
+                    if (string.IsNullOrWhiteSpace(name))
+                        name = $"Preset {_selectedPresetIndex}";
+
+                    _presetNames[_selectedPresetIndex] = name;
+                    SaveNames();
+                }
+            }
+            else
+            {
+                ImGui.BeginDisabled();
+                var dummy = _presetNames[0];
+                ImGui.InputText("Preset name", ref dummy, 64);
+                ImGui.EndDisabled();
             }
 
             if (_selectedPresetIndex > 0)
@@ -212,6 +294,10 @@ namespace Style.Runtime
                 ImGui.Button("Save to preset");
                 ImGui.EndDisabled();
             }
+
+            ImGui.SameLine();
+            if (ImGui.Button("Apply low-alpha preset"))
+                ApplyLowAlphaPreset(style);
 
             ImGui.Spacing();
             ImGui.Separator();
@@ -299,7 +385,7 @@ namespace Style.Runtime
             return $"imgui_color_preset_{slot}";
         }
 
-        private void SavePreset(int slot, ImGuiStylePtr style)
+        private static void SavePreset(int slot, ImGuiStylePtr style)
         {
             var state = new StyleColorState();
             state.CaptureFrom(style);
@@ -341,6 +427,9 @@ namespace Style.Runtime
                     ColorRegistry.m_state.colors[i] = state.colors[i];
 
                 ColorRegistry.SaveFromImGui();
+                
+                _presetNames[0] = _presetNames[slot];
+                SaveNames();
             }
             catch (System.Exception ex)
             {
@@ -395,6 +484,18 @@ namespace Style.Runtime
 
                 style.Colors[i] = vv;
             }
+        }
+
+        private void ApplyLowAlphaPreset(ImGuiStylePtr style)
+        {
+            for (var i = 0; i < (int)ImGuiCol.COUNT; i++)
+            {
+                var v = style.Colors[i];
+                v.w = ColorRegistry.MinAlpha;
+                style.Colors[i] = v;
+            }
+
+            ColorRegistry.SaveFromImGui();
         }
         
         private static string GetColorDescription(ImGuiCol colorId)
