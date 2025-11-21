@@ -34,6 +34,11 @@ namespace Slate.Runtime
         {
             WindowPosManager.EndOfFrame();
         }
+        
+        protected virtual void OnDestroy()
+        {
+            WindowPosManager.UnregisterWindow(_windowName);
+        }
 
         #endregion
 
@@ -99,17 +104,6 @@ namespace Slate.Runtime
             WindowPosManager.SetVisibilityOverride(_windowName, shouldDraw);
         }
 
-        protected void UpdateInitialPositionIfMouseDragging()
-        {
-            bool mouseDragging = ImGui.IsMouseDragging(ImGuiMouseButton.Left);
-            
-            if(!mouseDragging && _wasDraggedLastFrame)
-            {
-                WindowPosManager.UpdateWindowCache(_windowName);
-            }
-            _wasDraggedLastFrame = mouseDragging;
-        }
-   
         #endregion
 
         #region Private & Protected
