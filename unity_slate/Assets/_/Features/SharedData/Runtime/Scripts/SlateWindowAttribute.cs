@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Slate.Runtime
+namespace SharedData.Runtime
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public sealed class SlateWindowAttribute : Attribute
