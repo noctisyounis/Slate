@@ -822,8 +822,9 @@ MonoBehaviour:
   _debug: 0
   _warning: 0
   _error: 0
-  m_windowTitle: Gestion des Layouts
-  m_newLayoutName: Nouveau Layout
+  _windowName: Window Creator
+  m_windowTitle: Window Creator
+  m_newLayoutName: New Windows
 --- !u!1 &1455262925
 GameObject:
   m_ObjectHideFlags: 0

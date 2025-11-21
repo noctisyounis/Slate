@@ -166,8 +166,10 @@ MonoBehaviour:
   _debug: 0
   _warning: 0
   _error: 0
-  m_windowTitle: Gestion des Layouts
-  m_newLayoutName: Nouveau Layout
+  _windowName: Window Creation
+  m_windowTitle: Window Creation
+  m_newLayoutName: New Window
+  m_layoutZones: []
 --- !u!1 &99092573
 GameObject:
   m_ObjectHideFlags: 0
@@ -1023,6 +1025,10 @@ PrefabInstance:
     - target: {fileID: 2328476452236399001, guid: 7b4f6f53ab0b76741a26410a8389b71e, type: 3}
       propertyPath: m_Name
       value: Slate
+      objectReference: {fileID: 0}
+    - target: {fileID: 6260233280927838812, guid: 7b4f6f53ab0b76741a26410a8389b71e, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
