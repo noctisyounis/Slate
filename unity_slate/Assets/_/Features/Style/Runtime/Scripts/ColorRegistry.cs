@@ -52,7 +52,7 @@ namespace Style.Runtime
     {
         private const string Key = "imgui_style_colors_v1";
 
-        private const float MinAlpha = 0.05f;
+        public const float MinAlpha = 0.05f;
 
         public static float ClampAlpha(float a) => Mathf.Max(a, MinAlpha);
 

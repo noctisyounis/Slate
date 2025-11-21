@@ -59,56 +59,69 @@ namespace Style.Runtime
             DrawColorSection();
         }
 
-        private void DrawFontSection()
-        {
-            ImGui.Text("Fonts");
-            ImGui.SameLine();
-            ImGui.TextDisabled("(font kind + scale)");
-
-            if (ImGui.Button("Export fonts"))
+        #region Font
+        
+            private void DrawFontSection()
             {
-                ExportFonts();
+                ImGui.Text("Fonts");
+                ImGui.SameLine();
+                ImGui.TextDisabled("(font kind + scale)");
+
+                if (ImGui.Button("Export fonts"))
+                    ExportFonts();
+                ImGui.SameLine();
+                if (ImGui.Button("Import fonts"))
+                    ImportFontsWithPicker();
+
+                ImGui.TextDisabled(_fontPath);
             }
-            ImGui.SameLine();
-            if (ImGui.Button("Import fonts"))
-            {
-                ImportFonts();
-            }
 
-            ImGui.TextDisabled(_fontPath);
-        }
-
-        private void ExportFonts()
-        {
-            try
+            private void ExportFonts()
             {
-                var dto = new FontPresetDto
+                try
                 {
-                    fontKind = (int)FontRegistry.m_currentFont,
-                    scale = FontRegistry.m_fontScale
-                };
+                    var dto = new FontPresetDto
+                    {
+                        fontKind = (int)FontRegistry.m_currentFont,
+                        scale = FontRegistry.m_fontScale
+                    };
 
-                var json = JsonUtility.ToJson(dto, true);
-                File.WriteAllText(_fontPath, json);
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"[PresetManager] Failed to export fonts: {ex.Message}");
-            }
-        }
-
-        private void ImportFonts()
-        {
-            try
-            {
-                if (!File.Exists(_fontPath))
+                    var json = JsonUtility.ToJson(dto, true);
+                    File.WriteAllText(_fontPath, json);
+                }
+                catch (Exception ex)
                 {
-                    Debug.LogWarning($"[PresetManager] No font preset at {_fontPath}");
+                    Debug.LogWarning($"[PresetManager] Failed to export fonts: {ex.Message}");
+                }
+            }
+
+            private void ImportFontsWithPicker()
+            {
+                try
+                {
+                    var path = PickJsonFile(_fontPath);
+                    if (string.IsNullOrEmpty(path))
+                        return;
+
+                    _fontPath = path;
+                    ImportFontsFromPath(path);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning($"[PresetManager] Failed to import fonts: {ex.Message}");
+                }
+            }
+
+            private static void ImportFontsFromPath(string path)
+            {
+                if (!File.Exists(path))
+                {
+                    Debug.LogWarning($"[PresetManager] No font preset at {path}");
                     return;
                 }
 
-                var json = File.ReadAllText(_fontPath);
-                var dto = JsonUtility.FromJson<FontPresetDto>(json);
+                var json = File.ReadAllText(path);
+                var dto  = JsonUtility.FromJson<FontPresetDto>(json);
                 if (dto == null)
                 {
                     Debug.LogWarning("[PresetManager] Invalid font preset JSON.");
@@ -116,67 +129,77 @@ namespace Style.Runtime
                 }
 
                 FontRegistry.m_currentFont = (FontKind)dto.fontKind;
-                FontRegistry.m_fontScale = dto.scale;
+                FontRegistry.m_fontScale   = dto.scale;
                 FontRegistry.SavePrefs();
                 FontRegistry.ApplyAsDefault();
             }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"[PresetManager] Failed to import fonts: {ex.Message}");
-            }
-        }
 
-        private void DrawSizeSection()
-        {
-            ImGui.Text("Style sizes");
-            ImGui.SameLine();
-            ImGui.TextDisabled("(padding, rounding, spacing, etc.)");
+        #endregion
+        
+        #region Sizes
 
-            if (ImGui.Button("Export sizes"))
+            private void DrawSizeSection()
             {
-                ExportSizes();
-            }
-            ImGui.SameLine();
-            if (ImGui.Button("Import sizes"))
-            {
-                ImportSizes();
+                ImGui.Text("Style sizes");
+                ImGui.SameLine();
+                ImGui.TextDisabled("(padding, rounding, spacing, etc.)");
+
+                if (ImGui.Button("Export sizes"))
+                    ExportSizes();
+                ImGui.SameLine();
+                if (ImGui.Button("Import sizes"))
+                    ImportSizesWithPicker();
+
+                ImGui.TextDisabled(_sizePath);
             }
 
-            ImGui.TextDisabled(_sizePath);
-        }
-
-        private void ExportSizes()
-        {
-            try
+            private void ExportSizes()
             {
-                StyleRegistry.m_state.CaptureFrom(ImGui.GetStyle());
-
-                var dto = new SizePresetDto
+                try
                 {
-                    state = StyleRegistry.m_state
-                };
+                    StyleRegistry.m_state.CaptureFrom(ImGui.GetStyle());
 
-                var json = JsonUtility.ToJson(dto, true);
-                File.WriteAllText(_sizePath, json);
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"[PresetManager] Failed to export sizes: {ex.Message}");
-            }
-        }
+                    var dto = new SizePresetDto
+                    {
+                        state = StyleRegistry.m_state
+                    };
 
-        private void ImportSizes()
-        {
-            try
-            {
-                if (!File.Exists(_sizePath))
+                    var json = JsonUtility.ToJson(dto, true);
+                    File.WriteAllText(_sizePath, json);
+                }
+                catch (Exception ex)
                 {
-                    Debug.LogWarning($"[PresetManager] No size preset at {_sizePath}");
+                    Debug.LogWarning($"[PresetManager] Failed to export sizes: {ex.Message}");
+                }
+            }
+
+            private void ImportSizesWithPicker()
+            {
+                try
+                {
+                    var path = PickJsonFile(_sizePath);
+                    if (string.IsNullOrEmpty(path))
+                        return;
+
+                    _sizePath = path;
+                    ImportSizesFromPath(path);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning($"[PresetManager] Failed to import sizes: {ex.Message}");
+                }
+            }
+
+            private static void ImportSizesFromPath(string path)
+            {
+                if (!File.Exists(path))
+                {
+                    Debug.LogWarning($"[PresetManager] No size preset at {path}");
                     return;
                 }
 
-                var json = File.ReadAllText(_sizePath);
-                var dto = JsonUtility.FromJson<SizePresetDto>(json);
+                var json = File.ReadAllText(path);
+                var dto  = JsonUtility.FromJson<SizePresetDto>(json);
                 if (dto == null || dto.state == null)
                 {
                     Debug.LogWarning("[PresetManager] Invalid size preset JSON.");
@@ -187,63 +210,73 @@ namespace Style.Runtime
                 StyleRegistry.ApplyToImGui();
                 StyleRegistry.SaveFromImGui();
             }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"[PresetManager] Failed to import sizes: {ex.Message}");
-            }
-        }
+
+        #endregion
         
-        private void DrawColorSection()
-        {
-            ImGui.Text("Colors");
-            ImGui.SameLine();
-            ImGui.TextDisabled("(all ImGuiCol entries)");
+        #region Colors
 
-            if (ImGui.Button("Export colors"))
+            private void DrawColorSection()
             {
-                ExportColors();
+                ImGui.Text("Colors");
+                ImGui.SameLine();
+                ImGui.TextDisabled("(all ImGuiCol entries)");
+
+                if (ImGui.Button("Export colors"))
+                    ExportColors();
+                ImGui.SameLine();
+                if (ImGui.Button("Import colors"))
+                    ImportColorsWithPicker();
+
+                ImGui.TextDisabled(_colorPath);
             }
-            ImGui.SameLine();
-            if (ImGui.Button("Import colors"))
+
+            private void ExportColors()
             {
-                ImportColors();
-            }
-
-            ImGui.TextDisabled(_colorPath);
-        }
-
-        private void ExportColors()
-        {
-            try
-            {
-                ColorRegistry.SaveFromImGui();
-
-                var dto = new ColorPresetDto
+                try
                 {
-                    state = ColorRegistry.m_state
-                };
+                    ColorRegistry.SaveFromImGui();
 
-                var json = JsonUtility.ToJson(dto, true);
-                File.WriteAllText(_colorPath, json);
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"[PresetManager] Failed to export colors: {ex.Message}");
-            }
-        }
+                    var dto = new ColorPresetDto
+                    {
+                        state = ColorRegistry.m_state
+                    };
 
-        private void ImportColors()
-        {
-            try
-            {
-                if (!File.Exists(_colorPath))
+                    var json = JsonUtility.ToJson(dto, true);
+                    File.WriteAllText(_colorPath, json);
+                }
+                catch (Exception ex)
                 {
-                    Debug.LogWarning($"[PresetManager] No color preset at {_colorPath}");
+                    Debug.LogWarning($"[PresetManager] Failed to export colors: {ex.Message}");
+                }
+            }
+
+            private void ImportColorsWithPicker()
+            {
+                try
+                {
+                    var path = PickJsonFile(_colorPath);
+                    if (string.IsNullOrEmpty(path))
+                        return;
+
+                    _colorPath = path;
+                    ImportColorsFromPath(path);
+                }
+                catch (Exception ex)
+                {
+                    Debug.LogWarning($"[PresetManager] Failed to import colors: {ex.Message}");
+                }
+            }
+
+            private static void ImportColorsFromPath(string path)
+            {
+                if (!File.Exists(path))
+                {
+                    Debug.LogWarning($"[PresetManager] No color preset at {path}");
                     return;
                 }
 
-                var json = File.ReadAllText(_colorPath);
-                var dto = JsonUtility.FromJson<ColorPresetDto>(json);
+                var json = File.ReadAllText(path);
+                var dto  = JsonUtility.FromJson<ColorPresetDto>(json);
                 if (dto?.state == null)
                 {
                     Debug.LogWarning("[PresetManager] Invalid color preset JSON.");
@@ -255,10 +288,24 @@ namespace Style.Runtime
                 ColorRegistry.m_state.ApplyTo(ImGui.GetStyle());
                 ColorRegistry.SaveFromImGui();
             }
-            catch (Exception ex)
+
+        #endregion
+        
+        #region File picker helper
+
+            private static string PickJsonFile(string currentPath)
             {
-                Debug.LogWarning($"[PresetManager] Failed to import colors: {ex.Message}");
+#if UNITY_EDITOR
+                var dir = string.IsNullOrEmpty(currentPath) ? Application.dataPath : Path.GetDirectoryName(currentPath);
+                var file = !string.IsNullOrEmpty(currentPath) ? Path.GetFileName(currentPath) : "";
+                var chosen = UnityEditor.EditorUtility.OpenFilePanel("Import preset", dir, "json");
+                return string.IsNullOrEmpty(chosen) ? currentPath : chosen;
+#else
+                Debug.Log("[PresetManager] File picker is only available in the Editor. Using default path.");
+                return currentPath;
+#endif
             }
-        }
+
+        #endregion
     }
 }
