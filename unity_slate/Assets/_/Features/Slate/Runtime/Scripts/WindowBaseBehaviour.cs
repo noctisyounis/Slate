@@ -17,6 +17,15 @@ namespace Slate.Runtime
 
         #region Unity API
 
+        protected void Start()
+        {
+            if (string.IsNullOrEmpty(_windowName))
+            {
+                Warning($"Window name is not set! Setting it to {gameObject.name}");
+                _windowName = gameObject.name;
+            }
+        }
+
         protected virtual void OnEnable()
         {
             UImGuiUtility.OnInitialize += OnInitialize;
