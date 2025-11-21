@@ -10,7 +10,12 @@ Table of Contents
 ---
 - [Getting started](#getting-started)
   + [Installation](#installation)
+  + [How To](#how-to)
 - [Support](#support)
+  + [Main Links](#mainlinks)
+- [What's Next](#support)
+  + [Known Bugs](#knownbugs)
+  + [TO DO](#todo)
     
 Getting started
 ---
@@ -18,8 +23,31 @@ Getting started
 ### Installation
 Have Unity installed on your machine. Ideally Unity 6000.0+
 
+### How To
+Pan : RMB or MMB + Move Mouse
+Move Window : Drag & Drop title bar (showing up when hovered)
+Display existing ImGui Windows : Hover the title bar + Tools > ...
+
+What's Next ?
+---
+
+### Known Bugs
+- Drag & Drop window is painful when done vertically
+
+### TO DO
+- Naming Conventions Doc (script, project hierarchy)
+- Focus button : Takes all the existing Imgui windows and put them all inside user's view. Think about the way it's displayed to the User.
+- [Animation Flag Tool](https://gdcvault.com/play/1024894/A-Fun-Time-in-Which)
+- ImGui custom console
+ 
 Support
 ---
+
+### Main Links
 Please submit bug reports [here](https://github.com/noctisyounis/Slate/issues).  
 Submit your questions and feature requests [here](https://github.com/noctisyounis/Slate/discussions).  
 If you want to contact me privately, please drop me an email: ?
+
+What's Next ?
+---
+
