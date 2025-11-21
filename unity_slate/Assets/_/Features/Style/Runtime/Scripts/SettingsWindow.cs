@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using ImGuiNET;
-using Foundation.Runtime;
 using Slate.Runtime;
+using SharedData.Runtime;
 
 namespace Style.Runtime
 {
@@ -31,52 +31,35 @@ namespace Style.Runtime
         #endregion
 
         #region GUI
-        
-            public void ToggleVisible()
-            {
-                _visible = !_visible;
-            }
-
-            // protected override bool ShouldDrawWindow()
-            // {
-            //     return _visible;
-            // }
 
             protected override void WindowLayout()
             {
-                if (!_visible)
-                    return;
-                
-                if (ImGui.BeginTabBar("SettingsTabs"))
+                if (!ImGui.BeginTabBar("SettingsTabs")) return;
+                if (ImGui.BeginTabItem("Fonts"))
                 {
-                    if (ImGui.BeginTabItem("Fonts"))
-                    {
-                        _fontPanel.Draw();
-                        ImGui.EndTabItem();
-                    }
-
-                    if (ImGui.BeginTabItem("Styles"))
-                    {
-                        _stylePanel.Draw();
-                        ImGui.EndTabItem();
-                    }
-                    
-                    if (ImGui.BeginTabItem("Colors"))
-                    {
-                        _colorPanel.Draw();
-                        ImGui.EndTabItem();
-                    }
-                    
-                    if (ImGui.BeginTabItem("Preset Manager"))
-                    {
-                        _presetPanel.Draw();
-                        ImGui.EndTabItem();
-                    }
-
-                    ImGui.EndTabBar();
+                    _fontPanel.Draw();
+                    ImGui.EndTabItem();
                 }
 
-                ImGui.End();
+                if (ImGui.BeginTabItem("Styles"))
+                {
+                    _stylePanel.Draw();
+                    ImGui.EndTabItem();
+                }
+                    
+                if (ImGui.BeginTabItem("Colors"))
+                {
+                    _colorPanel.Draw();
+                    ImGui.EndTabItem();
+                }
+                    
+                if (ImGui.BeginTabItem("Preset Manager"))
+                {
+                    _presetPanel.Draw();
+                    ImGui.EndTabItem();
+                }
+
+                ImGui.EndTabBar();
             }
 
         #endregion
@@ -87,7 +70,6 @@ namespace Style.Runtime
             private StyleSettingsPanel _stylePanel;
             private ColorSettingsPanel _colorPanel;
             private PresetManagerPanel _presetPanel;
-            private bool _visible = false;
 
         #endregion
     }

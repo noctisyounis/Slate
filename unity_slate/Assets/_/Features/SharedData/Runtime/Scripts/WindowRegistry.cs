@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
-namespace Slate.Runtime
+namespace SharedData.Runtime
 {
     public static class WindowRegistry
     {
@@ -14,7 +15,7 @@ namespace Slate.Runtime
             {
                 public string Category;
                 public string Entry;
-                public Type   Type;
+                public Type Type;
             }
 
         #endregion
@@ -23,6 +24,7 @@ namespace Slate.Runtime
 
             private static readonly List<WindowInfo> _windows = new List<WindowInfo>();
             private static bool _initialized;
+            private static readonly Dictionary<Type, MonoBehaviour> _prefabsByType = new();
 
         #endregion
 
@@ -36,6 +38,15 @@ namespace Slate.Runtime
                     return _windows;
                 }
             }
+            
+            public static void RegisterPrefab(MonoBehaviour prefab)
+            {
+                if (prefab == null)
+                    return;
+
+                var type = prefab.GetType();
+                _prefabsByType[type] = prefab;
+            }
 
             public static IEnumerable<IGrouping<string, WindowInfo>> GroupedByCategory()
             {
@@ -47,16 +58,14 @@ namespace Slate.Runtime
 
             public static void ToggleWindow(WindowInfo info)
             {
-                if (info == null || info.Type == null)
+                if (info?.Type == null)
                     return;
 
-                var existing = UnityEngine.Object.FindObjectOfType(info.Type) as MonoBehaviour;
+                EnsureInitialized();
 
-                if (existing == null)
-                {
-                    var go = new GameObject(info.Type.Name);
-                    existing = (MonoBehaviour)go.AddComponent(info.Type);
-                }
+                var inst = SpawnInstance(info);
+                if (inst == null)
+                    return;
 
                 var toggle = info.Type.GetMethod(
                     "ToggleVisible",
@@ -68,11 +77,58 @@ namespace Slate.Runtime
 
                 if (toggle != null)
                 {
-                    toggle.Invoke(existing, null);
+                    toggle.Invoke(inst, null);
                     return;
                 }
 
                 Debug.LogWarning($"[WindowRegistry] {info.Type.Name} has no ToggleVisible() method.");
+            }
+            
+            public static bool HasInstance(WindowInfo info)
+            {
+                if (info?.Type == null)
+                    return false;
+
+                EnsureInitialized();
+                var existing = Object.FindObjectOfType(info.Type);
+                return existing != null;
+            }
+            
+            public static MonoBehaviour SpawnInstance(WindowInfo info)
+            {
+                if (info?.Type == null)
+                    return null;
+
+                EnsureInitialized();
+
+                var existing = Object.FindObjectOfType(info.Type) as MonoBehaviour;
+                if (existing != null)
+                    return existing;
+                
+                if (_prefabsByType.TryGetValue(info.Type, out var prefab) && prefab != null)
+                {
+                    var inst = Object.Instantiate(prefab);
+                    inst.name = prefab.name;
+                    return inst;
+                }
+
+                var go = new GameObject(info.Type.Name);
+                existing = (MonoBehaviour)go.AddComponent(info.Type);
+                return existing;
+            }
+            
+            public static void KillInstance(WindowInfo info)
+            {
+                if (info?.Type == null)
+                    return;
+
+                EnsureInitialized();
+
+                var existing = Object.FindObjectOfType(info.Type) as MonoBehaviour;
+                if (existing == null)
+                    return;
+
+                Object.Destroy(existing.gameObject);
             }
 
         #endregion

@@ -11,7 +11,7 @@ namespace Style.Runtime
         
             [Header("Font settings")]
             [Tooltip("Chemin Unity vers la font (relative au projet)")]
-            public string m_defaultRelativePath = "_/Content/Fonts/droid-sans.ttf";
+            public string m_defaultRelativePath = "_/Content/Fonts/droidSans.ttf";
             public string m_notoRelativePath = "_/Content/Fonts/NotoSansSymbols2-Regular.ttf";
             public string m_dysRelativePath = "_/Content/Fonts/OpenDyslexic3-Regular.ttf";
 

@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &6300659975722859519
+--- !u!1 &5607646191636050203
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,23 +8,23 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6642302220566417548}
-  - component: {fileID: 7077385383599836743}
-  - component: {fileID: 7767769492950506581}
+  - component: {fileID: 1043136010836838438}
+  - component: {fileID: 950392226944401701}
+  - component: {fileID: 3902762284268662726}
   m_Layer: 0
-  m_Name: P_Settings
+  m_Name: P_Font
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &6642302220566417548
+--- !u!4 &1043136010836838438
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6300659975722859519}
+  m_GameObject: {fileID: 5607646191636050203}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -33,13 +33,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7077385383599836743
+--- !u!114 &950392226944401701
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6300659975722859519}
+  m_GameObject: {fileID: 5607646191636050203}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91c6387e9a754801a51c4f1e8dc4c749, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3902762284268662726
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5607646191636050203}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7e46ff11e8774106ba446320a0613940, type: 3}
@@ -49,19 +61,3 @@ MonoBehaviour:
   m_notoRelativePath: _/Content/Fonts/NotoSansSymbols2-Regular.ttf
   m_dysRelativePath: _/Content/Fonts/OpenDyslexic3-Regular.ttf
   m_fontSize: 22
---- !u!114 &7767769492950506581
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6300659975722859519}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e76c618c0c524ab196ff1a1ebf1d406c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _debug: 0
-  _warning: 0
-  _error: 0
-  _windowName: Settings

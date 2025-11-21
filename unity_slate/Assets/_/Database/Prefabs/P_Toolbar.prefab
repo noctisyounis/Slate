@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3227176543383857047}
   - component: {fileID: 6620590746088927893}
   m_Layer: 0
-  m_Name: Toolbar
+  m_Name: P_Toolbar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -57,7 +57,7 @@ MonoBehaviour:
   m_hideDelay: 0.15
   m_useEaseOut: 1
   m_state: {fileID: 11400000, guid: 09d6f524959f50f419448b271eef4fd7, type: 2}
-  m_SettingsWindow: {fileID: 0}
+  m_SettingsWindow: {fileID: 7767769492950506581, guid: 0018a9bfd8664114bb3326bfa408a58e, type: 3}
   m_bootGuardSeconds: 0.35
   m_y: 0
   m_vy: 0
