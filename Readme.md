@@ -16,6 +16,7 @@ Table of Contents
 - [What's Next](#support)
   + [Known Bugs](#knownbugs)
   + [TO DO](#todo)
+
     
 Getting started
 ---
@@ -28,6 +29,15 @@ Pan : RMB or MMB + Move Mouse
 Move Window : Drag & Drop title bar (showing up when hovered)
 Display existing ImGui Windows : Hover the title bar + Tools > ...
 
+
+Support
+---
+
+### Main Links
+Please submit bug reports [here](https://github.com/noctisyounis/Slate/issues).  
+Submit your questions and feature requests [here](https://github.com/noctisyounis/Slate/discussions).
+
+
 What's Next ?
 ---
 
@@ -39,15 +49,3 @@ What's Next ?
 - Focus button : Takes all the existing Imgui windows and put them all inside user's view. Think about the way it's displayed to the User.
 - [Animation Flag Tool](https://gdcvault.com/play/1024894/A-Fun-Time-in-Which)
 - ImGui custom console
- 
-Support
----
-
-### Main Links
-Please submit bug reports [here](https://github.com/noctisyounis/Slate/issues).  
-Submit your questions and feature requests [here](https://github.com/noctisyounis/Slate/discussions).  
-If you want to contact me privately, please drop me an email: ?
-
-What's Next ?
----
-
