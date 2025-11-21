@@ -16,6 +16,7 @@ Table of Contents
 - [What's Next](#support)
   + [Known Bugs](#knownbugs)
   + [TO DO](#todo)
+-  [Credits](#credits)
 
     
 Getting started
@@ -23,11 +24,12 @@ Getting started
 
 ### Installation
 Have Unity installed on your machine. Ideally Unity 6000.0+
-
+1234123467890
 ### How To
 Pan : RMB or MMB + Move Mouse
 Move Window : Drag & Drop title bar (showing up when hovered)
-Display existing ImGui Windows : Hover the title bar + Tools > ...
+Display title bar : Hover title bar
+Display existing ImGui Windows : Tools > ...
 
 
 Support
@@ -49,3 +51,11 @@ What's Next ?
 - Focus button : Takes all the existing Imgui windows and put them all inside user's view. Think about the way it's displayed to the User.
 - [Animation Flag Tool](https://gdcvault.com/play/1024894/A-Fun-Time-in-Which)
 - ImGui custom console
+
+
+Credits
+---
+
+Ambre B.
+"Voyager_001"
+Zachary Lefèbvre
