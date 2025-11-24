@@ -56,7 +56,8 @@ What's Next ?
 Credits
 ---
 
-Ambre B
-"Voyager_001"
-Zachary Lefèbvre : Salut! Merci de reprendre le flambeau. Je suis très curieux de voir ce avec quoi vous allez come up :) 
-
+- "Aluth" : *"It is better to place oneself in a complicated situation to learn something useful, than to be in a useless situation to learn something complicated"*
+- Ambre B
+- "Ryospi" : *Voici la base du projet slate, en espérant que cela pourra vous aider dans vos futurs projets.*
+- "Voyager_001"
+- Zachary Lefèbvre : *Hey! Thanks for taking the lead (forced or not), I can't wait to see what you'll come up with :)*
