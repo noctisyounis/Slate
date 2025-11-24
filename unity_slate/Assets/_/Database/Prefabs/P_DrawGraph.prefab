@@ -48,4 +48,18 @@ MonoBehaviour:
   _warning: 0
   _error: 0
   _windowName: DrawGraph
-  action: 0
+  _windowFlags: 280
+  _action: 0
+  _rectSize: {x: 128, y: 64}
+  _finalRectColor:
+    serializedVersion: 2
+    rgba: 4293376147
+  _previewRectColor:
+    serializedVersion: 2
+    rgba: 4289563246
+  _finalLineColor:
+    serializedVersion: 2
+    rgba: 4291019715
+  _previewLineColor:
+    serializedVersion: 2
+    rgba: 4294967295
