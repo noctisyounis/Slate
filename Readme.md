@@ -8,23 +8,23 @@ The goal of Slate is to serve as a base and a tool allowing you to fasten your w
 
 Table of Contents
 ---
-- [Getting started](#getting-started)
+- [Getting Started](#getting-started)
   + [Installation](#installation)
   + [How To](#how-to)
 - [Support](#support)
-  + [Main Links](#mainlinks)
+  + [Main Links](#main-links)
 - [What's Next](#support)
-  + [Known Bugs](#knownbugs)
-  + [TO DO](#todo)
+  + [Known Bugs](#known-bugs)
+  + [To Do](#to-do)
 -  [Credits](#credits)
 
     
-Getting started
+Getting Started
 ---
 
 ### Installation
 Have Unity installed on your machine. Ideally Unity 6000.0+
-1234123467890
+
 ### How To
 Pan : RMB or MMB + Move Mouse
 Move Window : Drag & Drop title bar (showing up when hovered)
@@ -56,6 +56,7 @@ What's Next ?
 Credits
 ---
 
-Ambre B.
+Ambre B
 "Voyager_001"
-Zachary Lefèbvre
+Zachary Lefèbvre : Salut! Merci de reprendre le flambeau. Je suis très curieux de voir ce avec quoi vous allez come up :) 
+
