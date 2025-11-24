@@ -69,8 +69,8 @@ namespace Slate.Runtime
             // if false, fully skip window rendering
             if (!WindowPosManager.ShouldDraw(_windowName) || !WindowPosManager.GetVisibilityOverride(_windowName))
                 return;
-
-            if (ImGui.Begin(_windowName))
+            
+            if (ImGui.Begin(_windowName,_windowFlags))
             {
                 // bool mouseDragging = ImGui.IsMouseDragging(ImGuiMouseButton.Left);
                 // Initialize cache from actual window position the first frame it appears,
@@ -119,6 +119,8 @@ namespace Slate.Runtime
 
         [SerializeField]
         protected string _windowName;
+        [SerializeField]
+        protected ImGuiWindowFlags _windowFlags = ImGuiWindowFlags.None;
 
         private bool _wasDraggedLastFrame;
 
