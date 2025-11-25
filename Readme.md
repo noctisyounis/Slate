@@ -64,7 +64,12 @@ Doc
 
 ### Inputs
 Inputs are based on the new Input System. 
-Submit your questions and feature requests [here](https://github.com/noctisyounis/Slate/discussions).
+They can be accessed through the `InputsHandler` class. You can get inputs as events or float/bool depending on your needs.
+If you need to access extra inputs, you can : 
+- open the CustomInputActions object and add new Actions to it. Don't forget to save it.
+- use `Input.Keyboard.current` and access what you need locally (dirty way as you don't make it public for the rest of the crew but it's useful when testing out stuff).
+
+Anyway, in case of doubt, check the [Unity doc](https://docs.unity3d.com/Packages/com.unity.inputsystem@1.0//manual/QuickStartGuide.html) 
 
 
 
@@ -77,4 +82,5 @@ Credits
 - "Ryospi" : *Voici la base du projet slate, en espérant que cela pourra vous aider dans vos futurs projets.*
 - "Voyager_001" : *"Ce slate est un petit pas, mais un pas de géant pour nos futures productions.*"
 - Zachary Lefèbvre : *Hey! Thanks for taking the lead (forced or not), I can't wait to see what you'll come up with :)*
+
 
