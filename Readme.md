@@ -15,6 +15,10 @@ Table of Contents
   + [Main Links](#main-links)
 - [Doc](#doc)
   + [Inputs](#inputs)
+  + [Slate Windows](#slate-windows)
+  + [Minimap](#minimap)
+  + [Localisation](#localisation)
+  + [Grid Shader](#grid-shader)
 - [What's Next](#support)
   + [Known Bugs](#known-bugs)
   + [To Do](#to-do)
@@ -42,11 +46,12 @@ What's Next ?
 ### Known Bugs
 - Drag & Drop window is painful when done vertically
 
-### TO DO
+### To Do
 - Naming Conventions Doc (script, project hierarchy)
 - Focus button : Takes all the existing Imgui windows and put them all inside user's view. Think about the way it's displayed to the User.
 - [Animation Flag Tool](https://gdcvault.com/play/1024894/A-Fun-Time-in-Which)
 - ImGui custom console
+- How are Json organised ?
 
 
 
@@ -71,6 +76,19 @@ If you need to access extra inputs, you can :
 
 Anyway, in case of doubt, check the [Unity doc](https://docs.unity3d.com/Packages/com.unity.inputsystem@1.0//manual/QuickStartGuide.html) 
 
+### Slate Windows
+
+
+### Minimap
+
+
+### Localisation
+
+
+### Grid Shader
+The grid's shader is called `Grid_Slate` and was made using Amplify Shader. It is procedural and editable using the material. You don't need Amplify for it to work. If you need to change it, you will have to take the HLSL version and edit it manually. Note that doing so will break the link with Amplify.
+If I have the time, I will try to make a Shader Graph version of it.
+
 
 
 Credits
@@ -82,5 +100,6 @@ Credits
 - "Ryospi" : *Voici la base du projet slate, en espérant que cela pourra vous aider dans vos futurs projets.*
 - "Voyager_001" : *"Ce slate est un petit pas, mais un pas de géant pour nos futures productions.*"
 - Zachary Lefèbvre : *Hey! Thanks for taking the lead (forced or not), I can't wait to see what you'll come up with :)*
+
 
 
