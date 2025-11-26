@@ -5,10 +5,11 @@ using UnityEngine;
 
 public class DrawGraph : WindowBaseBehaviour
 {
+    #region ImGui Show Window
     protected override void WindowLayout()
     {
         
-        if (ImGui.Button("None"))
+        if (ImGui.Button("Selection"))
         {
             _action = DrawAction.None;
         }
@@ -19,21 +20,14 @@ public class DrawGraph : WindowBaseBehaviour
             _action = DrawAction.Rectangle;
         }
         
-        ImGui.SameLine();
-        if (ImGui.Button("Erase"))
-        {
-            _lines.Clear();
-            _rects.Clear();
-        }
-        
         // Reset drag if action switched
         if (_action != _lastAction)
         {
             _isDrawing = false;
             _lastAction = _action;
         }
-        
-        ImGui.BeginChild("DrawZone", ImGui.GetWindowSize());
+        Vector2 inspectSize = new Vector2(_inspectorSize.x + 32f,0f);
+        ImGui.BeginChild("DrawZone", ImGui.GetWindowSize() - inspectSize);
         
         var backgroundDrawList = ImGui.GetBackgroundDrawList();
         var foregroundDrawList = ImGui.GetWindowDrawList();
@@ -42,9 +36,9 @@ public class DrawGraph : WindowBaseBehaviour
         Vector2 mouse = ImGui.GetIO().MousePos;
         Vector2 mouseLocal = mouse - winContentPos;
         
-        bool hovered = ImGui.IsWindowHovered(ImGuiHoveredFlags.AllowWhenBlockedByActiveItem);
+        _isDrawGraphHovered = ImGui.IsWindowHovered(ImGuiHoveredFlags.AllowWhenBlockedByActiveItem);
 
-        if (hovered)
+        if (_isDrawGraphHovered)
         {
             switch (_action)
             {
@@ -62,13 +56,37 @@ public class DrawGraph : WindowBaseBehaviour
         }
 
         // Draw final rectangles
-        DrawAllRectangle(winContentPos, foregroundDrawList);
+        RectangleBehaviour(winContentPos, foregroundDrawList);
 
         // Draw final lines
         DrawAllLine(winContentPos, backgroundDrawList);
 
         ImGui.EndChild();
+        
+        // RIGHT: inspector 
+        ImGui.SameLine();
+
+        ImGui.BeginChild("Inspector", _inspectorSize);
+
+        if (_selectRectData != null)
+        {
+            ImGui.Text("Inspector");
+            ImGui.Separator();
+
+            // editable name
+            var name = _selectRectData.name;
+            if (ImGui.InputText("Name", ref name, 64))
+                _selectRectData.name = name;
+        }
+        else
+        {
+            ImGui.Text("No selection");
+        }
+
+        ImGui.EndChild();
     }
+    
+    #endregion
     
     
 #region Utils
@@ -130,7 +148,7 @@ public class DrawGraph : WindowBaseBehaviour
     }
     
     //DRAW ALL RECTANGLE
-    private void DrawAllRectangle(Vector2 winContentPos, ImDrawListPtr foregroundDrawList)
+    private void RectangleBehaviour(Vector2 winContentPos, ImDrawListPtr foregroundDrawList)
     {
         uint fillFinal = ImGui.ColorConvertFloat4ToU32(new Vector4(_finalRectColor.r/255f, _finalRectColor.g/255f, _finalRectColor.b/255f, _finalRectColor.a/255f));
         uint outlineCol = ImGui.GetColorU32(ImGuiCol.Border);
@@ -159,20 +177,38 @@ public class DrawGraph : WindowBaseBehaviour
             // Invisible button covering the rectangle area to detect right-click
             ImGui.SetCursorScreenPos(p1);
             ImGui.InvisibleButton("rectContext", _rects[i].size);
-
+            
             if (_action == DrawAction.Line && ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Left))
             {
                 if (_rects[i] == _lineStartRect) continue;
                 
-                _lines.Add(new LineData()
+                LineData newLine = new LineData
                 {
                     a = _startPos,
-                    b = _endPos,
+                    b = _rects[i].Center,
                     startRect = _lineStartRect,
                     endRect = _rects[i]
-                });
+                };
+
+                foreach (LineData line in _lines)
+                {
+                    if (line == newLine)
+                    {
+                        _action = DrawAction.None;
+                        return;
+                    }
+                }
+                _lines.Add(newLine);
+                _rects[i].line.Add(newLine);
+                _lineStartRect.line.Add(newLine);
                 
                 _action = DrawAction.None;
+                return;
+            }
+
+            if (_action == DrawAction.None && ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Left))
+            {
+                _selectRectData = _rects[i];
                 return;
             }
             
@@ -193,8 +229,19 @@ public class DrawGraph : WindowBaseBehaviour
 
                 if (ImGui.MenuItem("Delete this rectangle"))
                 {
+                    foreach (LineData line in _rects[i].line)
+                    {
+                        for(int j = 0; j < _lines.Count ; j++)
+                        {
+                            if (line == _lines[j])
+                            {
+                                _lines.RemoveAt(j);
+                                j--;
+                            }
+                        }
+                    }
                     _rects.RemoveAt(i);
-                    i--; // Adjust loop index after removal
+                    i--;
                 }
 
                 ImGui.EndPopup();
@@ -216,8 +263,12 @@ public class DrawGraph : WindowBaseBehaviour
     }
 #endregion
 
+#region Private and Protected
+
     // Data
     private enum DrawAction { None, Line, Rectangle }
+
+    private bool _isDrawGraphHovered;
 
     private class LineData
     {
@@ -232,11 +283,14 @@ public class DrawGraph : WindowBaseBehaviour
         public Vector2 pos;
         public Vector2 size;
         public Vector2 Center => pos + size * 0.5f;
+        public List<LineData> line = new();
     }
 
     private List<LineData> _lines = new();
     private List<RectData> _rects = new();
     private RectData _lineStartRect;
+
+    private RectData _selectRectData;
 
     private bool _isDrawing = false;
     private Vector2 _startPos, _endPos;
@@ -249,4 +303,7 @@ public class DrawGraph : WindowBaseBehaviour
     [SerializeField] private Color32 _previewRectColor = new Color32(255, 255, 255, 255);
     [SerializeField] private Color32 _finalLineColor = new Color32(255, 255, 255, 255);
     [SerializeField] private Color32 _previewLineColor = new Color32(255, 255, 255, 255);
+    [SerializeField] private Vector2 _inspectorSize = new Vector2(250f,100f);
+
+    #endregion
 }
