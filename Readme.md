@@ -83,7 +83,7 @@ Window State Management (+ / x)
 To make a window appear automatically in the Toolbar, simply add the `[SlateWindow]` attribute above your window class.
 The class must inherit from `MonoBehaviour` or `WindowBaseBehaviour`.
 
-```
+```cs
 using SharedData.Runtime;
 using UnityEngine;
 
@@ -229,6 +229,7 @@ Credits
 - "Ryospi" : *Voici la base du projet slate, en espérant que cela pourra vous aider dans vos futurs projets.*
 - "Voyager_001" : *"A small step with this Slate — a giant leap for our future productions."*
 - Zachary Lefèbvre : *Hey! Thanks for taking the lead (forced or not), I can't wait to see what you'll come up with :)*
+
 
 
 
