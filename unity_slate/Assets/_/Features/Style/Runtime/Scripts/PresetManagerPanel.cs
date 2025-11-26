@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using ImGuiNET;
+using SharedData.Runtime;
 
 namespace Style.Runtime
 {
@@ -28,8 +29,8 @@ namespace Style.Runtime
 
         private bool _initialized;
         private string _fontPath;
-        private string _sizePath;
-        private string _colorPath;
+        private static string _sizePath;
+        private static string _colorPath;
 
         private void InitOnce()
         {
@@ -153,7 +154,7 @@ namespace Style.Runtime
                 ImGui.TextDisabled(_sizePath);
             }
 
-            private void ExportSizes()
+            public static void ExportSizes()
             {
                 try
                 {
@@ -230,7 +231,7 @@ namespace Style.Runtime
                 ImGui.TextDisabled(_colorPath);
             }
 
-            private void ExportColors()
+            public static void ExportColors()
             {
                 try
                 {

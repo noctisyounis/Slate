@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using ImGuiNET;
+using SharedData.Runtime;
 
 namespace Style.Runtime
 {
@@ -333,7 +334,10 @@ namespace Style.Runtime
 
             ImGui.Separator();
             if (ImGui.Button("Save colors##StyleColors"))
+            {
                 ColorRegistry.SaveFromImGui();
+                PresetManagerPanel.ExportColors();
+            }
         }
         
         private void DrawColorLine(ImGuiStylePtr style, ImGuiCol colorId)

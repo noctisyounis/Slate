@@ -1,4 +1,5 @@
 ﻿using ImGuiNET;
+using SharedData.Runtime;
 
 namespace Style.Runtime
 {
@@ -117,7 +118,10 @@ namespace Style.Runtime
             ImGui.Separator();
 
             if (ImGui.Button("Save sizes##StyleSizes"))
+            {
                 StyleRegistry.SaveFromImGui();
+                PresetManagerPanel.ExportSizes();
+            }
         }
     }
 }

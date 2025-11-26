@@ -2,7 +2,7 @@
 using ImGuiNET;
 using System;
 
-namespace Style.Runtime
+namespace SharedData.Runtime
 {
     [Serializable]
     public class StyleSizeState
