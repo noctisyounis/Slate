@@ -2,7 +2,7 @@
 using System;
 using ImGuiNET;
 
-namespace Style.Runtime
+namespace SharedData.Runtime
 {
     [Serializable]
     public class StyleColorState

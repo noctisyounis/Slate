@@ -64,4 +64,5 @@ MonoBehaviour:
   _debug: 0
   _warning: 0
   _error: 0
-  _windowName: Settings
+  _windowName: ImGUI Settings
+  _windowFlags: 43

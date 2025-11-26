@@ -5,7 +5,7 @@ using SharedData.Runtime;
 
 namespace Style.Runtime
 {
-    [SlateWindow(categoryName = "Tools", entry = "Settings")]
+    [SlateWindow(categoryName = "Tools", entry = "ImGUI Settings")]
     public class SettingsWindow : WindowBaseBehaviour
     {
         #region Unity
@@ -32,7 +32,17 @@ namespace Style.Runtime
 
         #region GUI
 
-            protected override void WindowLayout()
+        protected override void WindowLayout()
+        {
+            if (!_sizeInitialized)
+            {
+                ImGui.SetWindowSize(new Vector2(650f, 500f));
+                _sizeInitialized = true;
+            }
+            DrawTitlebarCloseButton();
+            if (ImGui.BeginChild("ScrollableRegion", new Vector2(0, 0),
+                    ImGuiChildFlags.None,
+                    ImGuiWindowFlags.AlwaysVerticalScrollbar))
             {
                 if (!ImGui.BeginTabBar("SettingsTabs")) return;
                 if (ImGui.BeginTabItem("Fonts"))
@@ -46,13 +56,13 @@ namespace Style.Runtime
                     _stylePanel.Draw();
                     ImGui.EndTabItem();
                 }
-                    
+
                 if (ImGui.BeginTabItem("Colors"))
                 {
                     _colorPanel.Draw();
                     ImGui.EndTabItem();
                 }
-                    
+
                 if (ImGui.BeginTabItem("Preset Manager"))
                 {
                     _presetPanel.Draw();
@@ -61,6 +71,36 @@ namespace Style.Runtime
 
                 ImGui.EndTabBar();
             }
+            ImGui.EndChild();
+            return;
+
+            void DrawTitlebarCloseButton()
+            {
+                var frameH = ImGui.GetFrameHeight();
+
+                ImGui.BeginGroup();
+
+                ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0.12f, 0.20f, 0.35f, 1f));
+                ImGui.BeginChild("TitleBar", new Vector2(0, frameH + 4));
+
+                ImGui.PushFont(ImGui.GetFont());
+                ImGui.Text("ImGUI Settings");
+                ImGui.PopFont();
+
+                ImGui.SameLine();
+
+                var fullWidth = ImGui.GetContentRegionAvail().x - frameH;
+                ImGui.Dummy(new Vector2(fullWidth, 1));
+                ImGui.SameLine();
+
+                if (ImGui.Button("X", new Vector2(frameH, frameH)))
+                    Destroy(gameObject);
+
+                ImGui.EndChild();
+                ImGui.PopStyleColor();
+                ImGui.EndGroup();
+            }
+        }
 
         #endregion
 
@@ -70,6 +110,7 @@ namespace Style.Runtime
             private StyleSettingsPanel _stylePanel;
             private ColorSettingsPanel _colorPanel;
             private PresetManagerPanel _presetPanel;
+            private bool _sizeInitialized;
 
         #endregion
     }
