@@ -132,6 +132,7 @@ This tab adjusts the physical dimensions and spacing of UI elements. Settings ar
 - Rounding: Corner radius for windows, buttons, tabs, and scrollbars.
 - Scrollbar & Tabs: Dedicated sizing and rounding for scrollbars and tabs.
 - Display: Global safe margins for rendering.
+
 Note: The Save sizes button persists these geometry settings.
 
 3. Colors (Themes & Styling)
@@ -166,10 +167,10 @@ Settings are persisted in two complementary ways:
 Tool that allows to create, modify and organise data at runtime. Each window is a database and each change is then saved onto a Json.
 This window is based on the RPG Maker window used notably for the Game Designers of the team.
 
-To use it, you :
-- create a new window.
-- create new records.
-- fill all the date you need (you can choose between a variety of types : text, numbers, colours, vectors, databases, custom Enums).
+To use it, you can :
+- Create a new window.
+- Create new records.
+- Fill all the date you need (you can choose between a variety of types : text, numbers, colours, vectors, databases, custom Enums).
 - Save your data.
 
 There are various locks in place to assure your data is valid (min/max, null cleaning, unique GUIDs, auto-repair,...)
@@ -202,7 +203,6 @@ What's Next ?
 - [Localisation Debug Tool] Current language displayed is incorrect. It always takes the last element of the list.
 - [Minimap] It doesn't take Imgui windows sizes into account when drawing them
 
-
 ### To Do
 - [Whole Project] Naming Conventions Doc (script, project hierarchy)
 - [Slate Window] Focus button : Takes all the existing Imgui windows and put them all inside user's view. Think about the way it's displayed to the User.
@@ -229,5 +229,6 @@ Credits
 - "Ryospi" : *Voici la base du projet slate, en espérant que cela pourra vous aider dans vos futurs projets.*
 - "Voyager_001" : *"A small step with this Slate — a giant leap for our future productions."*
 - Zachary Lefèbvre : *Hey! Thanks for taking the lead (forced or not), I can't wait to see what you'll come up with :)*
+
 
 
