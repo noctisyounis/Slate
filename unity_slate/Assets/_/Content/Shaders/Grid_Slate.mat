@@ -14,8 +14,10 @@ Material:
   m_ValidKeywords: []
   m_InvalidKeywords:
   - _DRAWSECONDARYGRID_ON
+  - _FADESECONDARYGRIDOVERDISTANCE_ON
   - _RECEIVESHADOWS_OFF
   - _RECEIVE_SHADOWS_OFF
+  - _TOGGLESWITCH0_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -45,10 +47,16 @@ Material:
     - _DefaultOpacity: 1
     - _DrawDistance: 25
     - _DrawSecondaryGrid: 1
-    - _Float0: 0.33
+    - _FadeOverDistance: 0
+    - _FadeSecondaryGridOverDistance: 1
+    - _Float0: 0.221
     - _Float1: 5
     - _Float11: 1
+    - _Float2: 5.72
     - _GridCount: 1.01
+    - _GridMinimalpixelwidth: 4
+    - _GridSpacing: 100
+    - _GridWidth: 3
     - _LineWidth: 0.2
     - _MaxDrawDistance: 50
     - _PrimaryGridSize: 50
@@ -60,14 +68,18 @@ Material:
     - _QueueOffset: 0
     - _ReceiveShadows: 0
     - _SecondaryGridAmount: 5
-    - _SecondaryGridColourAttenuation: 0.5
+    - _SecondaryGridColourAttenuation: 0
     - _SecondaryGridPercentage: 20
     - _SecondaryGridRatio: 0.2
     - _SecondaryGridSubdivisions: 5
+    - _SecondaryGridWidth: 1
     - _SecondaryGridWidthandSpacingRatio: 0.2
     - _SecondaryLinesAttenuation: 0.5
     - _SmallLinesAttenuation: 0
+    - _ToggleSwitch0: 1
     - __dirty: 0
+    - _pixelwidth: 4
+    - _range: 0
     - _test: 10
     m_Colors:
     - _BackgroundColor: {r: 0.105882235, g: 0.10980379, b: 0.12156849, a: 1}
