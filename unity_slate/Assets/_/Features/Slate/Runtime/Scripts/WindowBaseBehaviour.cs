@@ -72,7 +72,6 @@ namespace Slate.Runtime
             
             if (ImGui.Begin(_windowName,_windowFlags))
             {
-                // bool mouseDragging = ImGui.IsMouseDragging(ImGuiMouseButton.Left);
                 // Initialize cache from actual window position the first frame it appears,
                 // so that we can apply delta to it without snapping.
                 if (ImGui.IsWindowAppearing())
@@ -83,14 +82,6 @@ namespace Slate.Runtime
                 // Apply pending delta (if any)
                 WindowPosManager.SyncWindowPosition(_windowName);
                 
-                // ImGui.Text(_windowName + " content");
-
-                // if (!mouseDragging && _wasDraggedLastFrame)
-                // {
-                //     WindowPosManager.UpdateWindowCache(_windowName);
-                // }
-                // _wasDraggedLastFrame = mouseDragging;
-                // UpdateInitialPositionIfMouseDragging();
                 WindowLayout();
                 
                 Info($"New position: {ImGui.GetWindowPos()} || Camera pos: {Camera.main.transform.position}");

@@ -104,11 +104,11 @@ namespace Manager.Runtime
                     continue;
                 }
 
-                Vector2 size = (Vector2)data.Size;
-                var newSize = size * scaleFactor;
+                Vector2 oldSize = (Vector2)data.Size;
+                var newSize = oldSize * scaleFactor;
                 
                 // Debug.Log($"New window size: {size}->{newSize} | ScaleFactor: {scaleFactor}");
-              
+                
                 ImGui.SetWindowSize(data.WindowName, newSize, ImGuiCond.Always);
             }
         }
