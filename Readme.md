@@ -65,7 +65,7 @@ Anyway, in case of doubt, check the [Unity doc](https://docs.unity3d.com/Package
 ### Toolbar
 The Toolbar is the main entry point of the application. It is a retractable bar located at the top of the screen, centralizing access to all windows (tools, settings, features) as well as core system commands. 
 
-1. Behavior (Auto-Hide)
+1. Behaviour (Auto-Hide)
 Managed by `Toolbar.cs`
 - Hidden by default: The bar remains invisible until user interaction.
 - Reveal zone: Hovering the top edge of the application window reveals the Toolbar with a smooth animation.
@@ -80,8 +80,8 @@ Window State Management (+ / x)
 - Close (x): If the window is already open, clicking its name (or the x icon) will immediately destroy it.
 
 3. Integration
-To make a window appear automatically in the Toolbar, simply add the [SlateWindow] attribute above your window class.
-The class must inherit from MonoBehaviour or WindowBaseBehaviour.
+To make a window appear automatically in the Toolbar, simply add the `[SlateWindow]` attribute above your window class.
+The class must inherit from `MonoBehaviour` or `WindowBaseBehaviour`.
 
 ```
 using SharedData.Runtime;
@@ -95,14 +95,14 @@ public class MyCustomTool : MonoBehaviour
     // Your ImGui code here...
 }
 ```
-After compilation, the WindowRegistry detects this class via reflection, creates the Tools menu if it does not already exist, and registers the My Custom Tool entry automatically.
+After compilation, the WindowRegistry detects this class via reflection, creates the Tools menu if it does not already exist, and registers the `My Custom Tool` entry automatically.
 
 4. System Controls
 Managed by `ToolbarButton.cs`
 The right side of the Toolbar contains essential application controls, styled as Ghost Buttons (transparent by default, visible on hover):
 - Minimize (_): Minimizes the application to the Windows taskbar.
 - Windowed / Borderless Toggle (□): Switches between exclusive fullscreen and borderless windowed mode. Particularly useful for development and multi-monitor setups.
-- Quit (X): Closes the application (or stops Play Mode in the Unity editor).
+- Quit (X): Closes the application (or stops Play Mode in the Unity Editor).
 
 Technical Insight
 The architecture is built around a clear separation between data and view:
@@ -117,12 +117,12 @@ This window allows configuration of the global appearance, ergonomics, and style
 1. Fonts (Typography)
 Managed by `FontSettingsPanel.cs`
 This tab controls text readability and scaling across the application.
-- Font Selection: Choose between built-in fonts:
-* Default (UImGui Default)
-* Noto Sans Symbols 2 (extended symbol support)
-* OpenDyslexic (accessibility-oriented)
-- Font Scale: A slider adjusts global text size (from ×0.75 to ×2.00).
-- Live Preview: A preview area displays a pangram (“The quick brown fox…”) and symbols for immediate feedback.
+Font Selection: Choose between built-in fonts:
+- Default (UImGui Default)
+- Noto Sans Symbols 2 (extended symbol support)
+- OpenDyslexic (accessibility-oriented)
+Font Scale: A slider adjusts global text size (from ×0.75 to ×2.00).
+Live Preview: A preview area displays a pangram (“The quick brown fox…”) and symbols for immediate feedback.
 
 2. Styles (Geometry & Layout)
 Managed by `StyleSettingsPanel.cs`
@@ -137,15 +137,16 @@ Note: The Save sizes button persists these geometry settings.
 3. Colors (Themes & Styling)
 Managed by `ColorSettingsPanel.cs`
 This is the full theme editor, allowing customization of every ImGui color.
-- Base Schemes: Apply default themes (Dark, Light, Classic) as a starting point.
-- Preset System:
-* Create, name, load, and save custom color presets.
-* Low-alpha preset option to quickly make backgrounds nearly transparent.
-- Granular Editing: Colors are grouped logically (Text, Windows, Widgets, Scrollbars, Tables, etc.).
-- Diagnostic Tools (?):
-* Each color row includes a ? button.
-* Hover: Shows a tooltip explaining the purpose of the color.
-* Click: Highlights the corresponding UI element in real time to visually identify it.
+Base Schemes: Apply default themes (Dark, Light, Classic) as a starting point.
+Preset System:
+- Create, name, load, and save custom color presets.
+- Low-alpha preset option to quickly make backgrounds nearly transparent.
+Granular Editing: Colors are grouped logically (Text, Windows, Widgets, Scrollbars, Tables, etc.).
+
+Diagnostic Tools (?):
+- Each color row includes a ? button.
+- Hover: Shows a tooltip explaining the purpose of the color.
+- Click: Highlights the corresponding UI element in real time to visually identify it.
 
 4. Preset Manager (Import / Export)
 Managed by `PresetManagerPanel.cs`
@@ -158,8 +159,8 @@ By default, files are stored in the Data/themes/ directory at the project root (
 
 Technical Insight
 Settings are persisted in two complementary ways:
-- PlayerPrefs: Immediate local persistence between sessions (keys like imgui_style_colors_v1, imgui_style_sizes_v1, etc.).
-- JSON Files: Managed via the Preset Manager for long-term storage and use in builds.
+1. PlayerPrefs: Immediate local persistence between sessions (keys like imgui_style_colors_v1, imgui_style_sizes_v1, etc.).
+2. JSON Files: Managed via the Preset Manager for long-term storage and use in builds.
 
 ### Window Creator
 Tool that allows to create, modify and organise data at runtime. Each window is a database and each change is then saved onto a Json.
@@ -228,4 +229,5 @@ Credits
 - "Ryospi" : *Voici la base du projet slate, en espérant que cela pourra vous aider dans vos futurs projets.*
 - "Voyager_001" : *"A small step with this Slate — a giant leap for our future productions."*
 - Zachary Lefèbvre : *Hey! Thanks for taking the lead (forced or not), I can't wait to see what you'll come up with :)*
+
 
