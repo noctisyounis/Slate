@@ -261,6 +261,10 @@ namespace Manager.Runtime
                 
                 WindowData windowData = _windowDatas[currentWindowName];
                 // otherData.Offset += currentWindowOffset;
+                
+                // This should be the same for all windows, so just use the first one
+                // Todo: remove condition and apply += delta to all windows when button is implemented
+                
                 if (currentWindowName == windowName)
                 {
                     windowData.Offset += delta;
