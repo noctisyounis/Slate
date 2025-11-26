@@ -15,7 +15,9 @@ Table of Contents
   + [Main Links](#main-links)
 - [Doc](#doc)
   + [Inputs](#inputs)
+  + [WindowBaseBehaviour](#windowbasebehaviour)
   + [Toolbar](#toolbar)
+  + [WindowPosManager](#windowposmanager)
   + [Window Creator](#window-creator)
   + [Minimap](#minimap)
   + [Localisation Tool](#localisation-tool)
@@ -61,6 +63,47 @@ If you need to access extra inputs, you can :
 - use `Input.Keyboard.current` and access what you need locally (dirty way as you don't make it public for the rest of the crew but it's useful when testing out stuff).
 
 Anyway, in case of doubt, check the [Unity doc](https://docs.unity3d.com/Packages/com.unity.inputsystem@1.0//manual/QuickStartGuide.html) 
+
+### WindowBaseBehaviour
+Abstract class that defines the basic behaviour of all UImGUI MonoBehaviour windows.
+This way, we manage subscription and unsubscribe to/from UImGUI events.
+
+It also registers the current window to the `WindowPosManager`, the class that handles movement and resize when panning or zooming in/out.
+`WindowBaseBehaviour` also calls the needed methods from `WindowPosManager` in order to move/resize the windows and also draw or not said windows when they go outside of the camera view.
+
+**Usage** 
+Simply make your UImGUI MonoBehaviour inherit from `WindowBaseBehaviour`, then override WindowLayout with your specific window’s style and logic:
+
+```
+public class ExampleWindow : WindowBaseBehaviour
+{
+    protected override void WindowLayout()
+    {
+        // your UImGUI layout and logic here
+    }
+}
+```
+
+### WindowPosManager
+This class handles window movements and sizes when panning and zooming in/out.
+`CameraPan` calls the `MoveWindows()` method with a movement delta, we then iterate over the list of registered windows and add the movement delta to the old position offset of said window.
+The actual repositioning is done in `SyncWindowPosition()` which handles if the window should move or not and if the window should be drawn.
+
+A window is considered to be “outside” of the camera view if its size + its offset adds up to the max screen width or height, or if they go into the negatives. If they are technically outside of the camera view then we stop rendering them, this is handled by the `ShouldDraw()` method.
+
+`ResizeWindows` is also called from the `CameraPan` class when we zoom in/out. 
+It simply receives a scale factor from 1-2 and multiplies the window’s initial size with the scale factor, we then set the window size to the new calculated size. (We do not save the current size in order to avoid resizing the windows infinitely)
+
+**Usage**
+This class’ implementation is handled through the `WindowBaseBehaviour` class:
+- It registers the current window through `WindowPosManager.RegisterWindow(_windowName)`. Take note that the `_windowName` variable should always be initialised so that the window can be registered to the `WindowPosManager`.
+
+- Early return if `WindowPosManager.ShouldDraw(_windowName)` returns false or if the visibility flag is overridden to false.
+
+- Inside `ImGui.Begin()` we call `WindowPosManager.UpdateWindowCache(_windowName)` if it’s the first time the window appears in order to initialise all its values.
+    - then we call `WindowPosManager.UpdateWindowCache(_windowName)` each frame to move the window if we pan around our view.
+
+In short, everything is handled through `WindowBaseBehaviour` so there’s no need to call `WindowPosManager` repeatedly.
 
 ### Toolbar
 The Toolbar is the main entry point of the application. It is a retractable bar located at the top of the screen, centralizing access to all windows (tools, settings, features) as well as core system commands. 
@@ -196,7 +239,7 @@ What's Next ?
 ---
 
 ### Known Bugs
-- [Slate Window] Drag & Drop window is painful when done vertically.
+- [Slate Window] Drag & Drop window is painful when done vertically. To move it, we are detecting the mouse movement and applying it to the window when criterias are met. 
 - [WindowCreator] There's no image preview for filepath.
 - [Localisation Tool] Window doesn't start at the right size.
 - [Localisation Tool] Extracting data from our Json hasn't been properly tested. While it may work fine, there might be couple of pain points on the way.
@@ -206,6 +249,7 @@ What's Next ?
 ### To Do
 - [Whole Project] Naming Conventions Doc (script, project hierarchy)
 - [Slate Window] Focus button : Takes all the existing Imgui windows and put them all inside user's view. Think about the way it's displayed to the User.
+- [Any Imgui Windows] The ResizeWindows method resizes from the lower-right corner, to make this behaviour less noticeable we should move the windows according to the difference in sizes. The issue is making it so that the movement is not exaggerated since the window will stop being displayed if moved outside of the camera view.
 - [WindowCreator] Records Templates
 - [WindowCreator] Drag & Drop categories / fields
 - [WindowCreator] Search / Filter in Records
@@ -229,6 +273,7 @@ Credits
 - "Ryospi" : *Voici la base du projet slate, en espérant que cela pourra vous aider dans vos futurs projets.*
 - "Voyager_001" : *"A small step with this Slate — a giant leap for our future productions."*
 - Zachary Lefèbvre : *Hey! Thanks for taking the lead (forced or not), I can't wait to see what you'll come up with :)*
+
 
 
 
