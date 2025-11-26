@@ -65,6 +65,11 @@ namespace Slate.Runtime
             }
             WindowPosManager.RegisterWindow(_windowName);
             
+            if (_focusWindow)
+            {
+                FocusWindow();
+            }
+
             // visibility test before Begin
             // if false, fully skip window rendering
             if (!WindowPosManager.ShouldDraw(_windowName) || !WindowPosManager.GetVisibilityOverride(_windowName))
@@ -104,6 +109,12 @@ namespace Slate.Runtime
             WindowPosManager.SetVisibilityOverride(_windowName, shouldDraw);
         }
 
+        public void FocusWindow()
+        {
+            WindowPosManager.FocusWindow(_windowName);
+            _focusWindow = false;
+        }
+
         #endregion
 
         #region Private & Protected
@@ -112,6 +123,8 @@ namespace Slate.Runtime
         protected string _windowName;
         [SerializeField]
         protected ImGuiWindowFlags _windowFlags = ImGuiWindowFlags.None;
+
+        [SerializeField] protected bool _focusWindow = false;
 
         private bool _wasDraggedLastFrame;
 

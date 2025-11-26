@@ -141,7 +141,7 @@ namespace Manager.Runtime
                 var size = ImGui.GetWindowSize();
                 data.Size = size;
                 data.IsSizeInitialized = true;
-                Debug.Log($"[INIT] Captured base size for {windowName}: {data.Size}");
+                // Debug.Log($"[INIT] Captured base size for {windowName}: {data.Size}");
             }
             
             bool wasDraggedLast = data.IsBeingDragged ?? false;
@@ -230,6 +230,51 @@ namespace Manager.Runtime
             
             WindowData currentData = _windowDatas[windowName];
             return currentData.VisibilityOverride;
+        }
+
+        public static void FocusWindow(string windowName)
+        {
+            if (!CheckRegisteredWindow(windowName)) return;
+            
+            WindowData currentWindow = _windowDatas[windowName];
+            
+            // Current screen position of focused window
+            var currentWindowOffset = currentWindow.Offset ?? Vector2.zero;
+            var initialPos = currentWindow.InitialPos ?? Vector2.zero;
+            var currentScreenPos = initialPos + currentWindowOffset;
+            
+            // currentData.Offset = Vector2.zero;
+            // currentData.HasPendingDelta = true;
+
+            // Calculate screen center
+            var screenCenter = ImGui.GetIO().DisplaySize * .5f;
+            var windowSize = currentWindow.Size ?? Vector2.zero;
+            var targetPos = screenCenter - (windowSize * .5f);
+            
+            // Calculate delta to move window to center
+            var delta = targetPos - currentScreenPos;
+            
+            for (int i = 0; i < _registeredWindows.Count; i++)
+            {
+                var currentWindowName = _registeredWindows[i];
+                // if (currentWindowName == windowName) continue;
+                
+                WindowData windowData = _windowDatas[currentWindowName];
+                // otherData.Offset += currentWindowOffset;
+                if (currentWindowName == windowName)
+                {
+                    windowData.Offset += delta;
+                }
+                else
+                {
+                    windowData.Offset -= delta;
+                }
+                windowData.HasPendingDelta = true;
+                
+                _windowDatas[currentWindowName] = windowData;
+            }
+            
+            // _windowDatas[windowName] = currentData;
         }
         #endregion
 
