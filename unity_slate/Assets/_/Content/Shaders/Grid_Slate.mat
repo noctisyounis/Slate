@@ -45,12 +45,12 @@ Material:
     - _DefaultOpacity: 1
     - _DrawDistance: 25
     - _DrawSecondaryGrid: 1
-    - _Float0: 1
+    - _Float0: 0.33
     - _Float1: 5
     - _Float11: 1
     - _GridCount: 1.01
     - _LineWidth: 0.2
-    - _MaxDrawDistance: 25
+    - _MaxDrawDistance: 50
     - _PrimaryGridSize: 50
     - _PrimaryGridSizecm: 50
     - _PrimaryGridSpacing: 50
@@ -75,7 +75,7 @@ Material:
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
     - _GridColor: {r: 0.056603692, g: 0.056603692, b: 0.056603692, a: 0}
     - _GridSpacingMinMax: {r: 80, g: 57, b: 0, a: 0}
-    - _GridWidthMinMax: {r: 3, g: 1.9, b: 0, a: 0}
+    - _GridWidthMinMax: {r: 3, g: 2.55, b: 0, a: 0}
     - _LinesColor: {r: 0.05660379, g: 0.05660379, b: 0.05660379, a: 0}
     - _Vector1: {r: 1, g: 1, b: 0, a: 0}
   m_BuildTextureStacks: []
