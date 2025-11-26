@@ -12,7 +12,8 @@ Table of Contents
   + [Installation](#installation)
   + [How To](#how-to-)
 - [Support](#support)
-  + [Main Links](#main-links)
+  + [Main Links](#main-links)r
+  + [Mac Support](#mac-support)
 - [Doc](#doc)
   + [Inputs](#inputs)
   + [WindowBaseBehaviour](#windowbasebehaviour)
@@ -49,6 +50,10 @@ Support
 ### Main Links
 Please submit bug reports [here](https://github.com/noctisyounis/Slate/issues).  
 Submit your questions and feature requests [here](https://github.com/noctisyounis/Slate/discussions).
+
+### Mac and Laptops Support
+Slate does support Mac devices. We have been developing on Mac and Windows in parallel.
+Laptops are also supported. Inputs have been chosen to accomodate to the fact that you might not have, say, middle-click mouse or numpads for example.       
 
 
 
@@ -273,6 +278,7 @@ Credits
 - "Ryospi" : *Voici la base du projet slate, en espérant que cela pourra vous aider dans vos futurs projets.*
 - "Voyager_001" : *"A small step with this Slate — a giant leap for our future productions."*
 - Zachary Lefèbvre : *Hey! Thanks for taking the lead (forced or not), I can't wait to see what you'll come up with :)*
+
 
 
 
