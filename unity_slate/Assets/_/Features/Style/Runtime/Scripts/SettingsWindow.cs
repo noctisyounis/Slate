@@ -32,18 +32,9 @@ namespace Style.Runtime
 
         #region GUI
 
-        protected override void WindowLayout()
-        {
-            if (!_sizeInitialized)
+            protected override void WindowLayout()
             {
-                ImGui.SetWindowSize(new Vector2(650f, 500f));
-                _sizeInitialized = true;
-            }
-            DrawTitlebarCloseButton();
-            if (ImGui.BeginChild("ScrollableRegion", new Vector2(0, 0),
-                    ImGuiChildFlags.None,
-                    ImGuiWindowFlags.AlwaysVerticalScrollbar))
-            {
+                DrawTitlebarCloseButton();
                 if (!ImGui.BeginTabBar("SettingsTabs")) return;
                 if (ImGui.BeginTabItem("Fonts"))
                 {
@@ -70,37 +61,37 @@ namespace Style.Runtime
                 }
 
                 ImGui.EndTabBar();
-            }
-            ImGui.EndChild();
-            return;
-
-            void DrawTitlebarCloseButton()
-            {
-                var frameH = ImGui.GetFrameHeight();
-
-                ImGui.BeginGroup();
-
-                ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0.12f, 0.20f, 0.35f, 1f));
-                ImGui.BeginChild("TitleBar", new Vector2(0, frameH + 4));
-
-                ImGui.PushFont(ImGui.GetFont());
-                ImGui.Text("ImGUI Settings");
-                ImGui.PopFont();
-
-                ImGui.SameLine();
-
-                var fullWidth = ImGui.GetContentRegionAvail().x - frameH;
-                ImGui.Dummy(new Vector2(fullWidth, 1));
-                ImGui.SameLine();
-
-                if (ImGui.Button("X", new Vector2(frameH, frameH)))
-                    Destroy(gameObject);
-
+                
                 ImGui.EndChild();
-                ImGui.PopStyleColor();
-                ImGui.EndGroup();
+                return;
+
+                void DrawTitlebarCloseButton()
+                {
+                    var frameH = ImGui.GetFrameHeight();
+
+                    ImGui.BeginGroup();
+
+                    ImGui.PushStyleColor(ImGuiCol.ChildBg, new Vector4(0.12f, 0.20f, 0.35f, 1f));
+                    ImGui.BeginChild("TitleBar", new Vector2(0, frameH + 4));
+
+                    ImGui.PushFont(ImGui.GetFont());
+                    ImGui.Text("ImGUI Settings");
+                    ImGui.PopFont();
+
+                    ImGui.SameLine();
+
+                    var fullWidth = ImGui.GetContentRegionAvail().x - frameH;
+                    ImGui.Dummy(new Vector2(fullWidth, 1));
+                    ImGui.SameLine();
+
+                    if (ImGui.Button("X", new Vector2(frameH, frameH)))
+                        Destroy(gameObject);
+
+                    ImGui.EndChild();
+                    ImGui.PopStyleColor();
+                    ImGui.EndGroup();
+                }
             }
-        }
 
         #endregion
 
