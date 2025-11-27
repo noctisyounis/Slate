@@ -224,8 +224,30 @@ To use it, you can :
 
 There are various locks in place to assure your data is valid (min/max, null cleaning, unique GUIDs, auto-repair,...)
 
+
 ### Draw Graph
-*work in progress*
+
+A simple graph editor base built with ImGui for Unity. Allows creating nodes (rectangles) and connecting them with lines. Provides an inspector for viewing and editing node data.
+
+#### Toolbar
+
+- **Selection:** Select a node to view its data in the inspector.  
+- **Draw Rectangle:** Draw a new node in the Draw Zone.  
+
+#### Draw Zone (Right-Click Context Menu)
+
+- **Make Line:** Start a connection from this node to another node.  
+- **Delete Rectangle:** Removes the node and all connected lines.  
+
+#### Data Structure
+
+- **Line:** Holds start/end positions and references to the starting and ending nodes.  
+- **Rectangle (Node):** Holds position, size, name, center, and all connected lines.  
+
+#### Inspector
+
+- Displays the selected node’s **Name** and **Transitions** (lines connected to other nodes).  
+- Allows renaming nodes.
 
 
 ### Minimap
@@ -284,6 +306,7 @@ Credits
 - "Ryospi" : *Voici la base du projet slate, en espérant que cela pourra vous aider dans vos futurs projets.*
 - "Voyager_001" : *"A small step with this Slate — a giant leap for our future productions."*
 - Zachary Lefèbvre : *Hey! Thanks for taking the lead (forced or not), I can't wait to see what you'll come up with :)*
+
 
 
 
