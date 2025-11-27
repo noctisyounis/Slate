@@ -72,11 +72,23 @@ public class DrawGraph : WindowBaseBehaviour
         {
             ImGui.Text("Inspector");
             ImGui.Separator();
-
-            // editable name
+            
+            ImGui.Text("Name");
+            ImGui.SameLine(100);
             var name = _selectRectData.name;
-            if (ImGui.InputText("Name", ref name, 64))
+            if (ImGui.InputText("##Name", ref name, 32))
                 _selectRectData.name = name;
+            
+            ImGui.Text("Transitions");
+            foreach (LineData lineData in _selectRectData.line)
+            {
+                ImGui.Text(lineData.startRect.name);
+                ImGui.SameLine(100);
+                ImGui.Text(" ---> ");
+                ImGui.SameLine();
+                ImGui.Text(lineData.endRect.name);
+            }
+            
         }
         else
         {
@@ -107,8 +119,6 @@ public class DrawGraph : WindowBaseBehaviour
         if (!_isDrawing && ImGui.IsMouseClicked(ImGuiMouseButton.Left))
         {
             _isDrawing = true;
-            // startPos = mouseLocal;
-            // endPos = mouseLocal;
         }
 
         if (_isDrawing && ImGui.IsMouseDown(ImGuiMouseButton.Left))
@@ -216,6 +226,7 @@ public class DrawGraph : WindowBaseBehaviour
             {
                 ImGui.OpenPopup($"rectMenu{i}");
             }
+            ImGui.PushStyleColor(ImGuiCol.PopupBg, new Vector4(0f, 0f, 0f, .6f));
 
             if (ImGui.BeginPopup($"rectMenu{i}"))
             {
@@ -239,13 +250,28 @@ public class DrawGraph : WindowBaseBehaviour
                                 j--;
                             }
                         }
+                        _rects.RemoveAt(i);
+                        i--;
+                        
+                        foreach (RectData rectData in _rects)
+                        {
+                            if (line.startRect == rectData || line.endRect == rectData)
+                            {
+                                for (int index = 0; index < rectData.line.Count; index++)
+                                {
+                                    if (rectData.line[index] == line)
+                                    {
+                                        rectData.line.RemoveAt(index);
+                                        index--;
+                                    }
+                                }
+                            }
+                        }
                     }
-                    _rects.RemoveAt(i);
-                    i--;
                 }
-
                 ImGui.EndPopup();
             }
+            ImGui.PopStyleColor();
         }
     }
     
