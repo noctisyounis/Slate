@@ -12,14 +12,15 @@ Table of Contents
   + [Installation](#installation)
   + [How To](#how-to-)
 - [Support](#support)
-  + [Main Links](#main-links)r
-  + [Mac Support](#mac-support)
+  + [Main Links](#main-links)
+  + [Mac and Laptops Support](#mac-and-laptops-support)
 - [Doc](#doc)
   + [Inputs](#inputs)
   + [WindowBaseBehaviour](#windowbasebehaviour)
   + [Toolbar](#toolbar)
   + [WindowPosManager](#windowposmanager)
   + [Window Creator](#window-creator)
+  + [Draw Graph](#draw-graph)
   + [Minimap](#minimap)
   + [Localisation Tool](#localisation-tool)
   + [Grid Shader](#grid-shader)
@@ -223,6 +224,10 @@ To use it, you can :
 
 There are various locks in place to assure your data is valid (min/max, null cleaning, unique GUIDs, auto-repair,...)
 
+### Draw Graph
+*work in progress*
+
+
 ### Minimap
 A mimimap is being displayed when moving in the Slate. Its purpose is to show you where you currently stand in the window compared to existing Imgui.
 
@@ -274,10 +279,12 @@ Credits
 
 - "Aluth" : *"It is better to place oneself in a complicated situation to learn something useful, than to be in a useless situation to learn something complicated"*
 - Ambre
+- Nicolas Carlier : "I wish Unity.GraphView will be cool"
 - "Lex"
 - "Ryospi" : *Voici la base du projet slate, en espérant que cela pourra vous aider dans vos futurs projets.*
 - "Voyager_001" : *"A small step with this Slate — a giant leap for our future productions."*
 - Zachary Lefèbvre : *Hey! Thanks for taking the lead (forced or not), I can't wait to see what you'll come up with :)*
+
 
 
 
