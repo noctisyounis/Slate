@@ -17,9 +17,9 @@ MonoBehaviour:
   m_mousePanSpeedmin: 4
   m_mousePanSpeedmax: 55
   m_zoomSpeed: 20
-  m_minOrthoZoom: 2
-  m_maxOrthoZoom: 8
-  m_zoomNormalized: 0.38707265
+  m_minOrthoZoom: 1
+  m_maxOrthoZoom: 15
+  m_zoomNormalized: 1.1666666
   m_correcZoom: 1
   m_startZoom: 2
   m_minZoom: -50

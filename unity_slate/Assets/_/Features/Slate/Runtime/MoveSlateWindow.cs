@@ -16,7 +16,6 @@ namespace Slate.Runtime
     /// </summary>
     public class MoveSlateWindow : FBehaviour
     {
-        // This
 #if UNITY_STANDALONE_WIN 
 
         #region Monobehaviour Methods
@@ -61,7 +60,12 @@ namespace Slate.Runtime
             _selectPressed = selectPressed;
 
             if (!selectPressed)
+            {
                 _isBeingMoved = false;
+                _holdingWindow = false;
+            }
+            else if (_toolbarSO.m_isPointerInToolbar)
+                _holdingWindow = true;
         }
 
         private void OnMovePressed(Vector2 move) => _rawMovement = move;
@@ -71,12 +75,11 @@ namespace Slate.Runtime
         /// </summary>
         private void WindowPositionManagement()
         {
-            if (!Application.isFocused)
+            if (!Application.isFocused || !_holdingWindow)
                 return;
 
             bool isMoving = Mathf.Abs(_rawMovement.normalized.magnitude) >= 0.01f;
-            bool tryingToMoveWindow = isMoving && _selectPressed && _toolbarSO.m_isPointerInToolbar;
-            if (!tryingToMoveWindow)
+            if (!isMoving)
                 return;
 
             if (!_isBeingMoved)
@@ -186,6 +189,7 @@ namespace Slate.Runtime
         private Vector2 _rawMovement;
         private bool _selectPressed = false;
 
+        private bool _holdingWindow = false;
         private bool _isBeingMoved = false;
         private POINT _mousePosLastFrame; // POINT seems to be required by Windows for some reason
         private POINT _currentMousePos;

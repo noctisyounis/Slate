@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
 using ImGuiNET;
-using SharedData.Runtime;
 
-namespace Style.Runtime
+namespace SharedData.Runtime
 {
     public class ThemeRegistry
     {

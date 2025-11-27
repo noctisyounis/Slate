@@ -511,7 +511,6 @@ namespace Localisation.Runtime
             foreach (var file in localizationFiles)
             {
                 string fileName = Path.GetFileNameWithoutExtension(file);
-                // fileName = "LocalisationData.en"
                 string lang = fileName.Substring("LocalisationData.".Length);
                 _languages.Add(lang);
             }
@@ -535,14 +534,11 @@ namespace Localisation.Runtime
                     foreach (var group in language.Value)
                     {
                         _groups.Add(group.Key);
-                        Debug.Log("Added : " + group);
                     }
                 }
             }
             
 
-            Debug.Log("_localisationByLanguage Count " + _localisationByLanguage.Count);
-            Debug.Log("_groups Count " + _groups.Count);
             foreach (var group in _groups){
                 
                 foreach (var lang in _languages)
@@ -572,12 +568,9 @@ namespace Localisation.Runtime
             {
                 string fileName = Path.Combine(fileDir,$"LocalisationData.{lang.Key}.json");
                 LocalisationFile file = new LocalisationFile();
-                Debug.Log($"<color='cyan'>Language KVP: {lang.Key}</color>");
             
                 foreach (var group in lang.Value)
                 {
-                    Debug.Log($"<color='yellow'>Group: {group.Key}</color>");
-
                     var copy = new List<LocalisationData>(group.Value);
                 
                     file.groups.Add(new GroupData
@@ -598,9 +591,7 @@ namespace Localisation.Runtime
 
             if (!_localisationByLanguage.ContainsKey(_languages[_selectedLanguage]))
             {
-                Debug.Log("Selected Language: " + _languages[_selectedLanguage]);
                 return;
-                    
             }
 
             var referenceList = _localisationByLanguage[_languages[_selectedLanguage]][groupName];
@@ -643,10 +634,7 @@ namespace Localisation.Runtime
                 fileName = Path.Combine(fileDir,$"LocalisationData.{lang}.json");
                 
                 if (!File.Exists(fileName))
-                {
-                    Debug.Log($"No file found for {lang}, skipping load.");
                     continue;
-                }
 
                 json = File.ReadAllText(fileName);
                 LocalisationFile file = JsonConvert.DeserializeObject<LocalisationFile>(json);
@@ -655,8 +643,6 @@ namespace Localisation.Runtime
 
                 foreach (var group in file.groups)
                 {
-                    Debug.Log($"<color='cyan'>Found group {group.groupName} and entries {group.entries.Count} for language {lang}</color>");
-
                     if (!_groups.Contains(group.groupName))
                         _groups.Add(group.groupName);
 
@@ -682,8 +668,6 @@ namespace Localisation.Runtime
             {
                 _localisationByGroup = new Dictionary<string, List<LocalisationData>>();
             }
-
-            Debug.Log($"Loaded localisation data for languages: {string.Join(", ", _localisationByLanguage.Keys)}");
         }
 
         
@@ -732,7 +716,6 @@ namespace Localisation.Runtime
         {
             return  $"UUID: {m_uuid}, Expression: {m_expression}";
         }
-
     }
 
 
@@ -748,7 +731,5 @@ namespace Localisation.Runtime
         public string groupName;
         public List<LocalisationData> entries = new List<LocalisationData>();
     }
-
-
 }
 

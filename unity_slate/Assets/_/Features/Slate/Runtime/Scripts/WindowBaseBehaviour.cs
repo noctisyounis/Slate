@@ -65,6 +65,11 @@ namespace Slate.Runtime
             }
             WindowPosManager.RegisterWindow(_windowName);
             
+            if (_focusWindow)
+            {
+                FocusWindow();
+            }
+
             // visibility test before Begin
             // if false, fully skip window rendering
             if (!WindowPosManager.ShouldDraw(_windowName) || !WindowPosManager.GetVisibilityOverride(_windowName))
@@ -72,7 +77,6 @@ namespace Slate.Runtime
             
             if (ImGui.Begin(_windowName,_windowFlags))
             {
-                // bool mouseDragging = ImGui.IsMouseDragging(ImGuiMouseButton.Left);
                 // Initialize cache from actual window position the first frame it appears,
                 // so that we can apply delta to it without snapping.
                 if (ImGui.IsWindowAppearing())
@@ -83,14 +87,6 @@ namespace Slate.Runtime
                 // Apply pending delta (if any)
                 WindowPosManager.SyncWindowPosition(_windowName);
                 
-                // ImGui.Text(_windowName + " content");
-
-                // if (!mouseDragging && _wasDraggedLastFrame)
-                // {
-                //     WindowPosManager.UpdateWindowCache(_windowName);
-                // }
-                // _wasDraggedLastFrame = mouseDragging;
-                // UpdateInitialPositionIfMouseDragging();
                 WindowLayout();
                 
                 Info($"New position: {ImGui.GetWindowPos()} || Camera pos: {Camera.main.transform.position}");
@@ -113,6 +109,12 @@ namespace Slate.Runtime
             WindowPosManager.SetVisibilityOverride(_windowName, shouldDraw);
         }
 
+        public void FocusWindow()
+        {
+            WindowPosManager.FocusWindow(_windowName);
+            _focusWindow = false;
+        }
+
         #endregion
 
         #region Private & Protected
@@ -121,6 +123,8 @@ namespace Slate.Runtime
         protected string _windowName;
         [SerializeField]
         protected ImGuiWindowFlags _windowFlags = ImGuiWindowFlags.None;
+
+        [SerializeField] protected bool _focusWindow = false;
 
         private bool _wasDraggedLastFrame;
 
