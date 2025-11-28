@@ -291,6 +291,9 @@ What's Next ?
 - [Localisation Tool] Add a button to remove an entry
 - [Localisation Tool] Add an option to see options from all languages at once
 - [Minimap] Render the Minimap when hovering its position on the Slate Window (it's currently only rendered when panning)
+- [DrawGraph] Implement navigation inside GraphView
+- [DrawGraph] Export/Import Json data (Animator ?, Narration ?, Achievement ?, Quest ?, ...)
+- [DrawGraph] Multiple tab of GraphView
 - Start working on a ImGui Custom Console ?
 - Start working on an [Animation Tool](https://gdcvault.com/play/1024894/A-Fun-Time-in-Which) ?
 
@@ -306,6 +309,7 @@ Credits
 - "Ryospi" : *Voici la base du projet slate, en espérant que cela pourra vous aider dans vos futurs projets.*
 - "Voyager_001" : *"A small step with this Slate — a giant leap for our future productions."*
 - Zachary Lefèbvre : *Hey! Thanks for taking the lead (forced or not), I can't wait to see what you'll come up with :)*
+
 
 
 
